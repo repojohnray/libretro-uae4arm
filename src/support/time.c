@@ -1,6 +1,6 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
-#include "uae/time.h"
+#include "uae_time.h"
 #include "options.h"
 #include "events.h"
 #include "uae.h"

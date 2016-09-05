@@ -1,9 +1,9 @@
 #ifndef UAE_PCI_HW_H
 #define UAE_PCI_HW_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/memory.h"
+#include "uae_memory.h"
 #endif
 
 #define MAX_PCI_BOARDS 6

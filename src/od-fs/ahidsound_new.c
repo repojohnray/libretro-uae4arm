@@ -1,6 +1,6 @@
 #include "sysconfig.h"
 
-#include "uae/ahi.h"
+#include "uae_ahi.h"
 
 #if defined(AHI)
 

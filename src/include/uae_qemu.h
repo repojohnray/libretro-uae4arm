@@ -4,8 +4,8 @@
 /* This file is intended to be included by external libraries as well,
  * so don't pull in too much UAE-specific stuff. */
 
-#include "uae/types.h"
-#include "uae/api.h"
+#include "uae_types.h"
+#include "uae_api.h"
 
 /* The qemu-uae major version must match this */
 #define QEMU_UAE_VERSION_MAJOR 3
@@ -44,7 +44,7 @@ UAE_DECLARE_IMPORT_FUNCTION(
 
 #ifdef UAE
 
-#include "uae/dlopen.h"
+#include "uae_dlopen.h"
 
 UAE_DLHANDLE uae_qemu_uae_init(void);
 

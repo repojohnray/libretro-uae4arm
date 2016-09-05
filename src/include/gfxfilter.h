@@ -1,7 +1,7 @@
 #ifndef UAE_GFXFILTER_H
 #define UAE_GFXFILTER_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 #ifdef GFXFILTER
 

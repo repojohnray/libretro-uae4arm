@@ -1,4 +1,4 @@
-#include "uae/types.h"
+#include "uae_types.h"
 
 #include "sysconfig.h"
 #include "sysdeps.h"

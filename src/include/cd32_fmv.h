@@ -1,9 +1,9 @@
 #ifndef UAE_CD32_FMV_H
 #define UAE_CD32_FMV_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/memory.h"
+#include "uae_memory.h"
 #endif
 
 extern addrbank *cd32_fmv_init (uaecptr);

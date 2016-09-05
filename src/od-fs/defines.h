@@ -15,7 +15,7 @@
 
 #define init_audio uae_init_audio
 
-#include "uae/log.h"
+#include "uae_log.h"
 
 // we are using our own main function, not the one from UAE...
 
@@ -73,7 +73,7 @@ extern FILE *g_fs_uae_sync_debug_file;
 #define XARCADE
 #define GNU_SOURCE 1
 
-#include "uae/limits.h"
+#include "uae_limits.h"
 
 // needed by serial.cpp
 #ifdef WINDOWS
@@ -119,7 +119,7 @@ typedef unsigned short USHORT;
 #undef ENUMNAME
 #undef ENUMDECL
 
-#include "uae/enum.h"
+#include "uae_enum.h"
 
 #include "machdep/machdep.h"
 
@@ -187,7 +187,7 @@ extern int uae_start_thread_fast (void *(*f)(void *), void *arg,
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
-#include "uae/jitconfig.h"
+#include "uae_jitconfig.h"
 
 #ifndef NORETURN
 #ifdef __GNUC__

@@ -7,7 +7,7 @@
 #ifdef WITH_SLIRP
 
 #include "options.h"
-#include "uae/slirp.h"
+#include "uae_slirp.h"
 #include "uae.h"
 
 #ifdef WITH_BUILTIN_SLIRP
@@ -17,9 +17,9 @@
 #endif
 
 #ifdef WITH_QEMU_SLIRP
-#include "uae/dlopen.h"
-#include "uae/ppc.h"
-#include "uae/qemu.h"
+#include "uae_dlopen.h"
+#include "uae_ppc.h"
+#include "uae_qemu.h"
 #endif
 
 /* Implementation enumeration must correspond to slirp_implementations in

@@ -8,7 +8,7 @@
 #include "drawing.h"
 #include "gfxfilter.h"
 #include "gui.h"
-#include "uae/fs.h"
+#include "uae_fs.h"
 
 #include <limits.h>
 #include <stdlib.h>

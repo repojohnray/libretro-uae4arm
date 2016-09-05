@@ -1,7 +1,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "uae/cdrom.h"
+#include "uae_cdrom.h"
 
 /* CDROM MODE 1 EDC/ECC code (from Reed-Solomon library by Heiko Eissfeldt) */
 

@@ -1,7 +1,7 @@
 #ifndef UAE_PARALLEL_H
 #define UAE_PARALLEL_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern int isprinter (void);
 extern void doprinter (uae_u8);

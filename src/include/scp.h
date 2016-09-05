@@ -1,7 +1,7 @@
 #ifndef UAE_SCP_H
 #define UAE_SCP_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 int scp_open(struct zfile *zf, int drv, int *num_tracks);
 void scp_close(int drv);

@@ -1,9 +1,9 @@
 #ifndef UAE_CPU_PREFETCH_H
 #define UAE_CPU_PREFETCH_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #include "newcpu.h"
 #endif
 

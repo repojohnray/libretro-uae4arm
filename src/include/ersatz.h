@@ -9,7 +9,7 @@
 #ifndef UAE_ERSATZ_H
 #define UAE_ERSATZ_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern void init_ersatz_rom (uae_u8 *data);
 extern void ersatz_chipcopy (void);

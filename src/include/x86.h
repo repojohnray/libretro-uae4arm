@@ -2,7 +2,7 @@
 #define UAE_X86_H
 
 #ifdef FSUAE // NL
-#include "uae/memory.h"
+#include "uae_memory.h"
 #endif
 
 extern addrbank *a1060_init(struct romconfig *rc);

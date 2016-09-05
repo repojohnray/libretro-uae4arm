@@ -23,15 +23,15 @@
 #include "zarchive.h"
 #include "diskutil.h"
 #include "fdi2raw.h"
-#include "uae/io.h"
+#include "uae_io.h"
 
 #include "archivers/zip/unzip.h"
 #include "archivers/dms/pfile.h"
 #include "archivers/wrp/warp.h"
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
-#include "uae/glib.h"
+#include "uae_fs.h"
+#include "uae_glib.h"
 #include <fs/data.h>
 #undef _WIN32
 #endif
@@ -896,7 +896,7 @@ end:
 
 #ifdef CAPS
 #ifdef FSUAE
-#include "uae/caps.h"
+#include "uae_caps.h"
 #else
 #include "caps/caps_win32.h"
 #endif

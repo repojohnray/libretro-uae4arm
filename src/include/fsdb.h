@@ -10,7 +10,7 @@
 #ifndef UAE_FSDB_H
 #define UAE_FSDB_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
 #include <stdio.h>
 #endif

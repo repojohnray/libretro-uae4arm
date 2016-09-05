@@ -1,9 +1,9 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "uae/dlopen.h"
-#include "uae/ppc.h"
-#include "uae/qemu.h"
+#include "uae_dlopen.h"
+#include "uae_ppc.h"
+#include "uae_qemu.h"
 
 UAE_DEFINE_IMPORT_FUNCTION(qemu_uae_version)
 UAE_DEFINE_IMPORT_FUNCTION(qemu_uae_init)

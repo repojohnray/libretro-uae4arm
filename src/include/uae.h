@@ -9,7 +9,7 @@
 #ifndef UAE_UAE_H
 #define UAE_UAE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern void do_start_program (void);
 extern void start_program (void);

@@ -106,7 +106,7 @@ struct PPC_CPU_State {
 
 extern PPC_CPU_State gCPU;
 
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 
 void PPCCALL ppc_cpu_atomic_raise_ext_exception();
 void PPCCALL ppc_cpu_atomic_cancel_ext_exception();

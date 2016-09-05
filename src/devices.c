@@ -6,7 +6,7 @@
 #include "options.h"
 #include "threaddep/thread.h"
 #include "traps.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "audio.h"
 #include "a2091.h"
 #include "a2065.h"
@@ -20,7 +20,7 @@
 #include "cpuboard.h"
 #include "sndboard.h"
 #include "statusline.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 #include "cd32_fmv.h"
 #include "cdtv.h"
 #include "cdtvcr.h"
@@ -58,8 +58,8 @@
 #include "pci_hw.h"
 #include "x86.h"
 #include "ethernet.h"
-#include "uae/debuginfo.h"
-#include "uae/segtracker.h"
+#include "uae_debuginfo.h"
+#include "uae_segtracker.h"
 #ifdef RETROPLATFORM
 #include "rp.h"
 #endif

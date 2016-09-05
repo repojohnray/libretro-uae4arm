@@ -9,10 +9,10 @@
 #ifndef UAE_AUTOCONF_H
 #define UAE_AUTOCONF_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/memory.h"
-#include "uae/limits.h"
+#include "uae_memory.h"
+#include "uae_limits.h"
 #endif
 
 #define RTAREA_DEFAULT 0xf00000

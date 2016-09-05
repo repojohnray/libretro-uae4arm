@@ -1,9 +1,9 @@
 #ifndef UAE_CPUMMU030_H
 #define UAE_CPUMMU030_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #include "newcpu.h"
 #endif
 

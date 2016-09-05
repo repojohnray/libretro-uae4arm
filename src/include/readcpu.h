@@ -1,9 +1,9 @@
 #ifndef UAE_READCPU_H
 #define UAE_READCPU_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/enum.h"
+#include "uae_enum.h"
 #endif
 
 ENUMDECL {

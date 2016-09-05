@@ -1,7 +1,7 @@
 #ifndef UAE_PICASSO96_H
 #define UAE_PICASSO96_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #include "traps.h"
 
 void picasso96_alloc (TrapContext* ctx);

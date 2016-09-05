@@ -13,7 +13,7 @@
 #ifndef UAE_TRAPS_H
 #define UAE_TRAPS_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 /*
  * Data passed to a trap handler

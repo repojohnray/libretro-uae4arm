@@ -15,7 +15,7 @@
 #include "sysdeps.h"
 
 #include "options.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "zfile.h"
 #include "rommgr.h"
 #include "autoconf.h"
@@ -27,14 +27,14 @@
 #include "debug.h"
 #include "flashrom.h"
 #include "uae.h"
-#include "uae/ppc.h"
-#include "uae/vm.h"
+#include "uae_ppc.h"
+#include "uae_vm.h"
 #include "idecontrollers.h"
 #include "scsi.h"
 #include "cpummu030.h"
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 #endif
 
 #define CPUBOARD_IO_LOG 0

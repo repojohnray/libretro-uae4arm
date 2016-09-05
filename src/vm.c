@@ -8,9 +8,9 @@
 
 #include "sysconfig.h"
 #include "sysdeps.h"
-#include "uae/vm.h"
-#include "uae/log.h"
-#include "uae/memory.h"
+#include "uae_vm.h"
+#include "uae_log.h"
+#include "uae_memory.h"
 #ifdef _WIN32
 
 #else

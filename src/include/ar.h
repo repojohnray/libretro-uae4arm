@@ -1,7 +1,7 @@
 #ifndef UAE_AR_H
 #define UAE_AR_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 /* disable HRTMon support by commenting this out */
 #define ACTION_REPLAY_HRTMON

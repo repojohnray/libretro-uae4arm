@@ -3,7 +3,7 @@
 
 #include "arcadia.h"
 #include "crc32.h"
-#include "uae/fs.h"
+#include "uae_fs.h"
 #include "rommgr.h"
 #include "zfile.h"
 

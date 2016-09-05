@@ -140,7 +140,7 @@ bool vsync_switchmode (int hz) {
 
 #ifndef AHI
 
-#include "uae/ahi.h"
+#include "uae_ahi.h"
 
 void ahi_hsync (void)
 {

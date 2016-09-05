@@ -17,7 +17,7 @@
 #ifdef CD32
 
 #include "options.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "events.h"
 #include "savestate.h"
 #include "blkdev.h"

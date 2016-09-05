@@ -14,7 +14,7 @@
 
 #include "options.h"
 #include "events.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "newcpu.h"
 #include "cia.h"
@@ -40,12 +40,12 @@
 #include "dongle.h"
 #include "inputrecord.h"
 #include "autoconf.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 #include "rommgr.h"
 #include "scsi.h"
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 #endif
 
 #define CIAA_DEBUG_R 0

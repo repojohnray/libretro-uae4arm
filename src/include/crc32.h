@@ -1,7 +1,7 @@
 #ifndef UAE_CRC32_H
 #define UAE_CRC32_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern uae_u32 get_crc32 (void *p, int size);
 extern uae_u16 get_crc16 (void *p, int size);

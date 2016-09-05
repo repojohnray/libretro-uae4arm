@@ -2,7 +2,7 @@
 #define UAE_ROMMGR_H
 
 #ifdef FSUAE // NL
-#include "uae/types.h"
+#include "uae_types.h"
 #endif
 
 extern int decode_cloanto_rom_do (uae_u8 *mem, int size, int real_size);

@@ -14,7 +14,7 @@
 
 #include "options.h"
 #include "uae.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "rommgr.h"
 #include "custom.h"
 #include "newcpu.h"
@@ -35,7 +35,7 @@
 #include "idecontrollers.h"
 #include "cpuboard.h"
 #include "sndboard.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 #include "autoconf.h"
 #include "specialmonitors.h"
 #include "inputdevice.h"

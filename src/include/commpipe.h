@@ -9,9 +9,9 @@
 #ifndef UAE_COMMPIPE_H
 #define UAE_COMMPIPE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #include "threaddep/sem.h"
 #include <stdlib.h>
 #include <string.h>

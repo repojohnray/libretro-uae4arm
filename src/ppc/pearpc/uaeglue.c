@@ -9,7 +9,7 @@
 #include "tools/snprintf.h"
 #endif
 
-#include "uae/log.h"
+#include "uae_log.h"
 
 int ht_printf(const char *format,...)
 {

@@ -11,7 +11,7 @@
 #include "zfile.h"
 #include "gui.h"
 #include "uae.h"
-#include "uae/dlopen.h"
+#include "uae_dlopen.h"
 
 #include "Comtype.h"
 #include "CapsAPI.h"

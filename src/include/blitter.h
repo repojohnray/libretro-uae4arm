@@ -9,7 +9,7 @@
 #ifndef UAE_BLITTER_H
 #define UAE_BLITTER_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 struct bltinfo {
     int blitzero;

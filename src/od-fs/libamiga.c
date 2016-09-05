@@ -7,7 +7,7 @@
 #include <string.h>
 #include <string.h>
 
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "autoconf.h"
 #include "options.h"
 #include "blkdev.h"
@@ -19,10 +19,10 @@
 #include "events.h"
 #include "luascript.h"
 
-#include "uae/fs.h"
-#include "uae/log.h"
-#include "uae/glib.h"
-#include "uae/time.h"
+#include "uae_fs.h"
+#include "uae_log.h"
+#include "uae_glib.h"
+#include "uae_time.h"
 
 void keyboard_settrans (void);
 libamiga_callbacks g_libamiga_callbacks = {};

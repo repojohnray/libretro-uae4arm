@@ -9,7 +9,7 @@
 #ifndef UAE_UAESERIAL_H
 #define UAE_UAESERIAL_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 uaecptr uaeserialdev_startup (uaecptr resaddr);
 void uaeserialdev_install (void);

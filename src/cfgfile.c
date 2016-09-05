@@ -28,7 +28,7 @@
 #include "inputdevice.h"
 #include "gfxfilter.h"
 #include "savestate.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "autoconf.h"
 #include "rommgr.h"
 #include "gui.h"

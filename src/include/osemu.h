@@ -9,10 +9,10 @@
 #ifndef UAE_OSEMU_H
 #define UAE_OSEMU_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
-#include "uae/memory.h"
+#include "uae_inline.h"
+#include "uae_memory.h"
 #include <stddef.h>
 #endif
 

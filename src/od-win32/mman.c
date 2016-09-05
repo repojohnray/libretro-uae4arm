@@ -6,9 +6,9 @@
 
 #include "sysconfig.h"
 #include "sysdeps.h"
-#include "uae/memory.h"
-#include "uae/mman.h"
-#include "uae/vm.h"
+#include "uae_memory.h"
+#include "uae_mman.h"
+#include "uae_vm.h"
 #include "options.h"
 #include "autoconf.h"
 #include "gfxboard.h"
@@ -20,7 +20,7 @@
 #endif
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 #endif
 
 #if defined(NATMEM_OFFSET)

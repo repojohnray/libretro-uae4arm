@@ -11,7 +11,7 @@
 #include "threaddep/thread.h"
 #include "options.h"
 #include "sana2.h"
-#include "uae/slirp.h"
+#include "uae_slirp.h"
 
 #ifndef HAVE_INET_ATON
 static int inet_aton(const char *cp, struct in_addr *ia)

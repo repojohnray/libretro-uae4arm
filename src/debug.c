@@ -16,7 +16,7 @@
 
 #include "options.h"
 #include "uae.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "newcpu.h"
 #include "cpu_prefetch.h"
@@ -36,20 +36,20 @@
 #include "rommgr.h"
 #include "inputrecord.h"
 #include "calc.h"
-#include "uae/debuginfo.h"
-#include "uae/segtracker.h"
+#include "uae_debuginfo.h"
+#include "uae_segtracker.h"
 #include "cpummu.h"
 #include "cpummu030.h"
 #include "ar.h"
 #include "pci.h"
-#include "uae/io.h"
+#include "uae_io.h"
 #ifdef WITH_PPC
 #include "ppc/ppcd.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 #endif
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 #undef _WIN32
 #endif
 

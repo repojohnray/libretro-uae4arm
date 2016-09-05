@@ -4,7 +4,7 @@
 #ifdef FSUAE
 #include "config.h"
 #endif
-#include "uae/types.h"
+#include "uae_types.h"
 
 typedef int isofs_gid_t;
 typedef int isofs_uid_t;

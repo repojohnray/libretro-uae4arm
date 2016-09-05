@@ -7,7 +7,7 @@
 #ifndef UAE_NATIVE2AMIGA_API_H
 #define UAE_NATIVE2AMIGA_API_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 #ifdef SUPPORT_THREADS
 void uae_Cause(uaecptr interrupt);

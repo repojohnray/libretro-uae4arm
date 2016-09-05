@@ -1,7 +1,7 @@
 #ifndef UAE_TIME_H
 #define UAE_TIME_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 /* frame_time_t is often cast to int in the code so we use int for now... */
 typedef uae_u32 uae_time_t;

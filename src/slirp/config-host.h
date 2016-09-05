@@ -2,7 +2,7 @@
 #define SLIRP_CONFIG_HOST_H
 
 #include "config.h"
-#include "uae/types.h"
+#include "uae_types.h"
 
 #ifdef restrict
 #undef restrict

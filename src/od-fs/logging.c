@@ -4,8 +4,8 @@
 #include "uae.h"
 #include "gui.h"
 #include "compemu.h"
-#include "uae/fs.h"
-#include "uae/glib.h"
+#include "uae_fs.h"
+#include "uae_glib.h"
 
 #include <stdio.h>
 

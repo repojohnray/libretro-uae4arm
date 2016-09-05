@@ -1,7 +1,7 @@
 #ifndef UAE_ETHERNET_H
 #define UAE_ETHERNET_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 #define UAENET_NONE 0
 #define UAENET_SLIRP 1

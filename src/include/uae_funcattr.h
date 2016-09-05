@@ -1,7 +1,7 @@
 #ifndef UAE_FUNCATTR_H
 #define UAE_FUNCATTR_H
 
-#include "uae/attributes.h"
+#include "uae_attributes.h"
 /*
 #ifdef __GNUC__
 #define UAE_PRINTF_FORMAT(f, a) __attribute__((format(printf, f, a)))

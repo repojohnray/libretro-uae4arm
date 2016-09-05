@@ -1,4 +1,4 @@
-#include "uae/log.h"
+#include "uae_log.h"
 #include <stdio.h>
 #include <stdarg.h>
 

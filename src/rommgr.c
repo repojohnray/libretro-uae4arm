@@ -11,7 +11,7 @@
 #include "options.h"
 #include "uae.h"
 #include "gui.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "rommgr.h"
 #include "zfile.h"
 #include "crc32.h"
@@ -20,7 +20,7 @@
 #include "filesys.h"
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 #endif
 
 #define SAVE_ROM 0

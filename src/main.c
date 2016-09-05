@@ -16,7 +16,7 @@
 #include "gensound.h"
 #include "audio.h"
 #include "events.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "serial.h"
 #include "newcpu.h"
@@ -39,7 +39,7 @@
 #include "uaenative.h"
 #include "tabletlibrary.h"
 #include "cpuboard.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 #include "devices.h"
 #include "jit/compemu.h"
 #ifdef RETROPLATFORM

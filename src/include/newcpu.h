@@ -14,11 +14,11 @@
 #include "config.h"
 #endif
 #endif
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
-#include "uae/memory.h"
-#include "uae/asm.h"
+#include "uae_inline.h"
+#include "uae_memory.h"
+#include "uae_asm.h"
 #endif
 #include "readcpu.h"
 #include "machdep/m68k.h"

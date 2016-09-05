@@ -23,7 +23,7 @@ int disk_debug_track = -1;
 
 #include "uae.h"
 #include "options.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "events.h"
 #include "custom.h"
 #include "ersatz.h"
@@ -43,7 +43,7 @@ int disk_debug_track = -1;
 #include "driveclick.h"
 #ifdef CAPS
 #ifdef FSUAE
-#include "uae/caps.h"
+#include "uae_caps.h"
 #else
 #include "caps/caps_win32.h"
 #endif
@@ -62,7 +62,7 @@ int disk_debug_track = -1;
 #include "rommgr.h"
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 /* in WinUAE, this is stored in od-win32/win32.cpp */
 int saveimageoriginalpath = 0;
 #endif

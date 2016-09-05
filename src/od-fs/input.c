@@ -7,7 +7,7 @@
 #include "moduleripper.h"
 #include "options.h"
 #include "xwin.h"
-#include "uae/fs.h"
+#include "uae_fs.h"
 
 int tablet_log = 0;
 

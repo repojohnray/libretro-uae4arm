@@ -40,7 +40,7 @@
 
 #include "options.h"
 #include "threaddep/thread.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "events.h"
 #include "newcpu.h"
@@ -77,7 +77,7 @@ int debug_rtg_blitter = 3;
 #define P96SPRTRACING_ENABLED 0
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 
 // FIXME: justing setting static value here -FS
 #define CURSORMAXWIDTH 128

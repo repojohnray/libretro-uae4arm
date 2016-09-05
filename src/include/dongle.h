@@ -1,7 +1,7 @@
 #ifndef UAE_DONGLE_H
 #define UAE_DONGLE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern void dongle_reset (void);
 extern uae_u8 dongle_cia_read (int, int, uae_u8);

@@ -29,10 +29,10 @@
 #include "scsidev.h"
 #include "mp3decoder.h"
 #include "cda_play.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "audio.h"
 #include "uae.h"
-#include "uae/cdrom.h"
+#include "uae_cdrom.h"
 #ifdef RETROPLATFORM
 #include "rp.h"
 #endif

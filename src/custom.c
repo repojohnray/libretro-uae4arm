@@ -21,7 +21,7 @@
 #include "audio.h"
 #include "sounddep/sound.h"
 #include "events.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "newcpu.h"
 #include "cia.h"

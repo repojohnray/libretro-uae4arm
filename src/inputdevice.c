@@ -31,7 +31,7 @@
 #include "custom.h"
 #include "xwin.h"
 #include "drawing.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "events.h"
 #include "newcpu.h"
 #include "uae.h"
@@ -61,8 +61,8 @@
 
 #ifdef FSUAE // NL
 
-#include "uae/fs.h"
-#include "uae/glib.h"
+#include "uae_fs.h"
+#include "uae_glib.h"
 // FIXME
 #include <fs/emu.h>
 

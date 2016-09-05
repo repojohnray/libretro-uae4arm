@@ -22,7 +22,7 @@
 // convert windows libc names to standard libc function names, and also
 // use char functions instead of wchar string functions.
 
-#include "uae/string.h"
+#include "uae_string.h"
 
 #define stricmp strcasecmp
 #define strnicmp strncasecmp

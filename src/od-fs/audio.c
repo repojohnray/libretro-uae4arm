@@ -5,7 +5,7 @@
 #include "include/options.h"
 #include "gensound.h"
 #include "audio.h"
-#include "uae/fs.h"
+#include "uae_fs.h"
 
 int have_sound = 0;
 
@@ -131,7 +131,7 @@ void update_sound (double freq, int longframe, int linetoggle) {
  */
 
 #include "audio.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "events.h"
 #include "custom.h"
 #include "gui.h"

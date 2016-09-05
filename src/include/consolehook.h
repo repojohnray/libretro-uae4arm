@@ -1,7 +1,7 @@
 #ifndef UAE_CONSOLEHOOK_H
 #define UAE_CONSOLEHOOK_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 int consolehook_activate (void);
 void consolehook_ret (uaecptr condev, uaecptr oldbeginio);

@@ -74,7 +74,7 @@ using namespace std;
 #define REGPARAM3 JITCALL
 
 #ifdef FSUAE
-#include "uae/types.h"
+#include "uae_types.h"
 #else
 #include <tchar.h>
 #endif
@@ -438,7 +438,7 @@ extern void mallocemu_free (void *ptr);
 #endif
 
 #ifdef FSUAE
-#include "uae/asm.h"
+#include "uae_asm.h"
 #else
 #ifdef X86_ASSEMBLY
 #define ASM_SYM_FOR_FUNC(a) __asm__(a)
@@ -455,7 +455,7 @@ extern void mallocemu_free (void *ptr);
 #endif
 
 #ifdef FSUAE
-#include "uae/log.h"
+#include "uae_log.h"
 #else
 #if __GNUC__ - 1 > 1 || __GNUC_MINOR__ - 1 > 6
 extern void write_log (const TCHAR *, ...);
@@ -494,7 +494,7 @@ extern void log_close (FILE *f);
 #endif
 
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #else
 #ifndef STATIC_INLINE
 #if __GNUC__ - 1 > 1 && __GNUC_MINOR__ - 1 >= 0
@@ -514,7 +514,7 @@ extern void log_close (FILE *f);
 #endif
 
 #ifdef FSUAE // NL
-#include "uae/cycleunit.h"
+#include "uae_cycleunit.h"
 #else
 /* Every Amiga hardware clock cycle takes this many "virtual" cycles.  This
    used to be hardcoded as 1, but using higher values allows us to time some

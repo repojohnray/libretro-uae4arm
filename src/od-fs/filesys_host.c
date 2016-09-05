@@ -7,8 +7,8 @@
 #include "sysdeps.h"
 
 #include "fsdb.h"
-#include "uae/fs.h"
-#include "uae/glib.h"
+#include "uae_fs.h"
+#include "uae_glib.h"
 #include "options.h"
 #include "filesys.h"
 #include "zfile.h"

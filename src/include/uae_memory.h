@@ -11,7 +11,7 @@
 
 #ifdef FSUAE // NL
 #include "config.h"
-#include "uae/types.h"
+#include "uae_types.h"
 #include <stddef.h>
 #endif
 

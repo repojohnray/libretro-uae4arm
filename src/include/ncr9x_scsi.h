@@ -1,9 +1,9 @@
 #ifndef UAE_NCR9X_SCSI_H
 #define UAE_NCR9X_SCSI_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/memory.h"
+#include "uae_memory.h"
 #endif
 
 extern void ncr9x_init(void);

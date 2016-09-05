@@ -12,9 +12,9 @@
 /* This file is intended to be included by external libraries as well,
  * so don't pull in too much UAE-specific stuff. */
 
-#include "uae/api.h"
-#include "uae/attributes.h"
-#include "uae/types.h"
+#include "uae_api.h"
+#include "uae_attributes.h"
+#include "uae_types.h"
 
 typedef void (UAECALL *uae_log_function)(const char *format, ...) UAE_PRINTF_FORMAT(1, 2);
 #ifdef UAE

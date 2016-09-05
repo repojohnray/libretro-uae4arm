@@ -1,7 +1,7 @@
 #ifndef UAE_FLASHROM_H
 #define UAE_FLASHROM_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 /* FLASH */
 

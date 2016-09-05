@@ -9,7 +9,7 @@
 #ifndef UAE_ZFILE_H
 #define UAE_ZFILE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
 #include <stddef.h>
 #endif

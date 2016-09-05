@@ -37,7 +37,7 @@
 #include "ppc_exc.h"
 #include "ppc_mmu.h"
 #include "ppc_tools.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 
 //#include "io/graphic/gcard.h"
 

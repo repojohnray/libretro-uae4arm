@@ -14,10 +14,10 @@
 #include "uae.h"
 #include "gui.h"
 #include "autoconf.h"
-#include "uae/dlopen.h"
-#include "uae/log.h"
-#include "uae/ppc.h"
-#include "uae/qemu.h"
+#include "uae_dlopen.h"
+#include "uae_log.h"
+#include "uae_ppc.h"
+#include "uae_qemu.h"
 
 #define SPINLOCK_DEBUG 0
 #define PPC_ACCESS_LOG 0
@@ -940,7 +940,7 @@ UAE_EXTERN_C void fsuae_ppc_pause(int pause)
 
 #else
 
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 
 bool uae_self_is_ppc(void)
 {

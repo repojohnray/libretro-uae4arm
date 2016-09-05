@@ -12,7 +12,7 @@
 /* This file is intended to be included by external libraries as well,
  * so don't pull in too much UAE-specific stuff. */
 
-#include "uae/attributes.h"
+#include "uae_attributes.h"
 
 /* Handy define so we can disable C++ name mangling without considering
  * whether the source language is C or C++. */

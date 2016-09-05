@@ -13,7 +13,7 @@
 #include "sysdeps.h"
 #include "options.h"
 
-#include "uae/debuginfo.h"
+#include "uae_debuginfo.h"
 
 #define HUNK_HEADER     1011
 #define HUNK_END        1010

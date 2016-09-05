@@ -25,7 +25,7 @@
 
 #include "options.h"
 #include "audio.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "events.h"
 #include "custom.h"
 #include "newcpu.h"
@@ -37,7 +37,7 @@
 #include "ahidsound.h"
 #include "picasso96.h"
 #include "uaenative.h"
-#include "uae/ahi.h"
+#include "uae_ahi.h"
 
 #ifdef FSUAE
 #if defined(WINDOWS) && !defined(_WIN32)

@@ -10,13 +10,13 @@
 #include "sysdeps.h"
 #include "options.h"
 
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "autoconf.h"
 #include "traps.h"
-#include "uae/patch.h"
+#include "uae_patch.h"
 #include "newcpu.h"
-#include "uae/debuginfo.h"
-#include "uae/segtracker.h"
+#include "uae_debuginfo.h"
+#include "uae_segtracker.h"
 
 static uae_u32 init_addr;
 static uae_u32 dos_base;

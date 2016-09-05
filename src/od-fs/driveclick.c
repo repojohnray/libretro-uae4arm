@@ -3,8 +3,8 @@
 #include "sysdeps.h"
 
 #include "driveclick.h"
-#include "uae/fs.h"
-#include "uae/glib.h"
+#include "uae_fs.h"
+#include "uae_glib.h"
 
 #include <fs/data.h>
 

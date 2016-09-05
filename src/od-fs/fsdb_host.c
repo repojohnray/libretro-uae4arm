@@ -17,11 +17,11 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 #include "options.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 
 #include "uae/uae.h"
-#include "uae/assert.h"
-#include "uae/glib.h"
+#include "uae_assert.h"
+#include "uae_glib.h"
 
 #include "fsdb.h"
 #include "zfile.h"

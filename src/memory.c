@@ -13,7 +13,7 @@
 
 #include "options.h"
 #include "uae.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "rommgr.h"
 #include "ersatz.h"
 #include "zfile.h"
@@ -35,7 +35,7 @@
 #include "debug.h"
 #include "gfxboard.h"
 #include "cpuboard.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 #include "devices.h"
 
 #ifdef FSUAE // NL

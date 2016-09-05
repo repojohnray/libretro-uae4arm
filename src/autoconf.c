@@ -12,7 +12,7 @@
 
 #include "options.h"
 #include "uae.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "events.h"
 #include "newcpu.h"

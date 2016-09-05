@@ -22,9 +22,9 @@
 #endif
 
 #include "options.h"
-#include "uae/memory.h"
-#include "uae/attributes.h"
-#include "uae/vm.h"
+#include "uae_memory.h"
+#include "uae_attributes.h"
+#include "uae_vm.h"
 #include "custom.h"
 #include "events.h"
 #include "newcpu.h"

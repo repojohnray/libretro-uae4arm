@@ -66,7 +66,7 @@
 #ifdef UAE
 #include "options.h"
 #include "events.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "custom.h"
 #else
 #include "sysdeps.h"
@@ -94,11 +94,11 @@
 
 #ifdef UAE
 #ifdef FSUAE
-#include "uae/fs.h"
+#include "uae_fs.h"
 #endif
-#include "uae/log.h"
+#include "uae_log.h"
 
-#include "uae/vm.h"
+#include "uae_vm.h"
 #define VM_PAGE_READ UAE_VM_READ
 #define VM_PAGE_WRITE UAE_VM_WRITE
 #define VM_PAGE_EXECUTE UAE_VM_EXECUTE
@@ -116,7 +116,7 @@ static inline void *vm_acquire(size_t size, int options = VM_MAP_DEFAULT)
 
 #define UNUSED(x)
 #include "uae.h"
-#include "uae/log.h"
+#include "uae_log.h"
 #define jit_log(format, ...) \
 	uae_log("JIT: " format "\n", ##__VA_ARGS__);
 #define jit_log2(format, ...)

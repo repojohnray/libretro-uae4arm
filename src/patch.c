@@ -10,10 +10,10 @@
 #include "sysdeps.h"
 #include "options.h"
 
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "traps.h"
 #include "autoconf.h"
-#include "uae/patch.h"
+#include "uae_patch.h"
 #include "newcpu.h"
 
 #define JMP 0x4ef9

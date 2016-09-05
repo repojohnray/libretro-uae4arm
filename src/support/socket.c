@@ -1,7 +1,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "uae/socket.h"
+#include "uae_socket.h"
 
 #ifdef _WIN32
 #include <Ws2tcpip.h>

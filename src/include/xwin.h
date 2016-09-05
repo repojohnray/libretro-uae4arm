@@ -9,9 +9,9 @@
 #ifndef UAE_XWIN_H
 #define UAE_XWIN_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/asm.h"
+#include "uae_asm.h"
 #include <string.h>
 #endif
 #include "machdep/rpt.h"

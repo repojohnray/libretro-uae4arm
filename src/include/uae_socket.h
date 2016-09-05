@@ -1,7 +1,7 @@
 #ifndef UAE_SOCKET_H
 #define UAE_SOCKET_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef _WIN32
 #include "Winsock2.h"
 #endif

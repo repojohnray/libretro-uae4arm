@@ -10,7 +10,7 @@
 #ifndef UAE_SERIAL_H
 #define UAE_SERIAL_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern void serial_init (void);
 extern void serial_exit (void);

@@ -11,7 +11,7 @@
 #include "sysdeps.h"
 
 #include "options.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "rommgr.h"
 #include "custom.h"
 #include "newcpu.h"

@@ -9,7 +9,7 @@
 #ifndef UAE_FILESYS_H
 #define UAE_FILESYS_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
 #include "options.h"
 #include <time.h>

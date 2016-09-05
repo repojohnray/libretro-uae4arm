@@ -4,7 +4,7 @@
 #include "options.h"
 #include "traps.h"
 #include "uaenative.h"
-#include "uae/fs.h"
+#include "uae_fs.h"
 #include "uae.h"
 
 char *g_libamiga_save_image_path = NULL;

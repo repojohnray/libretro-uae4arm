@@ -2,7 +2,7 @@
 #define UAE_GFXBOARD_H
 
 #ifdef FSUAE // NL
-#include "uae/memory.h"
+#include "uae_memory.h"
 #endif
 
 extern addrbank *gfxboard_init_memory (int devnum);

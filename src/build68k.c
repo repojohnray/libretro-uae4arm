@@ -18,7 +18,7 @@
 #include <ctype.h>
 
 #ifdef FSUAE
-#include "uae/types.h"
+#include "uae_types.h"
 #else
 #define TCHAR char
 #endif

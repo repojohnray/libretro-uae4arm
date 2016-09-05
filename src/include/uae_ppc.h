@@ -12,8 +12,8 @@
 /* This file is intended to be included by external libraries as well,
  * so don't pull in too much UAE-specific stuff. */
 
-#include "uae/api.h"
-#include "uae/types.h"
+#include "uae_api.h"
+#include "uae_types.h"
 
 #ifdef UAE
 #define PPCAPI UAE_EXTERN_C UAE_IMPORT

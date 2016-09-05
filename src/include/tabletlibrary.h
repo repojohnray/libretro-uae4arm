@@ -1,7 +1,7 @@
 #ifndef UAE_TABLETLIBRARY_H
 #define UAE_TABLETLIBRARY_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 uaecptr tabletlib_startup (uaecptr resaddr);
 void tabletlib_install (void);

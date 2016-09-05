@@ -22,7 +22,7 @@
 #define __CPU_H__
 
 #include "system/types.h"
-#include "uae/ppc.h"
+#include "uae_ppc.h"
 
 uint64	ppc_get_clock_frequency(int cpu);
 uint64	ppc_get_bus_frequency(int cpu);

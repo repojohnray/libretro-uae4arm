@@ -12,7 +12,7 @@
 #include "options.h"
 #include "zfile.h"
 #include "flashrom.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "newcpu.h"
 #include "debug.h"
 #include "gui.h"

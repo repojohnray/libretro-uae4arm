@@ -7,7 +7,7 @@
 #include "clipboard.h"
 
 #include "threaddep/thread.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "native2amiga_api.h"
 
 int clipboard_debug;

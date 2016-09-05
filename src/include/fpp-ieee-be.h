@@ -12,9 +12,9 @@
 #ifndef UAE_FPP_IEEE_BE_H
 #define UAE_FPP_IEEE_BE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #endif
 
 

@@ -4,7 +4,7 @@
 #ifdef FSUAE
 #include "config.h"
 #endif
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
 #include <time.h>
 #endif

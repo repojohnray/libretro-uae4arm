@@ -9,7 +9,7 @@
 #ifndef UAE_SANA2_H
 #define UAE_SANA2_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 #define MAX_TOTAL_NET_DEVICES 10
 

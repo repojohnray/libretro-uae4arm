@@ -1,7 +1,7 @@
 #ifndef UAE_UAEIPC_H
 #define UAE_UAEIPC_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern void *createIPC (const TCHAR *name, int);
 extern void closeIPC (void*);

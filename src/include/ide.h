@@ -1,9 +1,9 @@
 #ifndef UAE_IDE_H
 #define UAE_IDE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "commpipe.h"
 #include "filesys.h"
 #endif

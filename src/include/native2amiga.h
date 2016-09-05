@@ -13,9 +13,9 @@
 #ifndef UAE_NATIVE2AMIGA_H
 #define UAE_NATIVE2AMIGA_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #include "autoconf.h"
 #endif
 #include "native2amiga_api.h"

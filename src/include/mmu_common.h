@@ -1,11 +1,11 @@
 #ifndef UAE_MMU_COMMON_H
 #define UAE_MMU_COMMON_H
 
-#include "uae/types.h"
-#include "uae/likely.h"
+#include "uae_types.h"
+#include "uae_likely.h"
 #ifdef FSUAE
-#include "uae/inline.h"
-#include "uae/memory.h"
+#include "uae_inline.h"
+#include "uae_memory.h"
 #include "newcpu.h"
 #endif
 

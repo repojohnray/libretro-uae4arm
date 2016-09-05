@@ -8,7 +8,7 @@
 #ifndef UAE_IDENTIFY_H
 #define UAE_IDENTIFY_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 struct mem_labels
 {

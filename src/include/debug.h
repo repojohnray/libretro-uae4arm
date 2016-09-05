@@ -10,9 +10,9 @@
 #ifndef UAE_DEBUG_H
 #define UAE_DEBUG_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #endif
 
 #ifdef DEBUGGER

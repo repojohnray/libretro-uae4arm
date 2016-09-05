@@ -11,9 +11,9 @@
 #ifndef UAE_FPP_UNKNOWN_H
 #define UAE_FPP_UNKNOWN_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #include <math.h>
 #endif
 

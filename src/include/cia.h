@@ -9,7 +9,7 @@
 #ifndef UAE_CIA_H
 #define UAE_CIA_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 extern void CIA_reset (void);
 extern void CIA_vsync_prehandler (void);

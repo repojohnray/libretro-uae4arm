@@ -10,8 +10,8 @@
 #define MACHDEP_X86_MACCESS_H
 
 #ifdef FSUAE // NL
-#include "uae/types.h"
-#include "uae/inline.h"
+#include "uae_types.h"
+#include "uae_inline.h"
 #endif
 
 STATIC_INLINE uae_u32 do_get_mem_long (uae_u32 *a)

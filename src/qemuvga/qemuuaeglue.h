@@ -1,5 +1,5 @@
-#include "uae/inline.h"
-#include "uae/likely.h"
+#include "uae_inline.h"
+#include "uae_likely.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -14,7 +14,7 @@ extern void activate_debugger(void);
 //#define DEBUG_VGA
 
 #ifdef FSUAE
-#include "uae/log.h"
+#include "uae_log.h"
 #else
 extern void write_log (const char *, ...);
 #endif

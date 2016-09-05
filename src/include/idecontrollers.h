@@ -1,9 +1,9 @@
 #ifndef UAE_IDECONTROLLERS_H
 #define UAE_IDECONTROLLERS_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/memory.h"
+#include "uae_memory.h"
 #endif
 
 // Other IDE controllers

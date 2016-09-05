@@ -10,7 +10,7 @@
 #ifndef UAE_INPUTDEVICE_H
 #define UAE_INPUTDEVICE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
 #include "options.h"
 #endif

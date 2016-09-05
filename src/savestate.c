@@ -50,7 +50,7 @@
 #include "sysdeps.h"
 
 #include "options.h"
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "zfile.h"
 #include "ar.h"
 #include "autoconf.h"
@@ -68,7 +68,7 @@
 #include "devices.h"
 
 #ifdef FSUAE // NL
-#include "uae/fs.h"
+#include "uae_fs.h"
 #endif
 
 int savestate_state = 0;

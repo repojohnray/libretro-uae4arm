@@ -14,7 +14,7 @@
 #define C_FPU 1
 
 #ifdef FSUAE
-#include "uae/types.h"
+#include "uae_types.h"
 typedef uint8_t Bit8u;
 typedef int8_t Bit8s;
 typedef uint16_t Bit16u;

@@ -3,9 +3,9 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "uae/fs.h"
-#include "uae/io.h"
-#include "uae/glib.h"
+#include "uae_fs.h"
+#include "uae_io.h"
+#include "uae_glib.h"
 
 int64_t uae_ftello64(FILE *stream) {
 #if defined(HAVE_FTELLO64)

@@ -1,7 +1,7 @@
 #ifndef UAE_SLIRP_H
 #define UAE_SLIRP_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 #ifdef _WIN32
 #else

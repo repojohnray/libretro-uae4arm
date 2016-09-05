@@ -10,7 +10,7 @@
 
 #ifdef DEBUGGER
 
-#include "uae/memory.h"
+#include "uae_memory.h"
 #include "identify.h"
 
 const struct mem_labels int_labels[] =

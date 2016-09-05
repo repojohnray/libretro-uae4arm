@@ -7,9 +7,9 @@
 #ifndef UAE_DRAWING_H
 #define UAE_DRAWING_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/inline.h"
+#include "uae_inline.h"
 #include "custom.h"
 #include "xwin.h"
 #endif

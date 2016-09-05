@@ -19,7 +19,7 @@
 #ifndef UAE_FSUSAGE_H
 #define UAE_FSUSAGE_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 /* Space usage statistics for a filesystem.  Blocks are 512-byte. */
 struct fs_usage

@@ -1,7 +1,7 @@
 #ifndef UAE_FDI2RAW_H
 #define UAE_FDI2RAW_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 
 typedef struct fdi FDI;
 

@@ -10,9 +10,9 @@
 #ifndef UAE_OPTIONS_H
 #define UAE_OPTIONS_H
 
-#include "uae/types.h"
+#include "uae_types.h"
 #ifdef FSUAE
-#include "uae/limits.h"
+#include "uae_limits.h"
 #endif
 
 #define UAEMAJOR 3
