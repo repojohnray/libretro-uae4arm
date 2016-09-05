@@ -37,7 +37,7 @@ using namespace std;
 # ifndef _MSC_VER
 #define min(x,y) ((x) < (y) ? (x) : (y))
 #define max(x,y) ((x) > (y) ? (x) : (y))
-#endif
+# endif
 #endif /*__cplusplus*/
 #include <stdio.h>
 #include <stdlib.h>
