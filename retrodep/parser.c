@@ -6,7 +6,7 @@
  * Copyright 2010 Mustafa TUFAN
  */
 
-#include "sysconfig.h"
+#include "../libretro/libretro-glue.h"
 
 #undef SERIAL_ENET
 
@@ -15,7 +15,7 @@
 #include "gensound.h"
 #include "events.h"
 #include "uae.h"
-#include "include/memory_uae.h"
+#include "uae_memory.h"
 #include "custom.h"
 #include "autoconf.h"
 #include "newcpu.h"

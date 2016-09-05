@@ -47,9 +47,9 @@ int debuggable (void)
     return 1;
 }
 
-
 void setup_brkhandler (void)
 {
+#if 0
 #ifndef __CELLOS_LV2__
 #if defined(__unix) && !defined(__NeXT__)
     struct sigaction sa;
@@ -64,7 +64,9 @@ void setup_brkhandler (void)
     signal (SIGINT, sigbrkhandler);
 #endif
 #endif
+#endif /*0*/
 }
+
 #if 0
 /*
  * Handle target-specific cfgfile options

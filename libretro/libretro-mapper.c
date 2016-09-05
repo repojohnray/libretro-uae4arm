@@ -1,10 +1,16 @@
-#include "libretro.h"
 #include "libretro-glue.h"
+#include "libretro.h"
 #include "keyboard.h"
 #include "libretro-keymap.h"
 #include "graph.h"
 #include "vkbd.h"
 #include "libretro-mapper.h"
+#include "options.h"
+#include "inputdevice.h"
+#include "xwin.h"
+#include "custom.h"
+#include "drawing.h"
+#include "../retrodep/retroglue.h"
 
 #ifdef __CELLOS_LV2__
 #include "sys/sys_time.h"
@@ -591,6 +597,8 @@ int input_gui(void)
       gmy=0;
    if(gmy>retroh-1)
       gmy=retroh-1;
+
+   return ret;
 }
 
 int update_input_gui(void)

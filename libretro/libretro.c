@@ -1,18 +1,20 @@
+#include "sysconfig.h"
+#include "sysdeps.h"
+
 #include "libretro.h"
 #include "gui-retro/dialog.h"
-#include "retrodep/retroglue.h"
+#include "../retrodep/retroglue.h"
 #include "libretro-mapper.h"
 #include "libretro-glue.h"
-
-
-#define EMULATOR_DEF_WIDTH 640
-#define EMULATOR_DEF_HEIGHT 400
-#define EMULATOR_MAX_WIDTH 1024
-#define EMULATOR_MAX_HEIGHT 1024
-
-#if EMULATOR_DEF_WIDTH < 0 || EMULATOR_DEF_WIDTH > EMULATOR_MAX_WIDTH || EMULATOR_DEF_HEIGHT < 0 || EMULATOR_DEF_HEIGHT > EMULATOR_MAX_HEIGHT
-#error EMULATOR_DEF_WIDTH || EMULATOR_DEF_HEIGHT
-#endif
+#include "uae_fs.h"
+#include "uae.h"
+#include "fs/emu/hacks.h"
+#include "fs/conf.h"
+#include "fs/emu.h"
+#include "fs-uae/config-model.h"
+#include "fs-uae/config-common.h"
+#include "fs-uae/options.h"
+#include "fs-uae/fs-uae.h"
 
 cothread_t mainThread;
 cothread_t emuThread;
@@ -62,6 +64,18 @@ static struct retro_input_descriptor input_descriptors[] = {
    { 255, 255, 255, 255, NULL }
 };
 
+// FS_EMU_HACKS_H /* These variables should ideally be hidden, and a proper API designed instead. */
+#ifdef FS_EMU_HACKS_H
+int fs_emu_mouse_absolute_x = 0;
+int fs_emu_mouse_absolute_y = 0;
+
+double fs_emu_video_scale_x  = 1.0;
+double fs_emu_video_scale_y  = 1.0;
+double fs_emu_video_offset_x = 0.0;
+double fs_emu_video_offset_y = 0.0;
+#endif /* FS_EMU_HACKS_H */
+
+//
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -133,10 +147,51 @@ static void update_variables(void)
    }
 }
 
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 static void retro_wrap_emulator(void)
 {
-   static char *argv[] = { "puae", RPATH };
-   umain(sizeof(argv)/sizeof(*argv), argv);
+  static char *argv[] = { "puae" };
+
+   keyboard_settrans();
+
+
+   {
+     fprintf(stderr, "loading config from %s\n", RPATH); 
+     fs_config_read_file(RPATH, 0); // ../fs-uae-2.7.14dev/src/fs-uae/main.c
+   }
+
+   // must be called early, before fs_emu_init -affects video output
+   fs_uae_configure_amiga_model();
+
+#if 0
+   amiga_set_audio_callback(audio_callback_function);
+   amiga_set_cd_audio_callback(audio_callback_function);
+   amiga_set_event_function(event_handler);
+
+   amiga_set_led_function(led_function);
+   amiga_on_update_leds(on_update_leds);
+
+   amiga_set_media_function(media_function);
+   amiga_set_init_function(on_init);
+#endif
+
+   if (0) {
+     amiga_init_jit_compiler();
+   }
+
+   amiga_set_video_format(AMIGA_VIDEO_FORMAT_R5G6B5);
+
+   //amiga_set_video_format(AMIGA_VIDEO_FORMAT_RGBA);
+   //amiga_set_video_format(AMIGA_VIDEO_FORMAT_BGRA);
+   //amiga_set_video_format(AMIGA_VIDEO_FORMAT_R5G6B5);
+   //amiga_set_video_format(AMIGA_VIDEO_FORMAT_R5G5B5A1);
+  
+#ifdef AHI
+   //enforcer_enable(1);
+#endif
+   real_main(sizeof(argv)/sizeof(*argv), argv); /* e.g.: .fs-uae-2.7.14dev/src/od-fs/libamiga.cpp */
 
    pauseg = -1;
 
@@ -153,6 +208,9 @@ static void retro_wrap_emulator(void)
       co_switch(mainThread);
    }
 }
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void retro_init(void)
 {
@@ -206,7 +264,7 @@ void retro_get_system_info(struct retro_system_info *info)
 {
    memset(info, 0, sizeof(*info));
    info->library_name     = "PUAE";
-   info->library_version  = "v2.6.1";
+   info->library_version  = PACKAGE_STRING;
    info->need_fullpath    = true;
    info->block_extract    = false;	
    info->valid_extensions = "adf|dms|fdi|ipf|zip|uae";
@@ -245,7 +303,8 @@ void retro_shutdown_uae(void)
    environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
 }
 
-void retro_reset(void){}
+void retro_reset(void) {
+}
 
 void retro_audio_cb( short l, short r)
 {
@@ -254,62 +313,62 @@ void retro_audio_cb( short l, short r)
 
 extern unsigned short * sndbuffer;
 extern int sndbufsize;
-signed short rsnd=0;
-
+signed short rsnd = 0;
 static int firstpass = 1;
 
-void save_bkg(void)
-{
-   memcpy(savebmp, bmp,sizeof(bmp));
+void save_bkg(void) {
+  memcpy(savebmp, bmp,sizeof(bmp));
 }
 
-void restore_bkg(void)
-{
-   memcpy(bmp,savebmp,sizeof(bmp));
+void restore_bkg(void) {
+   memcpy(bmp, savebmp, sizeof(bmp));
 }
 
-void enter_gui0(void)
-{
-   save_bkg();
+void enter_gui0(void) {
+  save_bkg();
 
-   Dialog_DoProperty();
-   pauseg = 0;
+  Dialog_DoProperty();
+  pauseg = 0;
 
-   restore_bkg();
+  restore_bkg();
 }
 
-void pause_select(void)
-{
-   if(pauseg==1 && firstps==0)
-   {
+void pause_select(void) {
+  if(pauseg==1 && firstps==0)
+    {
       firstps=1;
       enter_gui0();
       firstps=0;
-   }
+    }
 }
 
-void retro_run(void)
-{
-   bool updated = false;
+void retro_run(void) {
+  bool updated = false;
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
-      update_variables();
+#ifdef DEBUG_RETRORUN
+  fprintf(stderr, "%s %d %s --------------------\n", __FILE__, __LINE__, __FUNCTION__);
+#endif /*DEBUG*/
+   
+  if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+    update_variables();
 
-   if(pauseg==0)
-   {
-      if(firstpass)
-      {
-         firstpass=0;
-         goto sortie;
-      }
-      update_input();	
-   }
+  if (pauseg==0) {
+    if (firstpass) {
+      firstpass=0;
+      goto sortie;
+    }
+    update_input();	
+  }
 
-sortie:
-
-   video_cb(bmp,retrow,retroh , retrow << 1);
-
-   co_switch(emuThread);
+ sortie:
+  video_cb(bmp,retrow,retroh , retrow << 1);
+#ifdef DEBUG_RETRORUN
+  fprintf(stderr, "%s %d %s --------------------\n", __FILE__, __LINE__, __FUNCTION__);
+#endif /*DEBUG*/
+  co_switch(emuThread);
+#ifdef DEBUG_RETRORUN
+  fprintf(stderr, "%s %d %s --------------------\n", __FILE__, __LINE__, __FUNCTION__);
+#endif /*DEBUG*/
 }
 
 bool retro_load_game(const struct retro_game_info *info)

@@ -6,8 +6,7 @@
   * Copyright 1996 Bernd Schmidt
   */
 
-#include "sysconfig.h"
-#include "sysdeps.h"
+#include "../libretro/libretro-glue.h"
 
 #include "options.h"
 #include "gui.h"
@@ -41,7 +40,7 @@ void gui_fps (int fps, int idle, int color)
     gui_data.idle = idle;
 }
 
-void gui_led (int led, int on)
+void gui_led (int led, int on, int third)
 {
 }
 
@@ -60,7 +59,7 @@ void gui_hd_led (int led)
     gui_data.hd = led;
     resetcounter = 6;
     if (old != gui_data.hd)
-	gui_led (5, gui_data.hd);
+      gui_led (5, gui_data.hd, -1);
 }
 
 void gui_cd_led (int led)
@@ -77,7 +76,7 @@ void gui_cd_led (int led)
     gui_data.cd = led;
     resetcounter = 6;
     if (old != gui_data.cd)
-	gui_led (6, gui_data.cd);
+      gui_led (6, gui_data.cd, -1);
 }
 
 void gui_flicker_led (int led, int unitnum, int status)

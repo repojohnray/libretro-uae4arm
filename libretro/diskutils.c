@@ -9,7 +9,10 @@
 #include <stdlib.h>
 #include <errno.h>
 
-int ndsknum=0;
+#include "libretro-mapper.h"
+#include "../retrodep/retroglue.h"
+
+int ndsknum = 0;
 static int entries; 
 
 extern unsigned short int bmp[TEX_WIDTH * TEX_HEIGHT];

@@ -8,8 +8,7 @@
  * Copyright 2010-2013 Mustafa Tufan
  */
 
-#include "sysconfig.h"
-#include "sysdeps.h"
+#include "../libretro/libretro-glue.h"
 
 #include "options.h"
 #include "autoconf.h"
@@ -20,7 +19,7 @@
 #endif
 #endif
 #endif
-#include "include/memory_uae.h"
+#include "uae_memory.h"
 #include "misc.h"
 
 uae_u32 max_z3fastmem;

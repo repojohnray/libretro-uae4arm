@@ -13,12 +13,11 @@
 *
 ***************************************************************************/
 
-#include "sysconfig.h"
-#include "sysdeps.h"
+#include "../libretro/libretro-glue.h"
 #include "uae.h"
 #include "options.h"
 #include "disk.h"
-#include "sleep.h"
+#include "newcpu.h"
 #include "autoconf.h"
 
 #include "custom.h"
@@ -27,9 +26,17 @@
 #include "savestate.h"
 #include "filesys.h"
 #include "zfile.h"
+#include "xwin.h"
+#include "drawing.h"
 #include "gensound.h"
+#include "graph.h"
+#include "sounddep/sound.h"
+#include "libretro.h"
 
 #include "libretro-glue.h"
+#include "libretro-mapper.h"
+#include "retroglue.h"
+
 extern unsigned short int bmp[TEX_WIDTH * TEX_HEIGHT];
 
 #define MPOS_CFG_SELECT 0
@@ -314,9 +321,8 @@ void  init_main_screen(void) {
 
 	if (config_name == NULL) {
 		config_name = (char *) malloc(512);
-		if (config_name) {
-//FIXME RETRO
-			sprintf(config_name, "%s\0", get_current_config_name());
+		if (config_name) { //FIXME RETRO		  //sprintf(config_name, "%s\0", get_current_config_name());
+		  strncpy(config_name, PACKAGE, sizeof(PACKAGE));
 		}
 	}
 	if (kickrom_name == NULL) {
@@ -456,37 +462,37 @@ void update_cpu_menu(void) {
 
 char* get_hdf_name(int index) {
 
-//FIXME RETRO
+  //FIXME RETRO
 
-		int     secspertrack, surfaces, reserved, blocksize, bootpri;
-		uae_u64 size;
-		int     cylinders, readonly, flags;
-		char   *devname, *volname, *rootdir, *filesysdir;
-		const char *failure;
+  int     secspertrack, surfaces, reserved, blocksize, bootpri;
+  uae_u64 size;
+  int     cylinders, readonly, flags;
+  char   *devname, *volname, *rootdir, *filesysdir;
+  const char *failure;
 
-		/* We always use currprefs.mountinfo for the GUI.  The filesystem
-		   code makes a private copy which is updated every reset.  */
+  /* We always use currprefs.mountinfo for the GUI.  The filesystem
+     code makes a private copy which is updated every reset.  */
 
-			int  nosize = 0,type;
-			struct uaedev_config_info *uci = &currprefs.mountconfig[index];
-			struct mountedinfo mi;
+  int  nosize = 0,type;
+  struct uaedev_config_info *uci = &currprefs.mountconfig[index].ci;
+  struct mountedinfo mi;
 			
-			type = get_filesys_unitconfig (&currprefs, index, &mi);
+  type = get_filesys_unitconfig (&currprefs, index, &mi);
 
-			if (type < 0) {
+  if (type < 0) {
 				
-				nosize = 1;
-			}
+    nosize = 1;
+  }
 
-		if(uci->type==FILESYS_HARDFILE)
-			return mi.rootdir;
+  if(uci->type==FILESYS_HARDFILE)
+    return strdup(mi.rootdir);
 	
-		return "\0";
+  return "";
 }
 
 /*static*/ int hardfile_testrdb (char *filename)
 {
-	struct zfile *f = zfile_fopen (filename, "rb",0);
+	struct zfile *f = zfile_fopen3 (filename, "rb",0);
 	uae_u8 tmp[8];
 	int i;
 	int result = 0;
@@ -1284,139 +1290,136 @@ int action_main_menu(int action) {
 }
 
 void enter_options(void) {
-
-	int event;
-	int exit = 0;
+  static int  first_time=0;
+  int event;
+  int exit = 0;
 	
-	ovl_left = (currprefs.gfx_size_win.width - 600) / 2;
+  ovl_left = (currprefs.gfx_size_win.width - 600) / 2;
 
-	if (ovl_left < 0) {
-		ovl_left = (720 - 600) / 2;
-	}
+  if (ovl_left < 0) {
+    ovl_left = (720 - 600) / 2;
+  }
 
-	memset(bmp,0,640*480*2);
+  memset(bmp,0,640*480*2);
 	
-	static first_time=0;
 
-	if(!first_time){
+  if(!first_time){
 
-		pause_sound();
-		uae_pause();
+    pause_sound();
+    uae_pause();
 
-		init_main_screen();
-		first_time=1;
-	}
+    init_main_screen();
+    first_time=1;
+  }
 
-	if(filebrowse==1){
+  if(filebrowse==1){
 
-		sprintf(browse_result,"%s\0",filebrowser(DEFAULT_PATH));
+    sprintf(browse_result,"%s\0",filebrowser(DEFAULT_PATH));
 
-		if(strcmp(browse_result,"EMPTY\0")==0){
-			//write_log("Cancel Fileselect(%s)\n",browse_result);
-			filebrowse=0;	
-		}
-		else if(strcmp(browse_result,"NO CHOICE\0")==0){
+    if(strcmp(browse_result,"EMPTY\0")==0){
+      //write_log("Cancel Fileselect(%s)\n",browse_result);
+      filebrowse=0;	
+    }
+    else if(strcmp(browse_result,"NO CHOICE\0")==0){
 			
-		}
-		else{
-			//write_log("Ok Fileselect(%s)\n",browse_result);			
-			goto fileok;			
+    }
+    else{
+      //write_log("Ok Fileselect(%s)\n",browse_result);			
+      goto fileok;			
 
-		}
+    }
 
-		return;
+    return;
 
-	}
+  }
 
-	while (!exit) {
+  while (!exit) {
 
-		event = update_input_gui();
+    event = update_input_gui();
 
-		fileok:
-			if(filebrowse==1)event=2;
+  fileok:
+    if(filebrowse==1)event=2;
 		
 
-		update_menu();
+    update_menu();
 	
-		if(event==0)event=-2;	
-		else if(event!=2 && event!=3 && event!=4){	//UP/DW/LFT/RGHT SLOWDOWN
+    if(event==0)event=-2;	
+    else if(event!=2 && event!=3 && event!=4){	//UP/DW/LFT/RGHT SLOWDOWN
 
-			if(idle_counter==0)sav_event=event;
+      if(idle_counter==0)sav_event=event;
 
-			if(event!=sav_event){
-				idle_counter=0;
-				sav_event=event;
-			}
+      if(event!=sav_event){
+	idle_counter=0;
+	sav_event=event;
+      }
 
-			idle_counter++;	
-			if(idle_counter<4)return;
-			else {
-				event=sav_event;
-				idle_counter=0;
-				sav_event=0;
-			}
+      idle_counter++;	
+      if(idle_counter<4)return;
+      else {
+	event=sav_event;
+	idle_counter=0;
+	sav_event=0;
+      }
 
-		}
+    }
 
-		//idle event
-		if (event == -2) {
-			exit = do_action(10);
-		} else
-		if (event == PAD_DOWN) {
-			menu_pos ++;
-			if ( menu_pos > max_menu_pos) {
-				menu_pos = 0;
-			}
-			update_menu();
-		} else
-		if (event == PAD_UP) {
-			menu_pos --;
-			if ( menu_pos < 0) {
-				menu_pos = max_menu_pos;
-			}
-			update_menu();
-		} else
-
-		if (event == PAD_CROSS) {
-
-			exit = do_action(1); 
-		} else
-		if (event == RETRO_X) {
-			exit = do_action(2); 
-		} else
-		if (event == PAD_RIGHT) {
-			exit = do_action(3);
-		} else
-		if (event == PAD_LEFT) {
-			exit = do_action(4);
-		}else		
-		if (event == PAD_SQUARE) {
-			if (screenId == MENU_MAIN) {
-				exit = 1;pauseg=0;
-				reset_drawing();
-				first_time=0;
-				uae_resume();resume_sound();
-				//write_log("retro: returning from options! exit=%i \n", exit);
-				return;
-
-			} else {
-				menu_pos =  (screenId - MENU_HDF) + MPOS_MENU_HDF;
-				screenId = MENU_MAIN;				
-				update_menu();
-			}
-		}		
-
-		if(exit!=0){
-			pauseg=0;
-			reset_drawing();
-			first_time=0;
-			uae_resume();resume_sound();
-		}
-
-		return;	
+    //idle event
+    if (event == -2) {
+      exit = do_action(10);
+    } else
+      if (event == PAD_DOWN) {
+	menu_pos ++;
+	if ( menu_pos > max_menu_pos) {
+	  menu_pos = 0;
 	}
+	update_menu();
+      } else
+	if (event == PAD_UP) {
+	  menu_pos --;
+	  if ( menu_pos < 0) {
+	    menu_pos = max_menu_pos;
+	  }
+	  update_menu();
+	} else
+
+	  if (event == PAD_CROSS) {
+
+	    exit = do_action(1); 
+	  } else
+	    if (event == RETRO_X) {
+	      exit = do_action(2); 
+	    } else
+	      if (event == PAD_RIGHT) {
+		exit = do_action(3);
+	      } else
+		if (event == PAD_LEFT) {
+		  exit = do_action(4);
+		}else		
+		  if (event == PAD_SQUARE) {
+		    if (screenId == MENU_MAIN) {
+		      exit = 1;pauseg=0;
+		      reset_drawing();
+		      first_time=0;
+		      uae_resume();resume_sound();
+		      //write_log("retro: returning from options! exit=%i \n", exit);
+		      return;
+
+		    } else {
+		      menu_pos =  (screenId - MENU_HDF) + MPOS_MENU_HDF;
+		      screenId = MENU_MAIN;				
+		      update_menu();
+		    }
+		  }		
+
+    if(exit!=0){
+      pauseg=0;
+      reset_drawing();
+      first_time=0;
+      uae_resume();resume_sound();
+    }
+
+    return;	
+  }
 
 
 }
-
-
