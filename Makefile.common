@@ -183,7 +183,7 @@ SOURCES_C +=			 $(ODFS)/hardfile_host.c \
 				 $(ODFS)/mouse.c \
 				 $(ODFS)/charset.c \
 				 $(ODFS)/inputrecord.c \
-				 $(ODFS)/threaddep/thread.c
+				 $(ODFS)/threading.c
 				 
 
 SOURCES_C +=			 $(LIBFSEMU)/thread.c $(LIBFSEMU)/filesys.c $(LIBFSEMU)/base.c $(LIBFSEMU)/data.c $(LIBFSEMU)/conf.c $(LIBFSEMU)/log.c $(LIBFSEMU)/inifile.c $(LIBFSEMU)/emu/video.c \

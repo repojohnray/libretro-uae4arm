@@ -172,6 +172,7 @@ sed -r -i "s,^(#include[ \t]+\")(linetoscr[.]c\"),\1../gen/\2," src/expansion.c
 sed -r -i "s,^(#include[ \t]+\")(comptbl[.]h\"),\1../gen/\2," src/jit/compemu_support.c
 sed -r -i "s/^(#include[ \t]+\"bsdsocket_posix.c)pp(\")/\1\2/" src/od-fs/bsdsocket_host.c
 sed -r -i "s/^(#include[ \t]+\"(codegen_arm|codegen_x86|compemu_midfunc_arm|compemu_midfunc_arm2|compemu_midfunc_x86)[.]c)pp(\")/\1\3/" src/jit/compemu_support.c
+sed -r -i "s/^(#include \")(md-fpp[.]h\")$/\1..\/od-win32\/\2/" src/fpp.c src/newcpu.c src/jit/compemu_fpp.c
 
 
 #-- fix _T("...")

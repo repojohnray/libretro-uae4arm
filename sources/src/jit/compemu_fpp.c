@@ -16,7 +16,7 @@
 #include "custom.h"
 #include "newcpu.h"
 #include "ersatz.h"
-#include "md-fpp.h"
+#include "../od-win32/md-fpp.h"
 #include "compemu.h"
 
 #if defined(JIT)

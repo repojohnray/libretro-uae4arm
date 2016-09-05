@@ -28,7 +28,7 @@
 #include "custom.h"
 #include "events.h"
 #include "newcpu.h"
-#include "md-fpp.h"
+#include "../od-win32/md-fpp.h"
 #include "savestate.h"
 #include "cpu_prefetch.h"
 #include "cpummu.h"

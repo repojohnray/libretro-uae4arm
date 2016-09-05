@@ -40,13 +40,14 @@
 #include "inputrecord.h"
 #include "inputdevice.h"
 #include "audio.h"
-#include "md-fpp.h"
+#include "../od-win32/md-fpp.h"
 #include "statusline.h"
 #include "uae_ppc.h"
 #include "cpuboard.h"
 #include "threaddep/thread.h"
 #include "x86.h"
 #include "bsdsocket.h"
+
 #ifdef JIT
 #include "jit/compemu.h"
 #include <signal.h>

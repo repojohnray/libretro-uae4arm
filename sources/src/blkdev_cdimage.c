@@ -23,7 +23,6 @@
 #include "scsidev.h"
 #ifdef BLKDEV_CDIMAGE
 #include <mp3decoder.h>
-#include <memory_uae.h>
 #ifdef RETROPLATFORM
 #include "rp.h"
 #endif
