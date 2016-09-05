@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include <stdlib.h>
 #include <stddef.h>
 #endif
@@ -13,7 +13,7 @@ extern void activate_debugger(void);
 //#define DEBUG_VGA_REG
 //#define DEBUG_VGA
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "uae_log.h"
 #else
 extern void write_log (const char *, ...);
@@ -26,7 +26,7 @@ extern void write_log (const char *, ...);
 #define tostring(s)	#s
 #endif
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 typedef int ssize_t;
 #endif
@@ -87,10 +87,10 @@ enum device_endian {
     DEVICE_BIG_ENDIAN,
     DEVICE_LITTLE_ENDIAN,
 };
-enum vga_retrace_method {
+typedef enum vga_retrace_method {
     VGA_RETRACE_DUMB,
     VGA_RETRACE_PRECISE
-};
+} vga_retrace_method;
 extern vga_retrace_method vga_retrace_method_value;
 
 typedef uint32_t QEMUClock;
@@ -316,10 +316,10 @@ void cirrus_init_common(CirrusVGAState * s, int device_id, int is_pci,
                                MemoryRegion *system_memory,
                                MemoryRegion *system_io, int vramlimit);
 
-struct DeviceState
+typedef struct DeviceState
 {
 	void *lsistate;
-};
+} DeviceState;
 
 #define QEMUFile void*
 #define PCIDevice void
@@ -388,7 +388,7 @@ static inline int pci_dma_write(PCIDevice *dev, dma_addr_t addr,
 	return pci_dma_rw(dev, addr, (void *)buf, len, DMA_DIRECTION_FROM_DEVICE);
 }
 
-struct BusState {
+typedef struct BusState {
     //Object obj;
     DeviceState *parent;
     const char *name;
@@ -396,7 +396,7 @@ struct BusState {
     int max_index;
 //    QTAILQ_HEAD(ChildrenHead, BusChild) children;
 //    QLIST_ENTRY(BusState) sibling;
-};
+} BusState;
 
 
 extern void lsi710_mmio_write(void *opaque, hwaddr addr, uint64_t val, unsigned size);

@@ -53,7 +53,7 @@ typedef enum eeprom_state {
 	I2C_DATA
 } eeprom_state;
 
-struct bitbang_i2c_interface {
+typedef struct bitbang_i2c_interface {
     bitbang_i2c_state state;
     int last_data;
     int last_clock;
@@ -68,7 +68,7 @@ struct bitbang_i2c_interface {
 	int addressbitmask;
 	uae_u8 *memory;
 	struct zfile *zf;
-};
+} bitbang_i2c_interface;
 
 static void nvram_write (struct bitbang_i2c_interface *i2c, int offset, int len)
 {

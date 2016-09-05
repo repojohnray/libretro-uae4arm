@@ -53,19 +53,19 @@ typedef uae_u32 (UNICALL *uae_uni_native_compat_function)(uae_u32, uae_u32,
 // the function prototype for the native library's uni_init function
 typedef int (UNICALL *uni_init_function)(void);
 
-struct library_data {
+typedef struct library_data {
     void *dl_handle;
     uae_thread_id thread_id;
     uae_sem_t empty_count;
     uae_sem_t full_count;
     int thread_stop_flag;
     struct uni *uni;
-};
+} library_data;
 
-struct uni_handle {
+typedef struct uni_handle {
     struct library_data *library;
     void *function;
-};
+} uni_handle;
 
 static uni_handle *g_handles = NULL;
 static int g_allocated_handles = 0;
@@ -635,11 +635,11 @@ uae_u32 uaenative_close_library(TrapContext *context, int flags)
 
 typedef uae_u32 (REGPARAM2 *uae_library_trap) (TrapContext *context);
 
-struct uae_library_trap_def {
+typedef struct uae_library_trap_def {
     uae_library_trap function; // native function pointer for trap
     int flags;                 // trap flags, e.g. TRAPFLAG_EXTRA_STACK
     uaecptr aptr;              // address of trap (Amiga-side)
-};
+} uae_library_trap_def;
 
 struct uae_library {
     // these members must be specified

@@ -38,11 +38,11 @@
 #include "uae_ppc.h"
 #include "devices.h"
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #undef _WIN32
 #endif
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 extern uae_u8 *natmem_offset, *natmem_offset_end;
 #endif
 
@@ -73,7 +73,7 @@ static bool needmman (void)
 	if (!jit_direct_compatible_memory)
 		return false;
 #ifdef _WIN32
-#ifdef FSUAE
+#if 1 //def FSUAE
     // FIXME: check if FS-UAE should return true here for Windows as well
 #endif
 	return true;
@@ -520,7 +520,7 @@ static uae_u32 REGPARAM2 chipmem_lget (uaecptr addr)
 
 	addr &= chipmem_bank.mask;
 	m = (uae_u32 *)(chipmem_bank.baseaddr + addr);
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_lget %08x = %08x\n", addr, do_get_mem_long (m));
 #endif
@@ -535,7 +535,7 @@ static uae_u32 REGPARAM2 chipmem_wget (uaecptr addr)
 	addr &= chipmem_bank.mask;
 	m = (uae_u16 *)(chipmem_bank.baseaddr + addr);
 	v = do_get_mem_word (m);
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_wget %08x = %08x\n", addr, v);
 #endif
@@ -548,7 +548,7 @@ static uae_u32 REGPARAM2 chipmem_bget (uaecptr addr)
 	uae_u8 v;
 	addr &= chipmem_bank.mask;
 	v = chipmem_bank.baseaddr[addr];
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_wget %08x = %08x\n", addr, v);
 #endif
@@ -558,12 +558,12 @@ static uae_u32 REGPARAM2 chipmem_bget (uaecptr addr)
 
 void REGPARAM2 chipmem_lput (uaecptr addr, uae_u32 l)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_lput %08x %08x\n", addr, l);
 #endif
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SYNC_MEMORY
 	write_sync_log("cl %08x %08x\n", addr, l);
 #endif
@@ -582,12 +582,12 @@ static int told, toldv;
 
 void REGPARAM2 chipmem_wput (uaecptr addr, uae_u32 w)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_wput %08x %08x\n", addr, w);
 #endif
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SYNC_MEMORY
 	write_sync_log("cw %08x %08x\n", addr, w);
 #endif
@@ -612,12 +612,12 @@ void REGPARAM2 chipmem_wput (uaecptr addr, uae_u32 w)
 
 void REGPARAM2 chipmem_bput (uaecptr addr, uae_u32 b)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_bput %08x %08x\n", addr, b);
 #endif
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SYNC_MEMORY
 	write_sync_log("cb %08x %08x\n", addr, b);
 #endif
@@ -664,7 +664,7 @@ static uae_u32 REGPARAM2 chipmem_agnus_lget (uaecptr addr)
 	if (addr >= chipmem_full_size - 3)
 		return 0;
 	m = (uae_u32 *)(chipmem_bank.baseaddr + addr);
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_agnus_lget %08x = %08x\n", addr, do_get_mem_long (m));
 #endif
@@ -680,7 +680,7 @@ uae_u32 REGPARAM2 chipmem_agnus_wget (uaecptr addr)
 	if (addr >= chipmem_full_size - 1)
 		return 0;
 	m = (uae_u16 *)(chipmem_bank.baseaddr + addr);
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_agnus_lget %08x = %08x\n", addr, do_get_mem_word (m));
 #endif
@@ -693,7 +693,7 @@ static uae_u32 REGPARAM2 chipmem_agnus_bget (uaecptr addr)
 	addr &= chipmem_full_mask;
 	if (addr >= chipmem_full_size)
 		return 0;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_agnus_lget %08x = %08x\n", addr, chipmem_bank.baseaddr[addr]);
 #endif
@@ -703,7 +703,7 @@ static uae_u32 REGPARAM2 chipmem_agnus_bget (uaecptr addr)
 
 static void REGPARAM2 chipmem_agnus_lput (uaecptr addr, uae_u32 l)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_agnus_lput %08x %08x\n", addr, l);
 #endif
@@ -719,7 +719,7 @@ static void REGPARAM2 chipmem_agnus_lput (uaecptr addr, uae_u32 l)
 
 void REGPARAM2 chipmem_agnus_wput (uaecptr addr, uae_u32 w)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_agnus_wput %08x %08x\n", addr, w);
 #endif
@@ -735,7 +735,7 @@ void REGPARAM2 chipmem_agnus_wput (uaecptr addr, uae_u32 w)
 
 static void REGPARAM2 chipmem_agnus_bput (uaecptr addr, uae_u32 b)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_MEM
 	write_log("chipmem_agnus_bput %08x %08x\n", addr, b);
 #endif
@@ -1066,7 +1066,7 @@ uae_u8 *REGPARAM2 default_xlate (uaecptr addr)
 				write_log (_T("Your Amiga program just did something terribly stupid %08X PC=%08X\n"), addr, M68K_GETPC);
 				if (debugging || DEBUG_STUPID) {
 					activate_debugger ();
-					m68k_dumpstate (0);
+					m68k_dumpstate1 (0);
 				}
 				for (i = 0; i < 10; i++) {
 					write_log (_T("%08X "), i >= 5 ? a3 : a2);
@@ -1266,12 +1266,12 @@ void a3000_fakekick (int map)
 
 static const uae_char *kickstring = "exec.library";
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 
 static void log_kickstart(uae_u8 *mem, int size)
 {
 	uae_u32 crc32 = get_crc32(mem, size);
-	struct romdata *rd = getromdatabycrc(crc32);
+	struct romdata *rd = getromdatabycrc1(crc32);
 	if (rd) {
 		char tmp[MAX_DPATH];
 		getromname(rd, tmp);
@@ -1344,7 +1344,7 @@ static int read_kickstart (struct zfile *f, uae_u8 *mem, int size, int dochecksu
 		if (!decode_rom (mem, size, cr, i))
 			return 0;
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	/* When i >= ROM_SIZE_256, a full kickstart ROM is in use, and we
 	 * don't want the A1000 KS bootstrap-specific behavior in this case. */
 #endif
@@ -1352,7 +1352,7 @@ static int read_kickstart (struct zfile *f, uae_u8 *mem, int size, int dochecksu
 		int off = 0;
 		if (!a1000_bootrom)
 			a1000_bootrom = xcalloc (uae_u8, ROM_SIZE_256);
-#ifdef FSUAE
+#if 1 //def FSUAE
 		/* FIXME: This loop looks a bit suspicious. When the A1000 bootstrap
 		 * ROM is 64 KB, this loop looks like it repeats the ROM. Fair enough,
 		 * but with <, it will only fill it three times and leave the upper
@@ -1378,7 +1378,7 @@ static int read_kickstart (struct zfile *f, uae_u8 *mem, int size, int dochecksu
 		dochecksum = 0;
 	if (dochecksum)
 		kickstart_checksum (mem, size);
-#ifdef FSUAE
+#if 1 //def FSUAE
 	log_kickstart(mem, i);
 #endif
 	return i;
@@ -1518,7 +1518,7 @@ static void patch_kick (void)
 		kickstart_fix_checksum (kickmem_bank.baseaddr, kickmem_bank.allocated);
 }
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "fs/data.h"
 #else
 extern unsigned char arosrom[];
@@ -1529,7 +1529,7 @@ static bool load_kickstart_replacement (void)
 {
 	struct zfile *f;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 	char *data;
 	int data_size;
 	if (fs_data_file_content("share/fs-uae/aros-amiga-m68k-ext.bin",
@@ -1554,7 +1554,7 @@ static bool load_kickstart_replacement (void)
 	mapped_malloc (&extendedkickmem_bank);
 	read_kickstart (f, extendedkickmem_bank.baseaddr, ROM_SIZE_512, 0, 1);
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	zfile_fclose(f);
 	free(data);
 	if (fs_data_file_content("share/fs-uae/aros-amiga-m68k-rom.bin",
@@ -1569,7 +1569,7 @@ static bool load_kickstart_replacement (void)
 	read_kickstart (f, kickmem_bank.baseaddr, ROM_SIZE_512, 1, 0);
 
 	zfile_fclose (f);
-#ifdef FSUAE
+#if 1 //def FSUAE
 	free(data);
 #endif
 
@@ -1621,7 +1621,7 @@ static int load_kickstart (void)
 		goto err;
 
 	if (f != NULL) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #if 0
 		printf("KICKSTART: %s\n", currprefs.romfile);
 #endif
@@ -1643,7 +1643,7 @@ static int load_kickstart (void)
 			zfile_fseek (f, 8, SEEK_SET);
 		}
 		if (filesize >= ROM_SIZE_512 * 2) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 			// FIXME: is the intention here to find kspos via romdata?
 #endif
 			struct romdata *rd = getromdatabyzfile(f);
@@ -1831,7 +1831,7 @@ static void add_shmmaps (uae_u32 start, addrbank *what)
 
 bool mapped_malloc (addrbank *ab)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log(_T("MMAN: mapped_malloc 0x%08x start=0x%08x %s (%s)\n"),
 			  ab->allocated, ab->start, ab->name, ab->label);
 	write_log(_T("MMAN: Flags:%s%s%s%s%s%s%s%s%s%s%s\n"),
@@ -2469,7 +2469,7 @@ void memory_reset (void)
 	}
 
 	if ((cloanto_rom || extendedkickmem_bank.allocated) && currprefs.maprom && currprefs.maprom < 0x01000000) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	    write_log("MAPROM: cloanto_rom=%d extendedkickmem_bank.allocated=%u\n", cloanto_rom, extendedkickmem_bank.allocated);
 	    write_log("MAPROM: Setting address 0x00a80000 (was 0x%08x)\n", currprefs.maprom);
 #endif
@@ -2610,7 +2610,7 @@ void memory_reset (void)
 #endif
 
 	if ((cloanto_rom || currprefs.cs_ksmirror_e0) && (currprefs.maprom != 0xe00000) && !extendedkickmem_type) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		if (currprefs.cs_ksmirror_e0) {
 			write_log("MAPROM: cs_ksmirror_e0 set - mirroring kickstart at 0x00e00000\n");
 		}
@@ -2757,7 +2757,7 @@ void memory_cleanup (void)
 
 void set_roms_modified(void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("set roms_modified = true;\n");
 #endif
 	roms_modified = true;
@@ -2789,10 +2789,10 @@ void map_banks_cond (addrbank *bank, int start, int size, int realsize)
 
 #ifdef WITH_THREADED_CPU
 
-struct addrbank_thread {
+typedef struct addrbank_thread {
 	addrbank *orig;
 	addrbank ab;
-};
+} addrbank_thread;
 
 #define MAX_THREAD_BANKS 200
 static addrbank_thread *thread_banks[MAX_THREAD_BANKS];
@@ -3340,7 +3340,7 @@ uaecptr strcpyha_safe (uaecptr dst, const uae_char *src)
 	} while (b);
 	return res;
 }
-#ifdef FSUAE
+#if 1 //def FSUAE
 
 int uae_get_memory_checksum(void *data, int size)
 {

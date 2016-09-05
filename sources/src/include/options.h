@@ -192,12 +192,12 @@ struct uaedev_config_info {
 	bool inject_icons;
 };
 
-struct uaedev_config_data
+typedef struct uaedev_config_data
 {
 	struct uaedev_config_info ci;
 	int configoffset; // HD config entry index
 	int unitnum; // scsi unit number (if tape currently)
-};
+} uaedev_config_data;
 
 enum { CP_GENERIC = 1, CP_CDTV, CP_CDTVCR, CP_CD32, CP_A500, CP_A500P, CP_A600, CP_A1000,
 	CP_A1200, CP_A2000, CP_A3000, CP_A3000T, CP_A4000, CP_A4000T, CP_VELVET };
@@ -308,7 +308,7 @@ struct gfx_filterdata
 
 #define MAX_DUPLICATE_EXPANSION_BOARDS 4
 #define MAX_EXPANSION_BOARDS 4
-struct romconfig
+typedef struct romconfig
 {
 	TCHAR romfile[MAX_DPATH];
 	TCHAR romident[256];
@@ -318,14 +318,14 @@ struct romconfig
 	int device_settings;
 	int subtype;
 	void *unitdata;
-};
+} romconfig;
 #define MAX_BOARD_ROMS 2
-struct boardromconfig
+typedef struct boardromconfig
 {
 	int device_type;
 	int device_num;
 	struct romconfig roms[MAX_BOARD_ROMS];
-};
+} boardromconfig;
 
 #define Z3MAPPING_AUTO 0
 #define Z3MAPPING_UAE 1
@@ -751,7 +751,7 @@ extern void discard_prefs (struct uae_prefs *, int);
 int parse_cmdline_option (struct uae_prefs *, TCHAR, const TCHAR*);
 
 extern int cfgfile_yesno (const TCHAR *option, const TCHAR *value, const TCHAR *name, bool *location);
-extern int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale);
+// extern int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale);
 extern int cfgfile_strval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, const TCHAR *table[], int more);
 extern int cfgfile_string (const TCHAR *option, const TCHAR *value, const TCHAR *name, TCHAR *location, int maxsz);
 extern TCHAR *cfgfile_subst_path (const TCHAR *path, const TCHAR *subst, const TCHAR *file);

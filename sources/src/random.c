@@ -21,10 +21,10 @@
 #define TEMPERING_SHIFT_T(y)  (y << 15)
 #define TEMPERING_SHIFT_L(y)  (y >> 18)
 
-struct rand_context {
+typedef struct rand_context {
 	uint32_t mt[N]; /* the array for the state vector  */
 	unsigned int mti;
-};
+} rand_context;
 
 static void rand_set_seed(rand_context *rand, uint32_t seed)
 {

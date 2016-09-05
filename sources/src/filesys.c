@@ -71,7 +71,7 @@
 #include "rp.h"
 #endif
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #undef _WIN32
 #endif
 
@@ -94,7 +94,7 @@ int log_filesys = 0;
 #define TRACE2(x)
 #define TRACE3(x)
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
 static int g_packet_delay = 0;
 #endif
 
@@ -558,7 +558,7 @@ static int set_filesys_volume (const TCHAR *rootdir, int *flags, bool *readonly,
 	*emptydrive = 0;
 	if (my_existsfile (rootdir)) {
 		struct zvolume *zv;
-		zv = zfile_fopen_archive (rootdir);
+		zv = zfile_fopen_archive1 (rootdir);
 		if (!zv) {
 			error_log (_T("'%s' is not a supported archive file."), rootdir);
 			return -1;
@@ -666,10 +666,10 @@ static int set_filesys_unit_1 (int nr, struct uaedev_config_info *ci)
 		ui->hf.unitnum = nr;
 		ui->volname = 0;
 		if (ui->hf.ci.rootdir[0]) {
-			if (hdf_open (&ui->hf) <= 0 && !c.readonly) {
+			if (hdf_open1 (&ui->hf) <= 0 && !c.readonly) {
 				write_log (_T("Attempting to open '%s' in read-only mode.\n"), ui->hf.ci.rootdir);
 				ui->hf.ci.readonly = c.readonly = true;
-				if (hdf_open (&ui->hf) > 0) {
+				if (hdf_open1 (&ui->hf) > 0) {
 					error_log (_T("'%s' opened in read-only mode.\n"), ui->hf.ci.rootdir);
 				}
 			}
@@ -802,7 +802,7 @@ static void allocuci (struct uae_prefs *p, int nr, int idx, int unitnum)
 		uci->unitnum = -1;
 	}
 }
-static void allocuci (struct uae_prefs *p, int nr, int idx)
+static void allocuci3 (struct uae_prefs *p, int nr, int idx)
 {
 	allocuci (p, nr, idx, -1);
 }
@@ -992,7 +992,7 @@ static void initialize_mountinfo (void)
 			memcpy (&ci, &uci->ci, sizeof (struct uaedev_config_info));
 			ci.flags = MYVOLUMEINFO_REUSABLE;
 			int idx = set_filesys_unit_1 (-1, &ci);
-			allocuci (&currprefs, nr, idx);
+			allocuci3 (&currprefs, nr, idx);
 		}
 	}
 	filesys_addexternals ();
@@ -1014,7 +1014,7 @@ static void initialize_mountinfo (void)
 				ci.surfaces = 1;
 				ci.blocksize = 2048;
 				int idx = set_filesys_unit_1 (i + cd_unit_offset, &ci);
-				allocuci (&currprefs, nr, idx);
+				allocuci3 (&currprefs, nr, idx);
 				nr++;
 			}
 		}
@@ -1086,7 +1086,7 @@ static void initialize_mountinfo (void)
 			added = true;
 		}
 		if (added)
-			allocuci (&currprefs, nr, -1);
+			allocuci3 (&currprefs, nr, -1);
 	}
 	
 
@@ -1549,11 +1549,11 @@ static struct fs_dirhandle *fs_opendir (Unit *u, a_inode *aino)
 	struct fs_dirhandle *fsd = xmalloc (struct fs_dirhandle, 1);
 	fsd->fstype = (u->volflags & MYVOLUMEINFO_ARCHIVE) ? FS_ARCHIVE : ((u->volflags & MYVOLUMEINFO_CDFS) ? FS_CDFS : FS_DIRECTORY);
 	if (fsd->fstype == FS_ARCHIVE) {
-		fsd->zd = zfile_opendir_archive (aino->nname);
+		fsd->zd = zfile_opendir_archive1 (aino->nname);
 		if (fsd->zd)
 			return fsd;
 	} else if (fsd->fstype == FS_DIRECTORY) {
-		fsd->od = my_opendir (aino->nname);
+		fsd->od = my_opendir1 (aino->nname);
 		if (fsd->od)
 			return fsd;
 	} else if (fsd->fstype == FS_CDFS) {
@@ -2152,7 +2152,7 @@ int hardfile_media_change (struct hardfiledata *hfd, struct uaedev_config_info *
 			}
 		}
 		memcpy (&hfd->ci, &hfd->delayedci, sizeof (struct uaedev_config_info));
-		if (hdf_open (hfd) <= 0) {
+		if (hdf_open1 (hfd) <= 0) {
 			write_log (_T("HARDFILE: '%s' failed to open\n"), hfd->ci.rootdir);
 			return 0;
 		}
@@ -2627,7 +2627,7 @@ static int fill_file_attrs (Unit *u, a_inode *base, a_inode *c)
 		c->amigaos_mode = 0;
 		if (flags >= 0)
 			c->amigaos_mode = flags;
-#ifdef FSUAE
+#if 1 //def FSUAE
 		//else {
 		//	//c->amigaos_mode = A_FIBF_READ| A_FIBF_EXECUTE;
 		//	//c->amigaos_mode = filesys_parse_mask(c->amigaos_mode);
@@ -2974,7 +2974,7 @@ static void startup_update_unit (Unit *unit, UnitInfo *uinfo)
 	xfree (unit->ui.volname);
 	memcpy (&unit->ui, uinfo, sizeof (UnitInfo));
 	unit->ui.devname = uinfo->devname;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	//printf("%p %s\n", uinfo->volname, uinfo->volname);
 	if (!uinfo->volname) {
 		// prevents a crash on linux/mac, when e.g. a cd-rom
@@ -3102,11 +3102,11 @@ static void filesys_start_thread (UnitInfo *ui, int nr)
 		ui->back_pipe = xmalloc (smp_comm_pipe, 1);
 		init_comm_pipe (ui->unit_pipe, 100, 3);
 		init_comm_pipe (ui->back_pipe, 100, 1);
-#ifdef FSUAE
+#if 1 //def FSUAE
 		if (!uae_deterministic_mode()) {
 #endif
 		uae_start_thread (_T("filesys"), filesys_thread, (void *)ui, &ui->tid);
-#ifdef FSUAE
+#if 1 //def FSUAE
 		}
 #endif
 	}
@@ -3326,7 +3326,7 @@ static void
 static void
 	action_disk_info (Unit *unit, dpacket packet)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     g_packet_delay = 10;
 #endif
 	TRACE((_T("ACTION_DISK_INFO\n")));
@@ -3336,7 +3336,7 @@ static void
 static void
 	action_info (Unit *unit, dpacket packet)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     g_packet_delay = 10;
 #endif
 	TRACE((_T("ACTION_INFO\n")));
@@ -3637,7 +3637,7 @@ static void
 		mode = SHARED_LOCK;
 	}
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 2;
 #endif
 	TRACE((_T("ACTION_LOCK(0x%08x, \"%s\", %d)\n"), lock, bstr (unit, name), mode));
@@ -3834,7 +3834,7 @@ static void action_free_lock (Unit *unit, dpacket packet)
 {
 	uaecptr lock = GET_PCK_ARG1 (packet) << 2;
 	a_inode *a;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 2;
 #endif
 	TRACE((_T("ACTION_FREE_LOCK(0x%x)\n"), lock));
@@ -3887,7 +3887,7 @@ static void
 	action_dup_lock (Unit *unit, dpacket packet)
 {
 	uaecptr lock = GET_PCK_ARG1 (packet) << 2;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 2;
 #endif
 	TRACE((_T("ACTION_DUP_LOCK(0x%x)\n"), lock));
@@ -4018,7 +4018,7 @@ static void
 		put_long (info + 124, statbuf.size > MAXFILESIZE32 ? MAXFILESIZE32 : (uae_u32)statbuf.size);
 	}
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	fsdb_get_file_time(aino, &days, &mins, &ticks);
 #else
 	timeval_to_amiga (&statbuf.mtime, &days, &mins, &ticks, 50);
@@ -4170,7 +4170,7 @@ static int action_lock_record (Unit *unit, dpacket packet, uae_u32 msg)
 
 	bool exclusive = mode == REC_EXCLUSIVE || mode == REC_EXCLUSIVE_IMMED;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 2;
 #endif
 	write_log (_T("action_lock_record('%s',%d,%d,%d,%d)\n"), k ? k->aino->nname : _T("null"), pos, len, mode, timeout);
@@ -4322,7 +4322,7 @@ static int exalldo (uaecptr exalldata, uae_u32 exalldatasize, uae_u32 type, uaec
 		size2 += 4;
 	}
 	if (type >= 5) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		fsdb_get_file_time(aino, &days, &mins, &ticks);
 #else
 		timeval_to_amiga (&statbuf.mtime, &days, &mins, &ticks, 50);
@@ -4415,7 +4415,7 @@ static int filesys_readdir(struct fs_dirhandle *d, TCHAR *fn, uae_u64 *uniq)
 {
 	int ok = 0;
 	if (d->fstype == FS_ARCHIVE)
-		ok = zfile_readdir_archive(d->zd, fn);
+		ok = zfile_readdir_archive2(d->zd, fn);
 	else if (d->fstype == FS_DIRECTORY)
 		ok = my_readdir(d->od, fn);
 	else if (d->fstype == FS_CDFS)
@@ -5139,7 +5139,7 @@ static void updatedirtime (a_inode *a1, int now)
 
 	if (!a1->parent)
 		return;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (!a1->parent->parent) {
 	    return;
 	}
@@ -5189,7 +5189,7 @@ static void
 		/* PUT_PCK_RES2 (packet, EINVAL); */
 		return;
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
     g_packet_delay = 100;
 #endif
 	TRACE((_T("ACTION_READ(%s,0x%x,%d)\n"), k->aino->nname, addr, size));
@@ -5300,7 +5300,7 @@ static void
 	}
 
 	gui_flicker_led (UNIT_LED(unit), unit->unit, 2);
-#ifdef FSUAE
+#if 1 //def FSUAE
     g_packet_delay = 320;
 #endif
 	TRACE((_T("ACTION_WRITE(%s,0x%x,%d)\n"), k->aino->nname, addr, size));
@@ -5652,7 +5652,7 @@ static void
 	a_inode *aino;
 	int err;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 320;
 #endif
 	TRACE((_T("ACTION_CREATE_DIR(0x%x,\"%s\")\n"), lock, bstr (unit, name)));
@@ -5733,10 +5733,10 @@ static void
 	if (mode < 0)
 		whence = SEEK_SET;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 100;
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
 	TRACE((_T("ACTION_SET_FILE_SIZE(0x%x, %jd, 0x%x)\n"), GET_PCK_ARG1 (packet), (intmax_t) offset, mode));
 #else
 	TRACE((_T("ACTION_SET_FILE_SIZE(0x%lx, %d, 0x%x)\n"), GET_PCK_ARG1 (packet), offset, mode));
@@ -5851,7 +5851,7 @@ static void
 	a_inode *a;
 	int err;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 320;
 #endif
 	TRACE((_T("ACTION_DELETE_OBJECT(0x%x,\"%s\")\n"), lock, bstr (unit, name)));
@@ -6283,7 +6283,7 @@ static void action_get_file_size64 (Unit *unit, dpacket packet)
 		PUT_PCK64_RES2 (packet, ERROR_INVALID_LOCK);
 		return;
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_packet_delay = 50;
 #endif
 	TRACE((_T("ACTION_GET_FILE_SIZE64(%s)\n"), k->aino->nname));
@@ -6656,7 +6656,7 @@ static int handle_packet (Unit *unit, dpacket pck, uae_u32 msg)
 	uae_s32 type = GET_PCK_TYPE (pck);
 	PUT_PCK_RES2 (pck, 0);
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	TRACE((_T("handle_packet packet=%d\n"), type));
 #else
 	TRACE((_T("unit=%p packet=%d\n"), unit, type));
@@ -6676,7 +6676,7 @@ static int handle_packet (Unit *unit, dpacket pck, uae_u32 msg)
 			PUT_PCK_RES2 (pck, unit->ui.unknown_media ? ERROR_NOT_A_DOS_DISK : ERROR_NO_DISK);
 			return 1;
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	//int t1 = SDL_GetTicks();
 #endif
 
@@ -6750,7 +6750,7 @@ static int handle_packet (Unit *unit, dpacket pck, uae_u32 msg)
 		write_log (_T("FILESYS: UNKNOWN PACKET %x\n"), type);
 		return 0;
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	//int t2 = SDL_GetTicks();
 	//if (t2 - t1 >= 9 ) {
 	//    write_log("fs action %d took %d ms\n", type, t2 - t1);
@@ -6954,7 +6954,7 @@ static void filesys_prepare_reset2 (void)
 			write_comm_pipe_int (uip[i].unit_pipe, 0, 0);
 			write_comm_pipe_int (uip[i].unit_pipe, 0, 0);
 			write_comm_pipe_int (uip[i].unit_pipe, 0, 1);
-#ifdef FSUAE
+#if 1 //def FSUAE
 			if (uae_deterministic_mode()) {
 				while (comm_pipe_has_data(uip[i].unit_pipe)) {
 	            	// process remaining packets until all are done
@@ -6965,7 +6965,7 @@ static void filesys_prepare_reset2 (void)
 #endif
 			uae_sem_wait (&uip[i].reset_sync_sem);
 			uae_end_thread (&uip[i].tid);
-#ifdef FSUAE
+#if 1 //def FSUAE
 			}
 #endif
 		}
@@ -8083,7 +8083,7 @@ static int dofakefilesys (UnitInfo *uip, uaecptr parmpacket, struct uaedev_confi
 		return FILESYS_HARDFILE;
 	}
 	write_log (_T("RDB: fakefilesys, trying to load '%s', dostype 0x%08X (%s)\n"), tmp, dostype, dostypes (dostype));
-	zf = zfile_fopen (tmp, _T("rb"), ZFD_NORMAL);
+	zf = zfile_fopen3 (tmp, _T("rb"), ZFD_NORMAL);
 	if (!zf) {
 		addfakefilesys (parmpacket, dostype, ver, rev, ci);
 		write_log (_T("RDB: filesys not found, mounted without forced filesys\n"));
@@ -8384,7 +8384,7 @@ static uae_u32 REGPARAM2 mousehack_done (TrapContext *context)
 	return 1;
 }
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 static int g_hsync_line = 0;
 #endif
 
@@ -8437,12 +8437,12 @@ void filesys_vsync (void)
 		heartbeat_task &= ~1;
 	}
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 	g_hsync_line = 0;
 #endif
 }
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #ifdef UAE_FILESYS_THREADS
 
 static void run_filesys_iterations(int max_count) {
@@ -8739,7 +8739,7 @@ static a_inode *restore_filesys_get_base (Unit *u, TCHAR *npath)
 
 static TCHAR *makenativepath (UnitInfo *ui, TCHAR *apath)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     return fsdb_native_path(ui->rootdir, apath);
 #else
 	int i;

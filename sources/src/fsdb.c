@@ -22,7 +22,7 @@
 #include "fsdb.h"
 #include "uae_io.h"
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #include "uae_fs.h"
 #undef _WIN32
 #endif
@@ -60,10 +60,10 @@ TCHAR *fsdb_search_dir (const TCHAR *dirname, TCHAR *rel)
 {
 	TCHAR *p = 0;
 	int de;
-	my_opendir_s *dir;
+	struct my_opendir_s *dir;
 	TCHAR fn[MAX_DPATH];
 
-	dir = my_opendir (dirname);
+	dir = my_opendir1 (dirname);
 	/* This really shouldn't happen...  */
 	if (! dir)
 		return 0;
@@ -305,7 +305,7 @@ static void write_aino (FILE *f, a_inode *aino)
 
 void fsdb_dir_writeback (a_inode *dir)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	// .uaem files are used instead of fsdb
 #else
 	FILE *f;

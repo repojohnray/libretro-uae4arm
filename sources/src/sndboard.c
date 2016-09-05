@@ -1224,7 +1224,7 @@ void sndboard_ext_volume(void)
 		calculate_volume_qemu();
 }
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 
 static uae_u8 *sndboard_get_buffer(int *frames)
 {

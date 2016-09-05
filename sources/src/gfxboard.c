@@ -896,7 +896,7 @@ STATIC_INLINE uaecptr fixaddr (uaecptr addr, int mask)
 	return addr;
 }
 
-STATIC_INLINE uaecptr fixaddr (uaecptr addr)
+STATIC_INLINE uaecptr fixaddr1 (uaecptr addr)
 {
 	if (vram_offset_enabled) {
 		if (addr & 0x8000) {
@@ -1330,7 +1330,7 @@ static void REGPARAM2 gfxboard_bput_mem (uaecptr addr, uae_u32 b)
 static uae_u32 REGPARAM2 gfxboard_lget_mem_nojit (uaecptr addr)
 {
 	addr -= gfxboardmem_start & gfxmem_bank.mask;
-	addr = fixaddr (addr);
+	addr = fixaddr1 (addr);
 	if (addr == -1)
 		return 0;
 	return gfxboard_lget_vram (addr, 0);
@@ -1338,7 +1338,7 @@ static uae_u32 REGPARAM2 gfxboard_lget_mem_nojit (uaecptr addr)
 static uae_u32 REGPARAM2 gfxboard_wget_mem_nojit (uaecptr addr)
 {
 	addr -= gfxboardmem_start & gfxmem_bank.mask;
-	addr = fixaddr (addr);
+	addr = fixaddr1 (addr);
 	if (addr == -1)
 		return 0;
 	return gfxboard_wget_vram (addr, 0);
@@ -1346,7 +1346,7 @@ static uae_u32 REGPARAM2 gfxboard_wget_mem_nojit (uaecptr addr)
 static uae_u32 REGPARAM2 gfxboard_bget_mem_nojit (uaecptr addr)
 {
 	addr -= gfxboardmem_start & gfxmem_bank.mask;
-	addr = fixaddr (addr);
+	addr = fixaddr1 (addr);
 	if (addr == -1)
 		return 0;
 	return gfxboard_bget_vram (addr, 0);
@@ -1354,7 +1354,7 @@ static uae_u32 REGPARAM2 gfxboard_bget_mem_nojit (uaecptr addr)
 static void REGPARAM2 gfxboard_lput_mem_nojit (uaecptr addr, uae_u32 l)
 {
 	addr -= gfxboardmem_start & gfxmem_bank.mask;
-	addr = fixaddr (addr);
+	addr = fixaddr1 (addr);
 	if (addr == -1)
 		return;
 	gfxboard_lput_vram (addr, l, 0);
@@ -1362,7 +1362,7 @@ static void REGPARAM2 gfxboard_lput_mem_nojit (uaecptr addr, uae_u32 l)
 static void REGPARAM2 gfxboard_wput_mem_nojit (uaecptr addr, uae_u32 w)
 {
 	addr -= gfxboardmem_start & gfxmem_bank.mask;
-	addr = fixaddr (addr);
+	addr = fixaddr1 (addr);
 	if (addr == -1)
 		return;
 	gfxboard_wput_vram (addr, w, 0);
@@ -1370,7 +1370,7 @@ static void REGPARAM2 gfxboard_wput_mem_nojit (uaecptr addr, uae_u32 w)
 static void REGPARAM2 gfxboard_bput_mem_nojit (uaecptr addr, uae_u32 b)
 {
 	addr -= gfxboardmem_start & gfxmem_bank.mask;
-	addr = fixaddr (addr);
+	addr = fixaddr1 (addr);
 	if (addr == -1)
 		return;
 	gfxboard_bput_vram (addr, b, 0);

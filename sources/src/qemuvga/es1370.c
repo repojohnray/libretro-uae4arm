@@ -366,7 +366,7 @@ static void es1370_update_status (ES1370State *s, uint32_t new_status)
 //    pci_set_irq(&s->dev, !!level);
 }
 
-static void es1370_reset (ES1370State *s)
+static void es1370_reset1 (ES1370State *s)
 {
     size_t i;
 
@@ -1059,7 +1059,7 @@ static const VMStateDescription vmstate_es1370 = {
 static void es1370_on_reset (void *opaque)
 {
     ES1370State *s = (ES1370State*)opaque;
-    es1370_reset (s);
+    es1370_reset1 (s);
 }
 
 #if 0
@@ -1085,7 +1085,7 @@ static void es1370_realize(PCIDevice *dev, Error **errp)
     qemu_register_reset (es1370_on_reset, s);
 
     AUD_register_card ("es1370", &s->card);
-    es1370_reset (s);
+    es1370_reset1 (s);
 }
 
 static int es1370_init (PCIBus *bus)
@@ -1184,7 +1184,7 @@ static void es1370_free(struct pci_board_state *pcibs)
 static bool es1370_init(struct pci_board_state *pcibs)
 {
 	init(pcibs);
-	es1370_reset(&es1370state);
+	es1370_reset1(&es1370state);
 	return true;
 }
 

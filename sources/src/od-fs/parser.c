@@ -338,7 +338,7 @@ void uaeser_close (void *vsd)
 	STUB("");
 }
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 /* No MIDI support. */
 #else
 #define WITH_MIDI
@@ -834,7 +834,7 @@ int setbaud (long baud)
 
 void initparallel (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("initparallel\n");
 #endif
 	if (_tcsnicmp(currprefs.prtname, "tcp:", 4) == 0) {
@@ -847,7 +847,7 @@ void initparallel (void)
 
 #ifdef AHI
 	if (uae_boot_rom_type) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		write_log("installing ahi_winuae\n");
 #endif
 		uaecptr a = here (); //this install the ahisound
@@ -866,7 +866,7 @@ int flashscreen = 0;
 
 void doflashscreen (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 
 #else
 	flashscreen = 10;
@@ -884,7 +884,7 @@ void hsyncstuff (void)
 {
 	static int keycheck = 0;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 /* DISABLED -- OLD AHI VERSION? */
 #else
 #ifdef AHI
@@ -902,7 +902,7 @@ void hsyncstuff (void)
 #endif
 #endif
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 /* DISABLED FOR NOW */
 #else
 #ifdef PARALLEL_PORT

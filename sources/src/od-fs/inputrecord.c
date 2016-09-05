@@ -46,14 +46,14 @@ void inprec_startup (void)
 {
 }
 
-static bool inprec_realtime (bool stopstart)
+static bool inprec_realtime1 (bool stopstart)
 {
 	return true;
 }
 
 bool inprec_realtime (void)
 {
-	return inprec_realtime (false);
+	return inprec_realtime1 (false);
 }
 
 bool inprec_playevent (int *nr, int *state, int *max, int *autofire)

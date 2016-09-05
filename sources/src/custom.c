@@ -60,7 +60,7 @@
 
 extern uae_u16 serper;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 int g_frame_debug_logging = 0;
 #endif
 
@@ -144,7 +144,7 @@ static bool genlockvtoggle;
 static bool graphicsbuffer_retry;
 static int scanlinecount;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 int g_uae_min_first_line_pal = VBLANK_ENDLINE_PAL;
 int g_uae_min_first_line_ntsc = VBLANK_ENDLINE_NTSC;
 #endif
@@ -367,7 +367,7 @@ unsigned long hsync_counter = 0, vsync_counter = 0;
 unsigned long int idletime;
 int bogusframe;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 int g_uae_vsync_counter = 0;
 //int g_uae_hsync_counter = 0;
 #endif
@@ -576,7 +576,7 @@ static void docols (struct color_entry *colentry)
 	int i;
 
 #ifdef AGA
-#ifdef FSUAE
+#if 1 //def FSUAE
 #if 0
 	// if (currprefs.chipset_mask & CSMASK_AGA) {
 	// color_reg_get checks aga_mode, so use that here too so
@@ -2797,7 +2797,7 @@ static void decide_line (int hpos)
 
 	if (fetch_state == fetch_not_started) {
 		bool strtpassed = false;
-		plfstate nextstate = plf_end;
+		enum plfstate nextstate = plf_end;
 		int hstart;
 
 		hstart = last_decide_line_hpos;
@@ -3539,7 +3539,7 @@ static void decide_sprites (int hpos, bool usepointx)
 	}
 #endif
 }
-static void decide_sprites(int hpos)
+static void decide_sprites1(int hpos)
 {
 	decide_sprites(hpos, false);
 }
@@ -3640,7 +3640,7 @@ static void finish_decisions (void)
 	if (thisline_decision.plfleft >= 0 && thisline_decision.nr_planes > 0)
 		record_diw_line (thisline_decision.plfleft, diwfirstword, diwlastword);
 
-	decide_sprites (hpos + 1);
+	decide_sprites1 (hpos + 1);
 
 	dip->last_sprite_entry = next_sprite_entry;
 	dip->last_color_change = next_color_change;
@@ -4163,7 +4163,7 @@ static void init_hz (bool checkvposw)
 	if (!isntsc) {
 		maxvpos = MAXVPOS_PAL;
 		maxhpos = MAXHPOS_PAL;
-#ifdef FSUAE
+#if 1 //def FSUAE
 		minfirstline = g_uae_min_first_line_pal;
 #else
 		minfirstline = VBLANK_ENDLINE_PAL;
@@ -4178,7 +4178,7 @@ static void init_hz (bool checkvposw)
 	} else {
 		maxvpos = MAXVPOS_NTSC;
 		maxhpos = MAXHPOS_NTSC;
-#ifdef FSUAE
+#if 1 //def FSUAE
 		minfirstline = g_uae_min_first_line_ntsc;
 #else
 		minfirstline = VBLANK_ENDLINE_NTSC;
@@ -5297,7 +5297,7 @@ static void BPLCON0_Denise (int hpos, uae_u16 v, bool immediate)
 
 #ifdef ECS_DENISE
 	if (currprefs.chipset_mask & CSMASK_ECS_DENISE) {
-		decide_sprites (hpos);
+		decide_sprites1 (hpos);
 		sprres = expand_sprres (v, bplcon3);
 	}
 #endif
@@ -5382,7 +5382,7 @@ static void BPLCON3(int hpos, uae_u16 v)
 	if (bplcon3 == v)
 		return;
 	decide_line (hpos);
-	decide_sprites (hpos);
+	decide_sprites1 (hpos);
 	bplcon3 = v;
 	sprres = expand_sprres (bplcon0, bplcon3);
 	record_register_change (hpos, 0x106, v);
@@ -5917,7 +5917,7 @@ static void SPRxCTL (int hpos, uae_u16 v, int num)
 	}
 #endif
 
-	decide_sprites(hpos);
+	decide_sprites1(hpos);
 	SPRxCTL_1(v, num, hpos);
 }
 static void SPRxPOS (int hpos, uae_u16 v, int num)
@@ -5929,7 +5929,7 @@ static void SPRxPOS (int hpos, uae_u16 v, int num)
 		write_log(_T("%d:%d:SPR%dPOSC %06X\n"), vpos, hpos, num, s->pt);
 	}
 #endif
-	decide_sprites(hpos);
+	decide_sprites1(hpos);
 	oldvpos = s->vstart;
 	SPRxPOS_1(v, num, hpos);
 	// Superfrog flashing intro bees fix.
@@ -5943,7 +5943,7 @@ static void SPRxPOS (int hpos, uae_u16 v, int num)
 
 static void SPRxPTH (int hpos, uae_u16 v, int num)
 {
-	decide_sprites (hpos);
+	decide_sprites1 (hpos);
 	if (hpos - 1 != spr[num].ptxhpos) {
 		spr[num].pt &= 0xffff;
 		spr[num].pt |= (uae_u32)v << 16;
@@ -5956,7 +5956,7 @@ static void SPRxPTH (int hpos, uae_u16 v, int num)
 }
 static void SPRxPTL (int hpos, uae_u16 v, int num)
 {
-	decide_sprites (hpos);
+	decide_sprites1 (hpos);
 	if (hpos - 1 != spr[num].ptxhpos) {
 		spr[num].pt &= ~0xffff;
 		spr[num].pt |= v & ~1;
@@ -7096,7 +7096,7 @@ static int mavg (struct mavg_data *md, int newval, int size)
 
 extern int log_vsync, debug_vsync_min_delay, debug_vsync_forced_delay;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 static bool framewait_2 (void)
 #else
 static bool framewait (void)
@@ -7131,7 +7131,7 @@ static bool framewait (void)
 			t += (int)start - (int)vsync_time;
 
 		if (!frame_shown) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 			printf("vframewait_2 -> show_screen(1)\n");
 #endif
@@ -7409,7 +7409,7 @@ static bool framewait (void)
 		vsyncmintime = curr_time;
 		vsyncmaxtime = vsyncwaittime = curr_time + vstb;
 		if (frame_rendered) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 			printf("framewait_2 -> show_screen(0)\n");
 #endif
@@ -7430,7 +7430,7 @@ static bool framewait (void)
 	return status != 0;
 }
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 
 static bool framewait (void)
 {
@@ -7534,7 +7534,7 @@ static void fpscounter (bool frameok)
 	frametime += last;
 	timeframes++;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	// the following code can crash with 0div error when running in benchmark
 	// mode
 #else
@@ -7573,7 +7573,7 @@ static void vsync_handler_pre (void)
 		// we are paused, do all config checks but don't do any emulation
 		if (vsync_handle_check ()) {
 			redraw_frame ();
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 			printf("vsync_handler_pre -> render_screen + show_screen\n");
 #endif
@@ -7614,7 +7614,7 @@ static void vsync_handler_pre (void)
 	
 	if (!picasso_on) {
 		if (!frame_rendered && vblank_hz_state) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 			printf("vsync_handler_pre -> render_screen\n");
 #endif
@@ -7622,7 +7622,7 @@ static void vsync_handler_pre (void)
 			frame_rendered = render_screen (false);
 		}
 		if (frame_rendered && !frame_shown) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 			printf("vsync_handler_pre -> show_screen_maybe\n");
 #endif
@@ -7649,7 +7649,7 @@ static void vsync_handler_pre (void)
 // emulated hardware vsync
 static void vsync_handler_post (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #if 0
     if (g_frame_debug_logging) {
         write_log("%6d  vsync_handler_post  %08x\n", vsync_counter,
@@ -7901,7 +7901,7 @@ static void dmal_emu (uae_u32 v)
 			debug_wgetpeekdma_chipram(pt, dat, MW_MASK_AUDIO_0 << nr, 0xaa + nr * 16);
 #endif
 		last_custom_value1 = dat;
-		AUDxDAT (nr, dat, pt);
+		AUDxDAT3 (nr, dat, pt);
 	} else {
 		uae_u16 dat;
 		int w = v & 1;
@@ -8069,7 +8069,7 @@ static void hsync_handler_pre (bool onvsync)
 	if (onvsync) {
 		vpos = 0;
 		vsync_counter++;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	g_uae_vsync_counter++;
 #endif
 	}
@@ -8372,7 +8372,7 @@ static void hsync_handler_post (bool onvsync)
 	cop_state.hpos = 0;
 	compute_spcflag_copper (maxhpos);
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	filesys_hsync();
 #endif
 	//copper_check (2);

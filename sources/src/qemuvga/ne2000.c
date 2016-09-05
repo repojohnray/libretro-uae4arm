@@ -32,16 +32,16 @@
 #include "queue.h"
 #include "threaddep/thread.h"
 
-struct NetClientState
+typedef struct NetClientState
 {
 	struct NE2000State *ne2000state;
 	struct pci_board_state *pcistate;
 	const struct pci_board *device;
-};
+} NetClientState;
 
-struct MACAddr {
+typedef struct MACAddr {
 	uint8_t a[6];
-};
+} MACAddr;
 
 typedef struct NICPeers {
 	//NetClientState *ncs[MAX_QUEUE_NUM];

@@ -11,7 +11,7 @@
 #define UAE_BSDSOCKET_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "traps.h"
 #include "threaddep/thread.h"
 #endif
@@ -100,7 +100,7 @@ struct socketbase {
     uae_u32 timeout;
     uae_u32 sigmp;
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
     TrapContext *context;
 #endif
 };

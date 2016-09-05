@@ -631,11 +631,11 @@ static uae_u32 readbin (TCHAR **c)
 	int size;
 	return readnum (c, &size, '%');
 }
-static uae_u32 readint (TCHAR **c, int *size)
+static uae_u32 readint2 (TCHAR **c, int *size)
 {
 	return readnum (c, size, '!');
 }
-static uae_u32 readhex (TCHAR **c, int *size)
+static uae_u32 readhex2 (TCHAR **c, int *size)
 {
 	return readnum (c, size, '$');
 }
@@ -1722,7 +1722,7 @@ static void cheatsearch (TCHAR **c)
 		return;
 	}
 	if (first)
-		val = readint (c, &size);
+		val = readint2 (c, &size);
 	else
 		val = readint (c);
 
@@ -2879,7 +2879,7 @@ static void memwatch (TCHAR **c)
 				} else if (_totupper (**c) == 'C') {
 					mwn->mustchange = 1;
 				} else {
-					mwn->val = readhex (c, &mwn->val_size);
+					mwn->val = readhex2 (c, &mwn->val_size);
 					mwn->val_enabled = 1;
 				}
 			}
@@ -2927,7 +2927,7 @@ static void writeintomem (TCHAR **c)
 			ignore_ws (c);
 			if (!more_params (c))
 				break;
-			val = readhex (c, &len);
+			val = readhex2 (c, &len);
 		
 			if (len == 4) {
 				put_long (addr, val);
@@ -3074,7 +3074,7 @@ static void memory_map_dump_3(UaeMemoryMap *map, int log)
 					uae_u32 crc = 0xffffffff;
 					if (a1->check(((j << 16) | bankoffset), (size * 1024) / mirrored))
 						crc = get_crc32 (a1->xlateaddr((j << 16) | bankoffset), (size * 1024) / mirrored);
-					struct romdata *rd = getromdatabycrc (crc);
+					struct romdata *rd = getromdatabycrc1 (crc);
 					_stprintf (p, _T(" (%08X)"), crc);
 					if (rd) {
 						tmp[0] = '=';
@@ -4524,7 +4524,7 @@ static bool debug_line (TCHAR *input)
 				else if (more_params(&inptr))
 					m68k_modify (&inptr);
 				else
-					m68k_dumpstate (&nextpc);
+					m68k_dumpstate1 (&nextpc);
 			}
 			break;
 		case 'D': deepcheatsearch (&inptr); break;
@@ -4710,7 +4710,7 @@ static bool debug_line (TCHAR *input)
 					if (history[temp].pc == addr || addr == 0) {
 						m68k_setpc (history[temp].pc);
 						if (badly) {
-							m68k_dumpstate (NULL);
+							m68k_dumpstate1 (NULL);
 						} else {
 							console_out_f(_T("%2d "), history[temp].intmask ? history[temp].intmask : (history[temp].s ? -1 : 0));
 							m68k_disasm (history[temp].pc, NULL, 1);
@@ -4873,7 +4873,7 @@ static void debug_1 (void)
 {
 	TCHAR input[MAX_LINEWIDTH];
 
-	m68k_dumpstate (&nextpc);
+	m68k_dumpstate1 (&nextpc);
 	nxdis = nextpc; nxmem = 0;
 	debugger_active = 1;
 
@@ -5048,7 +5048,7 @@ void debug (void)
 #ifdef WITH_PPC
 	uae_ppc_pause(1);
 #endif
-	inputdevice_unacquire ();
+	inputdevice_unacquire0 ();
 	pause_sound ();
 	setmouseactive (0);
 	activate_console ();

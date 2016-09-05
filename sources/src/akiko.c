@@ -78,9 +78,9 @@ static void nvram_read (void)
 	if (!cd32_nvram)
 		cd32_nvram = xmalloc(uae_u8, currprefs.cs_cd32nvram_size);
 	memset(cd32_nvram, 0, currprefs.cs_cd32nvram_size);
-	flashfile = zfile_fopen (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
+	flashfile = zfile_fopen3 (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
 	if (!flashfile)
-		flashfile = zfile_fopen (currprefs.flashfile, _T("wb"), 0);
+		flashfile = zfile_fopen3 (currprefs.flashfile, _T("wb"), 0);
 	if (flashfile) {
 		int size = zfile_fread(cd32_nvram, 1, currprefs.cs_cd32nvram_size, flashfile);
 		if (size < currprefs.cs_cd32nvram_size)
@@ -439,7 +439,7 @@ static void cdaudioplay_do (void)
 	sys_command_cd_play (unitnum, startlsn, endlsn, scan, statusfunc, subfunc);
 }
 
-static bool isaudiotrack (int startlsn)
+static bool isaudiotrack1 (int startlsn)
 {
 	struct cd_toc *s = NULL;
 	uae_u32 addr;
@@ -1309,13 +1309,13 @@ static void *akiko_thread (void *null)
 					blocks = SECTOR_BUFFER_SIZE;
 				}
 				if (blocks) {
-				int ok = sys_command_cd_rawread (unitnum, sector_buffer_2, sector, blocks, 2352);
+				int ok = sys_command_cd_rawread5 (unitnum, sector_buffer_2, sector, blocks, 2352);
 				if (!ok) {
 					int offset = 0;
 					while (offset < SECTOR_BUFFER_SIZE) {
 						int ok = 0;
 							if (is_valid_data_sector(sector))
-							ok = sys_command_cd_rawread (unitnum, sector_buffer_2 + offset * 2352, sector, 1, 2352);
+							ok = sys_command_cd_rawread5 (unitnum, sector_buffer_2 + offset * 2352, sector, 1, 2352);
 						sector_buffer_info_2[offset] = ok ? 3 : 0;
 						offset++;
 						sector++;
@@ -1882,7 +1882,7 @@ void restore_akiko_finish (void)
 	write_comm_pipe_u32 (&requests, 0x0102, 1); // pause
 	write_comm_pipe_u32 (&requests, 0x0104, 1); // stop
 	write_comm_pipe_u32 (&requests, 0x0103, 1); // unpause
-	if (cdrom_playing && isaudiotrack (last_play_pos)) {
+	if (cdrom_playing && isaudiotrack1 (last_play_pos)) {
 		write_comm_pipe_u32 (&requests, 0x0103, 1); // unpause
 		write_comm_pipe_u32 (&requests, 0x0110, 0); // play
 		write_comm_pipe_u32 (&requests, last_play_pos, 0);

@@ -9,7 +9,7 @@
 #ifndef UAE_MEMORY_H
 #define UAE_MEMORY_H
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #include "config.h"
 #include "uae_types.h"
 #include <stddef.h>
@@ -604,7 +604,7 @@ uae_u32 getz2endaddr (void);
 #define UAE_MEMORY_REGION_ALIAS (1 << 1)
 #define UAE_MEMORY_REGION_MIRROR (1 << 2)
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 int uae_get_memory_checksum(void *data, int size);
 #endif
 

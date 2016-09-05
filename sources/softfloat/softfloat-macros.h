@@ -307,7 +307,7 @@ static const int countLeadingZeros8[] = {
 | `a'.  If `a' is zero, 16 is returned.
 *----------------------------------------------------------------------------*/
 
-BX_CPP_INLINE int countLeadingZeros16(Bit16u a)
+static BX_CPP_INLINE int countLeadingZeros16(Bit16u a)
 {
     int shiftCount = 0;
     if (a < 0x100) {
@@ -325,7 +325,7 @@ BX_CPP_INLINE int countLeadingZeros16(Bit16u a)
 | `a'.  If `a' is zero, 32 is returned.
 *----------------------------------------------------------------------------*/
 
-BX_CPP_INLINE int countLeadingZeros32(Bit32u a)
+static BX_CPP_INLINE int countLeadingZeros32(Bit32u a)
 {
     int shiftCount = 0;
     if (a < 0x10000) {
@@ -345,7 +345,7 @@ BX_CPP_INLINE int countLeadingZeros32(Bit32u a)
 | `a'.  If `a' is zero, 64 is returned.
 *----------------------------------------------------------------------------*/
 
-BX_CPP_INLINE int countLeadingZeros64(Bit64u a)
+static BX_CPP_INLINE int countLeadingZeros64(Bit64u a)
 {
     int shiftCount = 0;
     if (a < BX_CONST64(0x100000000)) {

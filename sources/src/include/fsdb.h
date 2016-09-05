@@ -11,7 +11,7 @@
 #define UAE_FSDB_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include <stdio.h>
 #endif
 
@@ -150,7 +150,7 @@ struct my_opendir_s;
 struct my_openfile_s;
 
 extern struct my_opendir_s *my_opendir (const TCHAR*, const TCHAR*);
-extern struct my_opendir_s *my_opendir (const TCHAR*);
+extern struct my_opendir_s *my_opendir1 (const TCHAR*);
 extern void my_closedir (struct my_opendir_s*);
 extern int my_readdir (struct my_opendir_s*, TCHAR*);
 
@@ -201,7 +201,7 @@ extern int custom_fsdb_used_as_nname (a_inode *base, const TCHAR *nname);
 
 extern int my_getvolumeinfo (const TCHAR *root);
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 char *fsdb_native_path(const char *root_dir, const char *amiga_path);
 void fsdb_get_file_time(a_inode *node, int *days, int *mins, int *ticks);
 int fsdb_set_file_time(a_inode *node, int days, int mins, int ticks);

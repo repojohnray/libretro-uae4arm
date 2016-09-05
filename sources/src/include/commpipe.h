@@ -10,7 +10,7 @@
 #define UAE_COMMPIPE_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "uae_inline.h"
 #include "threaddep/sem.h"
 #include <stdlib.h>

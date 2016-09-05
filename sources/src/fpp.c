@@ -234,7 +234,7 @@ void to_single(fpdata *fpd, uae_u32 value)
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat) {
 		float32 f = value;
-		fpd->fpx = float32_to_floatx80(f, fxstatus);
+		fpd->fpx = float32_to_floatx80(f, &fxstatus);
 	} else
 #endif
 		fpd->fp = to_single_x(value);
@@ -243,7 +243,7 @@ static uae_u32 from_single(fpdata *fpd)
 {
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat) {
-		float32 f = floatx80_to_float32(fpd->fpx, fxstatus);
+		float32 f = floatx80_to_float32(fpd->fpx, &fxstatus);
 		return f;
 	} else
 #endif
@@ -254,7 +254,7 @@ void to_double(fpdata *fpd, uae_u32 wrd1, uae_u32 wrd2)
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat) {
 		float64 f = ((float64)wrd1 << 32) | wrd2;
-		fpd->fpx = float64_to_floatx80(f, fxstatus);
+		fpd->fpx = float64_to_floatx80(f, &fxstatus);
 	} else
 #endif
 		fpd->fp = to_double_x(wrd1, wrd2);
@@ -263,7 +263,7 @@ static void from_double(fpdata *fpd, uae_u32 *wrd1, uae_u32 *wrd2)
 {
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat) {
-		float64 f = floatx80_to_float64(fpd->fpx, fxstatus);
+		float64 f = floatx80_to_float64(fpd->fpx, &fxstatus);
 		*wrd1 = f >> 32;
 		*wrd2 = (uae_u32)f;
 		return;
@@ -998,11 +998,11 @@ static tointtype toint(fpdata *src, int size)
 {
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat) {
-		if (floatx80_compare(src->fpx, fxsizes[size * 2 + 0], fxstatus) == float_relation_greater)
-			return floatx80_to_int32(fxsizes[size * 2 + 0], fxstatus);
-		if (floatx80_compare(src->fpx, fxsizes[size * 2 + 1], fxstatus) == float_relation_less)
-			return floatx80_to_int32(fxsizes[size * 2 + 1], fxstatus);
-		return floatx80_to_int32(src->fpx, fxstatus);
+		if (floatx80_compare(src->fpx, fxsizes[size * 2 + 0], &fxstatus) == float_relation_greater)
+			return floatx80_to_int32(fxsizes[size * 2 + 0], &fxstatus);
+		if (floatx80_compare(src->fpx, fxsizes[size * 2 + 1], &fxstatus) == float_relation_less)
+			return floatx80_to_int32(fxsizes[size * 2 + 1], &fxstatus);
+		return floatx80_to_int32(src->fpx, &fxstatus);
 	} else
 #endif
 	{
@@ -1085,7 +1085,7 @@ static bool fp_is_zero(fpdata *fpd)
 {
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat)
-		return floatx80_compare_quiet(fpd->fpx, fxzero, fxstatus) == float_relation_equal;
+		return floatx80_compare_quiet(fpd->fpx, fxzero, &fxstatus) == float_relation_equal;
 #endif
 	return fpd->fp == 0.0;
 }
@@ -2478,8 +2478,8 @@ static void fround (int reg)
 {
 #ifdef WITH_SOFTFLOAT
 	if (currprefs.fpu_softfloat) {
-		float32 f = floatx80_to_float32(regs.fp[reg].fpx, fxstatus);
-		regs.fp[reg].fpx = float32_to_floatx80(f, fxstatus);
+		float32 f = floatx80_to_float32(regs.fp[reg].fpx, &fxstatus);
+		regs.fp[reg].fpx = float32_to_floatx80(f, &fxstatus);
 	} else
 #endif
 		regs.fp[reg].fp = (float)regs.fp[reg].fp;
@@ -2725,63 +2725,63 @@ static bool arithmetic_softfloat(floatx80 *srcd, int reg, int extra)
 			regs.fp[reg].fpx = fx;	
 			break;
 		case 0x01: /* FINT */
-			regs.fp[reg].fpx = floatx80_round_to_int(fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_round_to_int(fx, &fxstatus);
 			break;
 		case 0x03: /* FINTRZ */
 			float_rounding_mode = fxstatus.float_rounding_mode;
 			fxstatus.float_rounding_mode = float_round_to_zero;
-			regs.fp[reg].fpx = floatx80_round_to_int(fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_round_to_int(fx, &fxstatus);
 			float_rounding_mode = fxstatus.float_rounding_mode;
 			break;
 		case 0x04: /* FSQRT */
 		case 0x41: /* FSSQRT */
 		case 0x45: /* FDSQRT */
-			regs.fp[reg].fpx = floatx80_sqrt(fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_sqrt(fx, &fxstatus);
 			break;
 		case 0x18: /* FABS */
 		case 0x58: /* FSABS */
 		case 0x5c: /* FDABS */
-			regs.fp[reg].fpx = floatx80_abs(fx);
+			regs.fp[reg].fpx = floatx80_abs(&fx);
 			break;
 		case 0x1a: /* FNEG */
 		case 0x5a: /* FSNEG */
 		case 0x5e: /* FDNEG */
 			// same here..
-			regs.fp[reg].fpx = floatx80_chs(fx);
+			regs.fp[reg].fpx = floatx80_chs(&fx);
 			break;
 		case 0x20: /* FDIV */
 		case 0x60: /* FSDIV */
 		case 0x64: /* FDDIV */
-			regs.fp[reg].fpx = floatx80_div(f, fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_div(f, fx, &fxstatus);
 			break;
 		case 0x22: /* FADD */
 		case 0x62: /* FSADD */
 		case 0x66: /* FDADD */
-			regs.fp[reg].fpx = floatx80_add(f, fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_add(f, fx, &fxstatus);
 			break;
 		case 0x23: /* FMUL */
 		case 0x63: /* FSMUL */
 		case 0x67: /* FDMUL */
-			regs.fp[reg].fpx = floatx80_mul(f, fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_mul(f, fx, &fxstatus);
 			break;
 		case 0x24: /* FSGLDIV */
-			regs.fp[reg].fpx = floatx80_div(f, fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_div(f, fx, &fxstatus);
 			sgl = true;
 			break;
 		case 0x25: /* FREM */
-			floatx80_ieee754_remainder(f, fx, regs.fp[reg].fpx, q, fxstatus);
+			floatx80_ieee754_remainder(f, fx, &regs.fp[reg].fpx, &q, &fxstatus);
 			break;
 		case 0x27: /* FSGLMUL */
-			regs.fp[reg].fpx = floatx80_mul(f, fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_mul(f, fx, &fxstatus);
 			sgl = true;
 			break;
 		case 0x28: /* FSUB */
 		case 0x68: /* FSSUB */
 		case 0x6c: /* FDSUB */
-			regs.fp[reg].fpx = floatx80_sub(f, fx, fxstatus);
+			regs.fp[reg].fpx = floatx80_sub(f, fx, &fxstatus);
 			break;
 		case 0x38: /* FCMP */
-			f = floatx80_sub(f, fx, fxstatus);
+			f = floatx80_sub(f, fx, &fxstatus);
 			regs.fpsr = 0;
 			MAKE_FPSR_SOFTFLOAT(f);
 			return true;
@@ -2791,15 +2791,15 @@ static bool arithmetic_softfloat(floatx80 *srcd, int reg, int extra)
 			return true;
 
 		case 0x1d: /* FCOS */
-			fcos(f, fxstatus);
+			fcos(&f, &fxstatus);
 			regs.fp[reg].fpx = f;
 			break;
 		case 0x0e: /* FSIN */
-			fsin(f, fxstatus);
+			fsin(&f, &fxstatus);
 			regs.fp[reg].fpx = f;
 			break;
 		case 0x0f: /* FTAN */
-			ftan(f, fxstatus);
+			ftan(&f, &fxstatus);
 			regs.fp[reg].fpx = f;
 			break;
 		case 0x30: /* FSINCOS */
@@ -2810,7 +2810,7 @@ static bool arithmetic_softfloat(floatx80 *srcd, int reg, int extra)
 		case 0x35: /* FSINCOS */
 		case 0x36: /* FSINCOS */
 		case 0x37: /* FSINCOS */
-			fsincos(f, &regs.fp[extra & 7].fpx, &regs.fp[reg].fpx, fxstatus);
+			fsincos(f, &regs.fp[extra & 7].fpx, &regs.fp[reg].fpx, &fxstatus);
 			break;
 
 			// some of following are supported by softfloat, later..

@@ -36,7 +36,7 @@ these four paragraphs for those parts of this code that are retained.
 | conversion overflows, the integer indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit16s floatx80_to_int16(floatx80 a, float_status_t &status)
+Bit16s floatx80_to_int16(floatx80 a, float_status_t *status)
 {
    if (floatx80_is_unsupported(a)) {
         float_raise(status, float_flag_invalid);
@@ -46,7 +46,7 @@ Bit16s floatx80_to_int16(floatx80 a, float_status_t &status)
    Bit32s v32 = floatx80_to_int32(a, status);
 
    if ((v32 > 32767) || (v32 < -32768)) {
-        status.float_exception_flags = float_flag_invalid; // throw away other flags
+        status->float_exception_flags = float_flag_invalid; // throw away other flags
         return int16_indefinite;
    }
 
@@ -62,7 +62,7 @@ Bit16s floatx80_to_int16(floatx80 a, float_status_t &status)
 | indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit16s floatx80_to_int16_round_to_zero(floatx80 a, float_status_t &status)
+Bit16s floatx80_to_int16_round_to_zero(floatx80 a, float_status_t *status)
 {
    if (floatx80_is_unsupported(a)) {
         float_raise(status, float_flag_invalid);
@@ -72,7 +72,7 @@ Bit16s floatx80_to_int16_round_to_zero(floatx80 a, float_status_t &status)
    Bit32s v32 = floatx80_to_int32_round_to_zero(a, status);
 
    if ((v32 > 32767) || (v32 < -32768)) {
-        status.float_exception_flags = float_flag_invalid; // throw away other flags
+        status->float_exception_flags = float_flag_invalid; // throw away other flags
         return int16_indefinite;
    }
 
@@ -86,24 +86,24 @@ Bit16s floatx80_to_int16_round_to_zero(floatx80 a, float_status_t &status)
 | the IEC/IEEE recommended logb(x) function.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_extract(floatx80 &a, float_status_t &status)
+floatx80 floatx80_extract(floatx80 *a, float_status_t *status)
 {
-    Bit64u aSig = extractFloatx80Frac(a);
-    Bit32s aExp = extractFloatx80Exp(a);
-    int   aSign = extractFloatx80Sign(a);
+    Bit64u aSig = extractFloatx80Frac(*a);
+    Bit32s aExp = extractFloatx80Exp(*a);
+    int   aSign = extractFloatx80Sign(*a);
 
-    if (floatx80_is_unsupported(a))
+    if (floatx80_is_unsupported(*a))
     {
         float_raise(status, float_flag_invalid);
-        a = floatx80_default_nan;
-        return a;
+        *a = floatx80_default_nan;
+        return *a;
     }
 
     if (aExp == 0x7FFF) {
         if ((Bit64u) (aSig<<1))
         {
-            a = propagateFloatx80NaN(a, status);
-            return a;
+            *a = propagateFloatx80NaN2(*a, status);
+            return *a;
         }
         return packFloatx80(0, 0x7FFF, BX_CONST64(0x8000000000000000));
     }
@@ -111,15 +111,15 @@ floatx80 floatx80_extract(floatx80 &a, float_status_t &status)
     {
         if (aSig == 0) {
             float_raise(status, float_flag_divbyzero);
-            a = packFloatx80(aSign, 0, 0);
+            *a = packFloatx80(aSign, 0, 0);
             return packFloatx80(1, 0x7FFF, BX_CONST64(0x8000000000000000));
         }
         float_raise(status, float_flag_denormal);
         normalizeFloatx80Subnormal(aSig, &aExp, &aSig);
     }
 
-    a.exp = (aSign << 15) + 0x3FFF;
-    a.fraction = aSig;
+    a->exp = (aSign << 15) + 0x3FFF;
+    a->fraction = aSig;
     return int32_to_floatx80(aExp - 0x3FFF);
 }
 
@@ -131,7 +131,7 @@ floatx80 floatx80_extract(floatx80 &a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_scale(floatx80 a, floatx80 b, float_status_t &status)
+floatx80 floatx80_scale(floatx80 a, floatx80 b, float_status_t *status)
 {
     Bit32s aExp, bExp;
     Bit64u aSig, bSig;
@@ -246,7 +246,7 @@ float_class_t floatx80_class(floatx80 a)
 | value `b', or 'float_relation_unordered' otherwise.
 *----------------------------------------------------------------------------*/
 
-int floatx80_compare(floatx80 a, floatx80 b, float_status_t &status)
+int floatx80_compare(floatx80 a, floatx80 b, float_status_t *status)
 {
     float_class_t aClass = floatx80_class(a);
     float_class_t bClass = floatx80_class(b);
@@ -304,7 +304,7 @@ int floatx80_compare(floatx80 a, floatx80 b, float_status_t &status)
 | an exception.
 *----------------------------------------------------------------------------*/
 
-int floatx80_compare_quiet(floatx80 a, floatx80 b, float_status_t &status)
+int floatx80_compare_quiet(floatx80 a, floatx80 b, float_status_t *status)
 {
     float_class_t aClass = floatx80_class(a);
     float_class_t bClass = floatx80_class(b);

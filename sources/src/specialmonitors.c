@@ -2203,7 +2203,7 @@ struct png_cb
 	int size;
 };
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 // FIXME
 static void readcallback(png_structp png_ptr, png_bytep out, png_size_t count)
 #else
@@ -2287,7 +2287,7 @@ static void load_genlock_image(void)
 	genlock_image_width = width;
 	genlock_image_height = height;
 
-	row_pp = new png_bytep[height];
+	row_pp = malloc(sizeof(png_bytep[height]));
 	
 	genlock_image = xcalloc(uae_u8, width * height * 4);
 	
@@ -2300,7 +2300,7 @@ static void load_genlock_image(void)
 
 	png_destroy_read_struct(&png_ptr, &info_ptr, 0);
 
-	delete[] row_pp;
+	free(row_pp);
 end:
 	xfree(bfree);
 }

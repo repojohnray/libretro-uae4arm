@@ -516,7 +516,7 @@ void restore_state (const TCHAR *filename)
 	int z3num;
 
 	chunk = 0;
-	f = zfile_fopen (filename, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3 (filename, _T("rb"), ZFD_NORMAL);
 	if (!f)
 		goto error;
 	zfile_fseek (f, 0, SEEK_END);
@@ -1120,7 +1120,7 @@ int save_state (const TCHAR *filename, const TCHAR *description)
 	new_blitter = false;
 	savestate_nodialogs = 0;
 	custom_prepare_savestate ();
-	f = zfile_fopen (filename, _T("w+b"), 0);
+	f = zfile_fopen3 (filename, _T("w+b"), 0);
 	if (!f)
 		return 0;
 	if (savestate_specialdump) {
@@ -1414,7 +1414,7 @@ void savestate_memorysave (void)
 	new_blitter = true;
 	// create real statefile in memory too for later saving
 	zfile_fclose (staterecord_statefile);
-	staterecord_statefile = zfile_fopen_empty (NULL, _T("statefile.inp.uss"));
+	staterecord_statefile = zfile_fopen_empty2 (NULL, _T("statefile.inp.uss"));
 	if (staterecord_statefile)
 		save_state_internal (staterecord_statefile, _T("rerecording"), 1, false);
 }
@@ -1833,7 +1833,7 @@ void statefile_save_recording (const TCHAR *filename)
 {
 	if (!staterecord_statefile)
 		return;
-	struct zfile *zf = zfile_fopen (filename, _T("wb"), 0);
+	struct zfile *zf = zfile_fopen3 (filename, _T("wb"), 0);
 	if (zf) {
 		int len = zfile_size (staterecord_statefile);
 		uae_u8 *data = zfile_getdata (staterecord_statefile, 0, len);

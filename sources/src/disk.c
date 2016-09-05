@@ -42,10 +42,10 @@ int disk_debug_track = -1;
 #include "catweasel.h"
 #include "driveclick.h"
 #ifdef CAPS
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "uae_caps.h"
 #else
-#include "caps/caps_win32.h"
+#include "od-win32/caps/caps_win32.h"
 #endif
 #endif
 #ifdef SCP
@@ -61,7 +61,7 @@ int disk_debug_track = -1;
 #include "statusline.h"
 #include "rommgr.h"
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #include "uae_fs.h"
 /* in WinUAE, this is stored in od-win32/win32.cpp */
 int saveimageoriginalpath = 0;
@@ -295,7 +295,7 @@ static void disk_date (uae_u8 *p)
 	struct timeval tv;
 	struct mytimeval mtv;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	struct tm *today;
 	today = uae_get_amiga_time();
 	tv.tv_sec = mktime(today);
@@ -773,11 +773,11 @@ int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname, int leave_o
 	if (wrprot)
 		*wrprot = p->floppy_read_only ? 1 : 0;
 	if (leave_open || !zf) {
-		struct zfile *f = zfile_fopen (fname, _T("r+b"), ZFD_NORMAL | ZFD_DISKHISTORY);
+		struct zfile *f = zfile_fopen3 (fname, _T("r+b"), ZFD_NORMAL | ZFD_DISKHISTORY);
 		if (!f) {
 			if (wrprot)
 				*wrprot = 1;
-			f = zfile_fopen (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
+			f = zfile_fopen3 (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
 		}
 		if (f && crc32)
 			*crc32 = zfile_crc32 (f);
@@ -791,7 +791,7 @@ int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname, int leave_o
 			if (wrprot && !p->floppy_read_only)
 				*wrprot = 0;
 			if (crc32) {
-				struct zfile *f = zfile_fopen (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
+				struct zfile *f = zfile_fopen3 (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
 				if (f)
 					*crc32 = zfile_crc32 (f);
 				zfile_fclose (f);
@@ -807,7 +807,7 @@ int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname, int leave_o
 
 static void updatemfmpos (drive *drv)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     if (disk_debug_logging) {
         write_log(_T("drv->mfmpos = %d (updatemfmpos start)\n"), drv->mfmpos);
     }
@@ -819,7 +819,7 @@ static void updatemfmpos (drive *drv)
 	}
 	drv->mfmpos %= drv->tracklen;
 	drv->prevtracklen = drv->tracklen;
-#ifdef FSUAE
+#if 1 //def FSUAE
     if (disk_debug_logging) {
         write_log(_T("drv->mfmpos = %d (updatemfmpos stop)\n"), drv->mfmpos);
     }
@@ -947,7 +947,7 @@ static TCHAR *DISK_get_default_saveimagepath (const TCHAR *name)
 // 1 = image dir
 TCHAR *DISK_get_saveimagepath(const TCHAR *name, int type)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     static TCHAR name1[MAX_DPATH];
     TCHAR name2[MAX_DPATH];
     TCHAR path[MAX_DPATH];
@@ -1045,7 +1045,7 @@ static int iswritefileempty (struct uae_prefs *p, const TCHAR *name)
 static int openwritefile (struct uae_prefs *p, drive *drv, int create)
 {
 	bool wrprot = 0;
-#ifdef FSUAE
+#if 1 //def FSUAE
     if (create) {
         const char *writefile = DISK_get_saveimagepath(
                 currprefs.floppyslots[drv - &floppy[0]].df, 0);
@@ -1076,7 +1076,7 @@ static int openwritefile (struct uae_prefs *p, drive *drv, int create)
 				drv->num_tracks = drv->write_num_tracks;
 		}
 	} else if (zfile_iscompressed (drv->diskfile)) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		// overlay .sdf file will be opened on demand
 #else
 		drv->wrprot = 1;
@@ -1087,7 +1087,7 @@ static int openwritefile (struct uae_prefs *p, drive *drv, int create)
 
 static bool diskfile_iswriteprotect (struct uae_prefs *p, const TCHAR *fname, int *needwritefile, drive_type *drvtype)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("diskfile_iswriteprotect fname=%s\n", fname);
 #endif
 	struct zfile *zf1, *zf2;
@@ -1164,7 +1164,7 @@ static void update_disk_statusline(int num)
 
 static int drive_insert (drive * drv, struct uae_prefs *p, int dnum, const TCHAR *fname, bool fake, bool forcedwriteprotect)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("drive_insert drv=%p dnum=%d fname=%s fake=%d\n", drv, dnum, fname, fake);
 #endif
 	uae_u8 buffer[2 + 2 + 4 + 4];
@@ -1190,7 +1190,7 @@ static int drive_insert (drive * drv, struct uae_prefs *p, int dnum, const TCHAR
 		drv->dskeject = false;
 		gui_disk_image_change (dnum, fname, drv->wrprot);
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	// disks are always writable - using disk write files
 	drv->wrprot = 0;
 #endif
@@ -1249,7 +1249,7 @@ static int drive_insert (drive * drv, struct uae_prefs *p, int dnum, const TCHAR
 #ifdef CAPS
 	} else if (strncmp ((char*)buffer, "CAPS", 4) == 0) {
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 		// always saving data to overlay .sdf-files
 		drv->wrprot = false;
 #else
@@ -1265,7 +1265,7 @@ static int drive_insert (drive * drv, struct uae_prefs *p, int dnum, const TCHAR
 #endif
 #ifdef SCP
 	} else if (strncmp ((char*)buffer, "SCP", 3) == 0) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		// always saving data to overlay .sdf-files
 		drv->wrprot = false;
 #else
@@ -1502,7 +1502,7 @@ static int drive_insert (drive * drv, struct uae_prefs *p, int dnum, const TCHAR
 	drv->mfmpos %= drv->tracklen;
 	drv->prevtracklen = 0;
 	if (!fake) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (disk_debug_logging) {
 		write_log(_T("drv->mfmpos = %d\n"), drv->mfmpos);
 	}
@@ -1514,7 +1514,7 @@ static int drive_insert (drive * drv, struct uae_prefs *p, int dnum, const TCHAR
 		update_drive_gui (drv - floppy, false);
 		update_disk_statusline(drv - floppy);
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("drive_insert returning, drv->wrprot=%d\n", drv->wrprot);
 #endif
 	return 1;
@@ -2456,7 +2456,7 @@ static int drive_write_ext2 (uae_u16 *bigmfmbuf, struct zfile *diskfile, trackid
 	return 1;
 }
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 extern int g_fs_uae_writable_disk_images;
 #endif
 
@@ -2493,7 +2493,7 @@ static bool convert_adf_to_ext2 (drive *drv, int mode)
 	} else {
 		return false;
 	}
-	f = zfile_fopen (name, _T("r+b"));
+	f = zfile_fopen2 (name, _T("r+b"));
 	if (!f)
 		return false;
 	_tcscpy (currprefs.floppyslots[drv - floppy].df, name);
@@ -2518,7 +2518,7 @@ static void drive_write_data (drive * drv)
 	int ret = -1;
 	int tr = drv->cyl * 2 + side;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 	int force_write_disk_file = 1;
 	int write_to_disk_file = 1;
     switch (drv->filetype) {
@@ -2545,7 +2545,7 @@ static void drive_write_data (drive * drv)
 	if (drv->writediskfile) {
 		drive_write_ext2 (drv->bigmfmbuf, drv->writediskfile, &drv->writetrackdata[tr],
 			longwritemode ? dsklength2 * 8 : drv->tracklen);
-#ifdef FSUAE
+#if 1 //def FSUAE
 		// when we have written data to writediskfile, we do not want to write
 		// the the original disk
 		write_to_disk_file = 0;
@@ -2553,7 +2553,7 @@ static void drive_write_data (drive * drv)
 	}
 	switch (drv->filetype) {
 	case ADF_NORMAL:
-#ifdef FSUAE
+#if 1 //def FSUAE
 	    if (write_to_disk_file) {
 #endif
 		if (drive_write_adf_amigados (drv)) {
@@ -2566,14 +2566,14 @@ static void drive_write_data (drive * drv)
 				warned = 1;
 			}
 		}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	    }
 #endif
 		return;
 	case ADF_EXT1:
 		break;
 	case ADF_EXT2:
-#ifdef FSUAE
+#if 1 //def FSUAE
         if (write_to_disk_file) {
 #endif
 		if (!longwritemode)
@@ -2583,7 +2583,7 @@ static void drive_write_data (drive * drv)
 			drive_write_ext2 (drv->bigmfmbuf, drv->diskfile, &drv->trackdata[drv->cyl * 2 + side],
 				longwritemode ? dsklength2 * 8 : drv->tracklen);
 		}
-#ifdef FSUAE
+#if 1 //def FSUAE
         }
 #endif
 		return;
@@ -2592,13 +2592,13 @@ static void drive_write_data (drive * drv)
 	case ADF_SCP:
 		break;
 	case ADF_PCDOS:
-#ifdef FSUAE
+#if 1 //def FSUAE
         if (write_to_disk_file) {
 #endif
 		ret = drive_write_pcdos (drv);
 		if (ret)
 			write_log (_T("not a PC formatted track %d (error %d)\n"), drv->cyl * 2 + side, ret);
-#ifdef FSUAE
+#if 1 //def FSUAE
         }
 #endif
 		break;
@@ -2707,7 +2707,7 @@ bool disk_creatediskfile (const TCHAR *name, int type, drive_type adftype, const
 		zfile_fseek (copyfrom, 0, SEEK_SET);
 	}
 
-	f = zfile_fopen (name, _T("wb"), 0);
+	f = zfile_fopen3 (name, _T("wb"), 0);
 	chunk = xmalloc (uae_u8, size);
 	if (f && chunk) {
 		int cylsize = sectors * 2 * 512;
@@ -2791,7 +2791,7 @@ static void diskfile_readonly (const TCHAR *name, bool readonly)
 		return;
 	}
 	write_log(_T("'%s': old mode = %x\n"), name, st.mode);
-#ifdef FSUAE
+#if 1 //def FSUAE
 	// ADF files are not written to currently, anyway, so disable touching
 	// the files.
 #else
@@ -2981,7 +2981,7 @@ void disk_insert (int num, const TCHAR *name, bool forcedwriteprotect)
 	disk_insert_2 (num, name, 0, forcedwriteprotect);
 }
 
-void disk_insert (int num, const TCHAR *name)
+void disk_insert2 (int num, const TCHAR *name)
 {
 	set_config_changed ();
 	target_addtorecent (name, 0);
@@ -3804,7 +3804,7 @@ static void DISK_start (void)
 			/* Ugh.  A nasty hack.  Assume ADF_EXT1 tracks are always read
 			from the start.  */
 			if (ti->type == TRACK_RAW1) {
-#ifdef FSUAE
+#if 1 //def FSUAE
                 if (disk_debug_logging) {
                     write_log("setting drv->mfmpos = 0...\n");
                 }
@@ -4114,7 +4114,7 @@ void DSKLEN (uae_u16 v, int hpos)
 					pos %= drv->tracklen;
 				}
 				drv->mfmpos = pos;
-#ifdef FSUAE
+#if 1 //def FSUAE
                 if (disk_debug_logging) {
                     write_log("drv->mfmpos = %d (2)\n", drv->mfmpos);
                 }
@@ -4135,7 +4135,7 @@ void DSKLEN (uae_u16 v, int hpos)
 					pos %= drv->tracklen;
 				}
 				drv->mfmpos = pos;
-#ifdef FSUAE
+#if 1 //def FSUAE
                 if (disk_debug_logging) {
                     write_log("drv->mfmpos = %d (3)\n", drv->mfmpos);
                 }
@@ -4426,7 +4426,7 @@ end2:
 		drive_eject (drv);
 		currprefs.floppyslots[num].df[0] = 0;
 		drv->dskchange_time = wasdelayed;
-		disk_insert (num, drv->newname);
+		disk_insert2 (num, drv->newname);
 	}
 	return ret;
 }
@@ -4721,11 +4721,11 @@ int disk_prevnext_name (TCHAR *imgp, int dir)
 
 	old = my_strdup (imgp);
 
-	struct zfile *zf = zfile_fopen (imgp, _T("rb"), ZFD_NORMAL);
+	struct zfile *zf = zfile_fopen3 (imgp, _T("rb"), ZFD_NORMAL);
 	if (zf) {
 		_tcscpy (img, zfile_getname (zf));
 		zfile_fclose (zf);
-		zf = zfile_fopen (img, _T("rb"), ZFD_NORMAL);
+		zf = zfile_fopen3 (img, _T("rb"), ZFD_NORMAL);
 		if (!zf) // oops, no directory support in this archive type
 			_tcscpy (img, imgp);
 		zfile_fclose (zf);

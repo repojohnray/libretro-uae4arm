@@ -20,7 +20,7 @@
 #include "events.h"
 #include "newcpu.h"
 #include "blitter.h"
-#include "blit.h"
+#include "../gen/blit.h"
 #include "savestate.h"
 #include "debug.h"
 

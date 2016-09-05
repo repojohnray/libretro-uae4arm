@@ -62,7 +62,7 @@ these four paragraphs for those parts of this code that are retained.
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 int32_to_float32(Bit32s a, float_status_t &status)
+float32 int32_to_float32(Bit32s a, float_status_t *status)
 {
     if (a == 0) return 0;
     if (a == (Bit32s) 0x80000000) return packFloat32(1, 0x9E, 0);
@@ -92,7 +92,7 @@ float64 int32_to_float64(Bit32s a)
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 int64_to_float32(Bit64s a, float_status_t &status)
+float32 int64_to_float32(Bit64s a, float_status_t *status)
 {
     if (a == 0) return 0;
     int zSign = (a < 0);
@@ -119,7 +119,7 @@ float32 int64_to_float32(Bit64s a, float_status_t &status)
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 int64_to_float64(Bit64s a, float_status_t &status)
+float64 int64_to_float64(Bit64s a, float_status_t *status)
 {
     if (a == 0) return 0;
     if (a == (Bit64s) BX_CONST64(0x8000000000000000)) {
@@ -135,7 +135,7 @@ float64 int64_to_float64(Bit64s a, float_status_t &status)
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 uint32_to_float32(Bit32u a, float_status_t &status)
+float32 uint32_to_float32(Bit32u a, float_status_t *status)
 {
     if (a == 0) return 0;
     if (a & 0x80000000) return normalizeRoundAndPackFloat32(0, 0x9D, a >> 1, status);
@@ -162,7 +162,7 @@ float64 uint32_to_float64(Bit32u a)
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 uint64_to_float32(Bit64u a, float_status_t &status)
+float32 uint64_to_float32(Bit64u a, float_status_t *status)
 {
     if (a == 0) return 0;
     int shiftCount = countLeadingZeros64(a) - 40;
@@ -187,7 +187,7 @@ float32 uint64_to_float32(Bit64u a, float_status_t &status)
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 uint64_to_float64(Bit64u a, float_status_t &status)
+float64 uint64_to_float64(Bit64u a, float_status_t *status)
 {
     if (a == 0) return 0;
     return normalizeRoundAndPackFloat64(0, 0x43C, a, status);
@@ -202,7 +202,7 @@ float64 uint64_to_float64(Bit64u a, float_status_t &status)
 | conversion overflows the integer indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32s float32_to_int32(float32 a, float_status_t &status)
+Bit32s float32_to_int32(float32 a, float_status_t *status)
 {
     Bit32u aSig = extractFloat32Frac(a);
     Bit16s aExp = extractFloat32Exp(a);
@@ -213,7 +213,7 @@ Bit32s float32_to_int32(float32 a, float_status_t &status)
         if (get_denormals_are_zeros(status)) aSig = 0;
     }
     int shiftCount = 0xAF - aExp;
-    Bit64u aSig64 = Bit64u(aSig) << 32;
+    Bit64u aSig64 = (Bit64u)(aSig) << 32;
     if (0 < shiftCount) aSig64 = shift64RightJamming(aSig64, shiftCount);
     return roundAndPackInt32(aSign, aSig64, status);
 }
@@ -227,7 +227,7 @@ Bit32s float32_to_int32(float32 a, float_status_t &status)
 | value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32s float32_to_int32_round_to_zero(float32 a, float_status_t &status)
+Bit32s float32_to_int32_round_to_zero(float32 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -266,7 +266,7 @@ Bit32s float32_to_int32_round_to_zero(float32 a, float_status_t &status)
 | or conversion overflows, the largest positive integer is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32u float32_to_uint32_round_to_zero(float32 a, float_status_t &status)
+Bit32u float32_to_uint32_round_to_zero(float32 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -304,7 +304,7 @@ Bit32u float32_to_uint32_round_to_zero(float32 a, float_status_t &status)
 | conversion overflows, the integer indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64s float32_to_int64(float32 a, float_status_t &status)
+Bit64s float32_to_int64(float32 a, float_status_t *status)
 {
     Bit64u aSig64, aSigExtra;
 
@@ -336,7 +336,7 @@ Bit64s float32_to_int64(float32 a, float_status_t &status)
 | value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64s float32_to_int64_round_to_zero(float32 a, float_status_t &status)
+Bit64s float32_to_int64_round_to_zero(float32 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -377,7 +377,7 @@ Bit64s float32_to_int64_round_to_zero(float32 a, float_status_t &status)
 | or the conversion overflows, the largest unsigned integer is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64u float32_to_uint64_round_to_zero(float32 a, float_status_t &status)
+Bit64u float32_to_uint64_round_to_zero(float32 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -417,7 +417,7 @@ Bit64u float32_to_uint64_round_to_zero(float32 a, float_status_t &status)
 | overflows, the largest unsigned integer is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64u float32_to_uint64(float32 a, float_status_t &status)
+Bit64u float32_to_uint64(float32 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp, shiftCount;
@@ -460,12 +460,12 @@ Bit64u float32_to_uint64(float32 a, float_status_t &status)
 | overflows, the largest unsigned integer is returned. 
 *----------------------------------------------------------------------------*/
 
-Bit32u float32_to_uint32(float32 a, float_status_t &status)
+Bit32u float32_to_uint32(float32 a, float_status_t *status)
 {
     Bit64u val_64 = float32_to_uint64(a, status);
 
     if (val_64 > 0xffffffff) {
-        status.float_exception_flags = float_flag_invalid; // throw away other flags
+        status->float_exception_flags = float_flag_invalid; // throw away other flags
         return uint32_indefinite;
     }
 
@@ -479,7 +479,7 @@ Bit32u float32_to_uint32(float32 a, float_status_t &status)
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float32_to_float64(float32 a, float_status_t &status)
+float64 float32_to_float64(float32 a, float_status_t *status)
 {
     Bit32u aSig = extractFloat32Frac(a);
     Bit16s aExp = extractFloat32Exp(a);
@@ -507,7 +507,7 @@ float64 float32_to_float64(float32 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_round_to_int(float32 a, Bit8u scale, float_status_t &status)
+float32 float32_round_to_int(float32 a, Bit8u scale, float_status_t *status)
 {
     Bit32u lastBitMask, roundBitsMask;
     int roundingMode = get_float_rounding_mode(status);
@@ -515,7 +515,7 @@ float32 float32_round_to_int(float32 a, Bit8u scale, float_status_t &status)
     scale &= 0xf;
 
     if ((aExp == 0xFF) && extractFloat32Frac(a)) {
-        return propagateFloat32NaN(a, status);
+        return propagateFloat32NaN2(a, status);
     }
 
     aExp += scale; // scale the exponent
@@ -571,7 +571,7 @@ float32 float32_round_to_int(float32 a, Bit8u scale, float_status_t &status)
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_frc(float32 a, float_status_t &status)
+float32 float32_frc(float32 a, float_status_t *status)
 {
     int roundingMode = get_float_rounding_mode(status);
 
@@ -580,7 +580,7 @@ float32 float32_frc(float32 a, float_status_t &status)
     int aSign = extractFloat32Sign(a);
 
     if (aExp == 0xFF) {
-        if (aSig) return propagateFloat32NaN(a, status);
+        if (aSig) return propagateFloat32NaN2(a, status);
         float_raise(status, float_flag_invalid);
         return float32_default_nan;
     }
@@ -626,13 +626,13 @@ float32 float32_frc(float32 a, float_status_t &status)
 | to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_getexp(float32 a, float_status_t &status)
+float32 float32_getexp(float32 a, float_status_t *status)
 {
     Bit16s aExp = extractFloat32Exp(a);
     Bit32u aSig = extractFloat32Frac(a);
 
     if (aExp == 0xFF) {
-        if (aSig) return propagateFloat32NaN(a, status);
+        if (aSig) return propagateFloat32NaN2(a, status);
         return float32_positive_inf;
     }
 
@@ -655,14 +655,14 @@ float32 float32_getexp(float32 a, float_status_t &status)
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_getmant(float32 a, float_status_t &status, int sign_ctrl, int interv)
+float32 float32_getmant(float32 a, float_status_t *status, int sign_ctrl, int interv)
 {
     Bit16s aExp = extractFloat32Exp(a);
     Bit32u aSig = extractFloat32Frac(a);
     int aSign = extractFloat32Sign(a);
 
     if (aExp == 0xFF) {
-        if (aSig) return propagateFloat32NaN(a, status);
+        if (aSig) return propagateFloat32NaN2(a, status);
         if (aSign) {
             if (sign_ctrl & 0x2) {
                 float_raise(status, float_flag_invalid);
@@ -717,7 +717,7 @@ float32 float32_getmant(float32 a, float_status_t &status, int sign_ctrl, int in
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_scalef(float32 a, float32 b, float_status_t &status)
+float32 float32_scalef(float32 a, float32 b, float_status_t *status)
 {
     Bit32u aSig = extractFloat32Frac(a);
     Bit16s aExp = extractFloat32Exp(a);
@@ -809,7 +809,7 @@ float32 float32_scalef(float32 a, float32 b, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static float32 addFloat32Sigs(float32 a, float32 b, int zSign, float_status_t &status)
+static float32 addFloat32Sigs(float32 a, float32 b, int zSign, float_status_t *status)
 {
     Bit16s aExp, bExp, zExp;
     Bit32u aSig, bSig, zSig;
@@ -906,7 +906,7 @@ static float32 addFloat32Sigs(float32 a, float32 b, int zSign, float_status_t &s
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static float32 subFloat32Sigs(float32 a, float32 b, int zSign, float_status_t &status)
+static float32 subFloat32Sigs(float32 a, float32 b, int zSign, float_status_t *status)
 {
     Bit16s aExp, bExp, zExp;
     Bit32u aSig, bSig, zSig;
@@ -993,7 +993,7 @@ static float32 subFloat32Sigs(float32 a, float32 b, int zSign, float_status_t &s
 | Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_add(float32 a, float32 b, float_status_t &status)
+float32 float32_add(float32 a, float32 b, float_status_t *status)
 {
     int aSign = extractFloat32Sign(a);
     int bSign = extractFloat32Sign(b);
@@ -1012,7 +1012,7 @@ float32 float32_add(float32 a, float32 b, float_status_t &status)
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_sub(float32 a, float32 b, float_status_t &status)
+float32 float32_sub(float32 a, float32 b, float_status_t *status)
 {
     int aSign = extractFloat32Sign(a);
     int bSign = extractFloat32Sign(b);
@@ -1031,7 +1031,7 @@ float32 float32_sub(float32 a, float32 b, float_status_t &status)
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_mul(float32 a, float32 b, float_status_t &status)
+float32 float32_mul(float32 a, float32 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit16s aExp, bExp, zExp;
@@ -1103,7 +1103,7 @@ float32 float32_mul(float32 a, float32 b, float_status_t &status)
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_div(float32 a, float32 b, float_status_t &status)
+float32 float32_div(float32 a, float32 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit16s aExp, bExp, zExp;
@@ -1174,7 +1174,7 @@ float32 float32_div(float32 a, float32 b, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_sqrt(float32 a, float_status_t &status)
+float32 float32_sqrt(float32 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp, zExp;
@@ -1186,7 +1186,7 @@ float32 float32_sqrt(float32 a, float_status_t &status)
     aSign = extractFloat32Sign(a);
 
     if (aExp == 0xFF) {
-        if (aSig) return propagateFloat32NaN(a, status);
+        if (aSig) return propagateFloat32NaN2(a, status);
         if (! aSign) return a;
         float_raise(status, float_flag_invalid);
         return float32_default_nan;
@@ -1261,7 +1261,7 @@ float_class_t float32_class(float32 a)
 | value `b', or 'float_relation_unordered' otherwise.
 *----------------------------------------------------------------------------*/
 
-int float32_compare(float32 a, float32 b, float_status_t &status)
+int float32_compare(float32 a, float32 b, float_status_t *status)
 {
     if (get_denormals_are_zeros(status)) {
         a = float32_denormal_to_zero(a);
@@ -1301,7 +1301,7 @@ int float32_compare(float32 a, float32 b, float_status_t &status)
 | an exception.
 *----------------------------------------------------------------------------*/
 
-int float32_compare_quiet(float32 a, float32 b, float_status_t &status)
+int float32_compare_quiet(float32 a, float32 b, float_status_t *status)
 {
     if (get_denormals_are_zeros(status)) {
         a = float32_denormal_to_zero(a);
@@ -1341,7 +1341,7 @@ int float32_compare_quiet(float32 a, float32 b, float_status_t &status)
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_min(float32 a, float32 b, float_status_t &status)
+float32 float32_min(float32 a, float32 b, float_status_t *status)
 {
   if (get_denormals_are_zeros(status)) {
     a = float32_denormal_to_zero(a);
@@ -1357,7 +1357,7 @@ float32 float32_min(float32 a, float32 b, float_status_t &status)
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float32_max(float32 a, float32 b, float_status_t &status)
+float32 float32_max(float32 a, float32 b, float_status_t *status)
 {
   if (get_denormals_are_zeros(status)) {
     a = float32_denormal_to_zero(a);
@@ -1376,7 +1376,7 @@ float32 float32_max(float32 a, float32 b, float_status_t &status)
 | conversion overflows, the integer indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32s float64_to_int32(float64 a, float_status_t &status)
+Bit32s float64_to_int32(float64 a, float_status_t *status)
 {
     Bit64u aSig = extractFloat64Frac(a);
     Bit16s aExp = extractFloat64Exp(a);
@@ -1400,7 +1400,7 @@ Bit32s float64_to_int32(float64 a, float_status_t &status)
 | value  is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32s float64_to_int32_round_to_zero(float64 a, float_status_t &status)
+Bit32s float64_to_int32_round_to_zero(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -1444,7 +1444,7 @@ Bit32s float64_to_int32_round_to_zero(float64 a, float_status_t &status)
 | or conversion overflows, the largest positive integer is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32u float64_to_uint32_round_to_zero(float64 a, float_status_t &status)
+Bit32u float64_to_uint32_round_to_zero(float64 a, float_status_t *status)
 {
     Bit64u aSig = extractFloat64Frac(a);
     Bit16s aExp = extractFloat64Exp(a);
@@ -1481,7 +1481,7 @@ Bit32u float64_to_uint32_round_to_zero(float64 a, float_status_t &status)
 | largest integer with the same sign as `a' is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64s float64_to_int64(float64 a, float_status_t &status)
+Bit64s float64_to_int64(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -1518,7 +1518,7 @@ Bit64s float64_to_int64(float64 a, float_status_t &status)
 | value  is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64s float64_to_int64_round_to_zero(float64 a, float_status_t &status)
+Bit64s float64_to_int64_round_to_zero(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -1562,7 +1562,7 @@ Bit64s float64_to_int64_round_to_zero(float64 a, float_status_t &status)
 | or the conversion overflows, the largest unsigned integer is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64u float64_to_uint64_round_to_zero(float64 a, float_status_t &status)
+Bit64u float64_to_uint64_round_to_zero(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -1607,12 +1607,12 @@ Bit64u float64_to_uint64_round_to_zero(float64 a, float_status_t &status)
 | overflows, the largest unsigned integer is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32u float64_to_uint32(float64 a, float_status_t &status)
+Bit32u float64_to_uint32(float64 a, float_status_t *status)
 {
     Bit64u val_64 = float64_to_uint64(a, status);
 
     if (val_64 > 0xffffffff) {
-        status.float_exception_flags = float_flag_invalid; // throw away other flags
+        status->float_exception_flags = float_flag_invalid; // throw away other flags
         return uint32_indefinite;
     }
 
@@ -1628,7 +1628,7 @@ Bit32u float64_to_uint32(float64 a, float_status_t &status)
 | overflows, the largest unsigned integer is returned.
 *----------------------------------------------------------------------------*/
  
-Bit64u float64_to_uint64(float64 a, float_status_t &status)
+Bit64u float64_to_uint64(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp, shiftCount;
@@ -1672,7 +1672,7 @@ Bit64u float64_to_uint64(float64 a, float_status_t &status)
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 float64_to_float32(float64 a, float_status_t &status)
+float32 float64_to_float32(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp;
@@ -1707,7 +1707,7 @@ float32 float64_to_float32(float64 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_round_to_int(float64 a, Bit8u scale, float_status_t &status)
+float64 float64_round_to_int(float64 a, Bit8u scale, float_status_t *status)
 {
     Bit64u lastBitMask, roundBitsMask;
     int roundingMode = get_float_rounding_mode(status);
@@ -1715,7 +1715,7 @@ float64 float64_round_to_int(float64 a, Bit8u scale, float_status_t &status)
     scale &= 0xf;
 
     if ((aExp == 0x7FF) && extractFloat64Frac(a)) {
-        return propagateFloat64NaN(a, status);
+        return propagateFloat64NaN2(a, status);
     }
 
     aExp += scale; // scale the exponent
@@ -1771,7 +1771,7 @@ float64 float64_round_to_int(float64 a, Bit8u scale, float_status_t &status)
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_frc(float64 a, float_status_t &status)
+float64 float64_frc(float64 a, float_status_t *status)
 {
     int roundingMode = get_float_rounding_mode(status);
 
@@ -1780,7 +1780,7 @@ float64 float64_frc(float64 a, float_status_t &status)
     int aSign = extractFloat64Sign(a);
 
     if (aExp == 0x7FF) {
-        if (aSig) return propagateFloat64NaN(a, status);
+        if (aSig) return propagateFloat64NaN2(a, status);
         float_raise(status, float_flag_invalid);
         return float64_default_nan;
     }
@@ -1826,13 +1826,13 @@ float64 float64_frc(float64 a, float_status_t &status)
 | to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_getexp(float64 a, float_status_t &status)
+float64 float64_getexp(float64 a, float_status_t *status)
 {
     Bit16s aExp = extractFloat64Exp(a);
     Bit64u aSig = extractFloat64Frac(a);
 
     if (aExp == 0x7FF) {
-        if (aSig) return propagateFloat64NaN(a, status);
+        if (aSig) return propagateFloat64NaN2(a, status);
         return float64_positive_inf;
     }
 
@@ -1855,14 +1855,14 @@ float64 float64_getexp(float64 a, float_status_t &status)
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_getmant(float64 a, float_status_t &status, int sign_ctrl, int interv)
+float64 float64_getmant(float64 a, float_status_t *status, int sign_ctrl, int interv)
 {
     Bit16s aExp = extractFloat64Exp(a);
     Bit64u aSig = extractFloat64Frac(a);
     int aSign = extractFloat64Sign(a);
 
     if (aExp == 0x7FF) {
-        if (aSig) return propagateFloat64NaN(a, status);
+        if (aSig) return propagateFloat64NaN2(a, status);
         if (aSign) {
             if (sign_ctrl & 0x2) {
                 float_raise(status, float_flag_invalid);
@@ -1917,7 +1917,7 @@ float64 float64_getmant(float64 a, float_status_t &status, int sign_ctrl, int in
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_scalef(float64 a, float64 b, float_status_t &status)
+float64 float64_scalef(float64 a, float64 b, float_status_t *status)
 {
     Bit64u aSig = extractFloat64Frac(a);
     Bit16s aExp = extractFloat64Exp(a);
@@ -2010,7 +2010,7 @@ float64 float64_scalef(float64 a, float64 b, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static float64 addFloat64Sigs(float64 a, float64 b, int zSign, float_status_t &status)
+static float64 addFloat64Sigs(float64 a, float64 b, int zSign, float_status_t *status)
 {
     Bit16s aExp, bExp, zExp;
     Bit64u aSig, bSig, zSig;
@@ -2106,7 +2106,7 @@ static float64 addFloat64Sigs(float64 a, float64 b, int zSign, float_status_t &s
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static float64 subFloat64Sigs(float64 a, float64 b, int zSign, float_status_t &status)
+static float64 subFloat64Sigs(float64 a, float64 b, int zSign, float_status_t *status)
 {
     Bit16s aExp, bExp, zExp;
     Bit64u aSig, bSig, zSig;
@@ -2193,7 +2193,7 @@ static float64 subFloat64Sigs(float64 a, float64 b, int zSign, float_status_t &s
 | Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_add(float64 a, float64 b, float_status_t &status)
+float64 float64_add(float64 a, float64 b, float_status_t *status)
 {
     int aSign = extractFloat64Sign(a);
     int bSign = extractFloat64Sign(b);
@@ -2212,7 +2212,7 @@ float64 float64_add(float64 a, float64 b, float_status_t &status)
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_sub(float64 a, float64 b, float_status_t &status)
+float64 float64_sub(float64 a, float64 b, float_status_t *status)
 {
     int aSign = extractFloat64Sign(a);
     int bSign = extractFloat64Sign(b);
@@ -2231,7 +2231,7 @@ float64 float64_sub(float64 a, float64 b, float_status_t &status)
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_mul(float64 a, float64 b, float_status_t &status)
+float64 float64_mul(float64 a, float64 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit16s aExp, bExp, zExp;
@@ -2301,7 +2301,7 @@ float64 float64_mul(float64 a, float64 b, float_status_t &status)
 | the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_div(float64 a, float64 b, float_status_t &status)
+float64 float64_div(float64 a, float64 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit16s aExp, bExp, zExp;
@@ -2380,7 +2380,7 @@ float64 float64_div(float64 a, float64 b, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_sqrt(float64 a, float_status_t &status)
+float64 float64_sqrt(float64 a, float_status_t *status)
 {
     int aSign;
     Bit16s aExp, zExp;
@@ -2392,7 +2392,7 @@ float64 float64_sqrt(float64 a, float_status_t &status)
     aSign = extractFloat64Sign(a);
 
     if (aExp == 0x7FF) {
-        if (aSig) return propagateFloat64NaN(a, status);
+        if (aSig) return propagateFloat64NaN2(a, status);
         if (! aSign) return a;
         float_raise(status, float_flag_invalid);
         return float64_default_nan;
@@ -2465,7 +2465,7 @@ float_class_t float64_class(float64 a)
 | value `b', or 'float_relation_unordered' otherwise.
 *----------------------------------------------------------------------------*/
 
-int float64_compare(float64 a, float64 b, float_status_t &status)
+int float64_compare(float64 a, float64 b, float_status_t *status)
 {
     if (get_denormals_are_zeros(status)) {
         a = float64_denormal_to_zero(a);
@@ -2505,7 +2505,7 @@ int float64_compare(float64 a, float64 b, float_status_t &status)
 | an exception.
 *----------------------------------------------------------------------------*/
 
-int float64_compare_quiet(float64 a, float64 b, float_status_t &status)
+int float64_compare_quiet(float64 a, float64 b, float_status_t *status)
 {
     if (get_denormals_are_zeros(status)) {
         a = float64_denormal_to_zero(a);
@@ -2545,7 +2545,7 @@ int float64_compare_quiet(float64 a, float64 b, float_status_t &status)
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_min(float64 a, float64 b, float_status_t &status)
+float64 float64_min(float64 a, float64 b, float_status_t *status)
 {
   if (get_denormals_are_zeros(status)) {
     a = float64_denormal_to_zero(a);
@@ -2561,7 +2561,7 @@ float64 float64_min(float64 a, float64 b, float_status_t &status)
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 float64_max(float64 a, float64 b, float_status_t &status)
+float64 float64_max(float64 a, float64 b, float_status_t *status)
 {
   if (get_denormals_are_zeros(status)) {
     a = float64_denormal_to_zero(a);
@@ -2613,7 +2613,7 @@ floatx80 int64_to_floatx80(Bit64s a)
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 float32_to_floatx80(float32 a, float_status_t &status)
+floatx80 float32_to_floatx80(float32 a, float_status_t *status)
 {
     Bit32u aSig = extractFloat32Frac(a);
     Bit16s aExp = extractFloat32Exp(a);
@@ -2638,7 +2638,7 @@ floatx80 float32_to_floatx80(float32 a, float_status_t &status)
 | Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 float64_to_floatx80(float64 a, float_status_t &status)
+floatx80 float64_to_floatx80(float64 a, float_status_t *status)
 {
     Bit64u aSig = extractFloat64Frac(a);
     Bit16s aExp = extractFloat64Exp(a);
@@ -2667,7 +2667,7 @@ floatx80 float64_to_floatx80(float64 a, float_status_t &status)
 | conversion overflows, the integer indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32s floatx80_to_int32(floatx80 a, float_status_t &status)
+Bit32s floatx80_to_int32(floatx80 a, float_status_t *status)
 {
     Bit64u aSig = extractFloatx80Frac(a);
     Bit32s aExp = extractFloatx80Exp(a);
@@ -2696,7 +2696,7 @@ Bit32s floatx80_to_int32(floatx80 a, float_status_t &status)
 | indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit32s floatx80_to_int32_round_to_zero(floatx80 a, float_status_t &status)
+Bit32s floatx80_to_int32_round_to_zero(floatx80 a, float_status_t *status)
 {
     Bit32s aExp;
     Bit64u aSig, savedASig;
@@ -2747,7 +2747,7 @@ Bit32s floatx80_to_int32_round_to_zero(floatx80 a, float_status_t &status)
 | conversion overflows, the integer indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64s floatx80_to_int64(floatx80 a, float_status_t &status)
+Bit64s floatx80_to_int64(floatx80 a, float_status_t *status)
 {
     Bit32s aExp;
     Bit64u aSig, aSigExtra;
@@ -2789,7 +2789,7 @@ Bit64s floatx80_to_int64(floatx80 a, float_status_t &status)
 | indefinite value is returned.
 *----------------------------------------------------------------------------*/
 
-Bit64s floatx80_to_int64_round_to_zero(floatx80 a, float_status_t &status)
+Bit64s floatx80_to_int64_round_to_zero(floatx80 a, float_status_t *status)
 {
     int aSign;
     Bit32s aExp;
@@ -2833,7 +2833,7 @@ Bit64s floatx80_to_int64_round_to_zero(floatx80 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float32 floatx80_to_float32(floatx80 a, float_status_t &status)
+float32 floatx80_to_float32(floatx80 a, float_status_t *status)
 {
     Bit64u aSig = extractFloatx80Frac(a);
     Bit32s aExp = extractFloatx80Exp(a);
@@ -2864,7 +2864,7 @@ float32 floatx80_to_float32(floatx80 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float64 floatx80_to_float64(floatx80 a, float_status_t &status)
+float64 floatx80_to_float64(floatx80 a, float_status_t *status)
 {
     Bit32s aExp;
     Bit64u aSig, zSig;
@@ -2898,7 +2898,7 @@ float64 floatx80_to_float64(floatx80 a, float_status_t &status)
 | Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_round_to_int(floatx80 a, float_status_t &status)
+floatx80 floatx80_round_to_int(floatx80 a, float_status_t *status)
 {
     int aSign;
     Bit64u lastBitMask, roundBitsMask;
@@ -2916,7 +2916,7 @@ floatx80 floatx80_round_to_int(floatx80 a, float_status_t &status)
     Bit64u aSig = extractFloatx80Frac(a);
     if (0x403E <= aExp) {
         if ((aExp == 0x7FFF) && (Bit64u) (aSig<<1)) {
-            return propagateFloatx80NaN(a, status);
+            return propagateFloatx80NaN2(a, status);
         }
         return a;
     }
@@ -2986,7 +2986,7 @@ floatx80 floatx80_round_to_int(floatx80 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static floatx80 addFloatx80Sigs(floatx80 a, floatx80 b, int zSign, float_status_t &status)
+static floatx80 addFloatx80Sigs(floatx80 a, floatx80 b, int zSign, float_status_t *status)
 {
     Bit32s aExp, bExp, zExp;
     Bit64u aSig, bSig, zSig0, zSig1;
@@ -3068,7 +3068,7 @@ static floatx80 addFloatx80Sigs(floatx80 a, floatx80 b, int zSign, float_status_
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static floatx80 subFloatx80Sigs(floatx80 a, floatx80 b, int zSign, float_status_t &status)
+static floatx80 subFloatx80Sigs(floatx80 a, floatx80 b, int zSign, float_status_t *status)
 {
     Bit32s aExp, bExp, zExp;
     Bit64u aSig, bSig, zSig0, zSig1;
@@ -3158,7 +3158,7 @@ static floatx80 subFloatx80Sigs(floatx80 a, floatx80 b, int zSign, float_status_
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_add(floatx80 a, floatx80 b, float_status_t &status)
+floatx80 floatx80_add(floatx80 a, floatx80 b, float_status_t *status)
 {
     int aSign = extractFloatx80Sign(a);
     int bSign = extractFloatx80Sign(b);
@@ -3175,7 +3175,7 @@ floatx80 floatx80_add(floatx80 a, floatx80 b, float_status_t &status)
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_sub(floatx80 a, floatx80 b, float_status_t &status)
+floatx80 floatx80_sub(floatx80 a, floatx80 b, float_status_t *status)
 {
     int aSign = extractFloatx80Sign(a);
     int bSign = extractFloatx80Sign(b);
@@ -3192,7 +3192,7 @@ floatx80 floatx80_sub(floatx80 a, floatx80 b, float_status_t &status)
 | IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_mul(floatx80 a, floatx80 b, float_status_t &status)
+floatx80 floatx80_mul(floatx80 a, floatx80 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit32s aExp, bExp, zExp;
@@ -3262,7 +3262,7 @@ floatx80 floatx80_mul(floatx80 a, floatx80 b, float_status_t &status)
 | according to the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_div(floatx80 a, floatx80 b, float_status_t &status)
+floatx80 floatx80_div(floatx80 a, floatx80 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit32s aExp, bExp, zExp;
@@ -3350,7 +3350,7 @@ floatx80 floatx80_div(floatx80 a, floatx80 b, float_status_t &status)
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_sqrt(floatx80 a, float_status_t &status)
+floatx80 floatx80_sqrt(floatx80 a, float_status_t *status)
 {
     int aSign;
     Bit32s aExp, zExp;
@@ -3368,7 +3368,7 @@ floatx80 floatx80_sqrt(floatx80 a, float_status_t &status)
     aExp = extractFloatx80Exp(a);
     aSign = extractFloatx80Sign(a);
     if (aExp == 0x7FFF) {
-        if ((Bit64u) (aSig0<<1)) return propagateFloatx80NaN(a, status);
+        if ((Bit64u) (aSig0<<1)) return propagateFloatx80NaN2(a, status);
         if (! aSign) return a;
         float_raise(status, float_flag_invalid);
         return floatx80_default_nan;
@@ -3429,7 +3429,7 @@ floatx80 floatx80_sqrt(floatx80 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float128 floatx80_to_float128(floatx80 a, float_status_t &status)
+float128 floatx80_to_float128(floatx80 a, float_status_t *status)
 {
     Bit64u zSig0, zSig1;
 
@@ -3451,7 +3451,7 @@ float128 floatx80_to_float128(floatx80 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 float128_to_floatx80(float128 a, float_status_t &status)
+floatx80 float128_to_floatx80(float128 a, float_status_t *status)
 {
     Bit32s aExp;
     Bit64u aSig0, aSig1;
@@ -3486,7 +3486,7 @@ floatx80 float128_to_floatx80(float128 a, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-floatx80 floatx80_mul(floatx80 a, float128 b, float_status_t &status)
+floatx80 floatx80_mul_f128(floatx80 a, float128 b, float_status_t *status)
 {
     Bit32s aExp, bExp, zExp;
     Bit64u aSig, bSig0, bSig1, zSig0, zSig1, zSig2;
@@ -3569,7 +3569,7 @@ floatx80 floatx80_mul(floatx80 a, float128 b, float_status_t &status)
 | Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static float128 addFloat128Sigs(float128 a, float128 b, int zSign, float_status_t &status)
+static float128 addFloat128Sigs(float128 a, float128 b, int zSign, float_status_t *status)
 {
     Bit32s aExp, bExp, zExp;
     Bit64u aSig0, aSig1, bSig0, bSig1, zSig0, zSig1, zSig2;
@@ -3636,7 +3636,7 @@ static float128 addFloat128Sigs(float128 a, float128 b, int zSign, float_status_
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-static float128 subFloat128Sigs(float128 a, float128 b, int zSign, float_status_t &status)
+static float128 subFloat128Sigs(float128 a, float128 b, int zSign, float_status_t *status)
 {
     Bit32s aExp, bExp, zExp;
     Bit64u aSig0, aSig1, bSig0, bSig1, zSig0, zSig1;
@@ -3669,7 +3669,7 @@ static float128 subFloat128Sigs(float128 a, float128 b, int zSign, float_status_
     if (aSig0 < bSig0) goto bBigger;
     if (bSig1 < aSig1) goto aBigger;
     if (aSig1 < bSig1) goto bBigger;
-    return packFloat128(0, 0);
+    return packFloat1282(0, 0);
 
  bExpBigger:
     if (bExp == 0x7FFF) {
@@ -3712,7 +3712,7 @@ static float128 subFloat128Sigs(float128 a, float128 b, int zSign, float_status_
 | for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float128 float128_add(float128 a, float128 b, float_status_t &status)
+float128 float128_add(float128 a, float128 b, float_status_t *status)
 {
     int aSign = extractFloat128Sign(a);
     int bSign = extractFloat128Sign(b);
@@ -3731,7 +3731,7 @@ float128 float128_add(float128 a, float128 b, float_status_t &status)
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float128 float128_sub(float128 a, float128 b, float_status_t &status)
+float128 float128_sub(float128 a, float128 b, float_status_t *status)
 {
     int aSign = extractFloat128Sign(a);
     int bSign = extractFloat128Sign(b);
@@ -3750,7 +3750,7 @@ float128 float128_sub(float128 a, float128 b, float_status_t &status)
 | Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float128 float128_mul(float128 a, float128 b, float_status_t &status)
+float128 float128_mul(float128 a, float128 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit32s aExp, bExp, zExp;
@@ -3813,7 +3813,7 @@ float128 float128_mul(float128 a, float128 b, float_status_t &status)
 | the IEC/IEEE Standard for Binary Floating-Point Arithmetic.
 *----------------------------------------------------------------------------*/
 
-float128 float128_div(float128 a, float128 b, float_status_t &status)
+float128 float128_div(float128 a, float128 b, float_status_t *status)
 {
     int aSign, bSign, zSign;
     Bit32s aExp, bExp, zExp;

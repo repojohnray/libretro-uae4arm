@@ -317,16 +317,16 @@ static bool using_pearpc(void)
 	return ppc_implementation == PPC_IMPLEMENTATION_PEARPC;
 }
 
-enum PPCLockMethod {
+typedef enum PPCLockMethod {
 	PPC_RELEASE_SPINLOCK,
 	PPC_KEEP_SPINLOCK,
-};
+} PPCLockMethod;
 
-enum PPCLockStatus {
+typedef enum PPCLockStatus {
 	PPC_NO_LOCK_NEEDED,
 	PPC_LOCKED,
 	PPC_LOCKED_WITHOUT_SPINLOCK,
-};
+} PPCLockStatus;
 
 static PPCLockStatus get_ppc_lock(PPCLockMethod method)
 {
@@ -398,7 +398,7 @@ static void initialize(void)
 	uae_ppc_spinlock_get();
 }
 
-static void map_banks(void)
+static void map_banks0(void)
 {
 	if (impl.map_memory == NULL) {
 		return;
@@ -549,7 +549,7 @@ static void uae_ppc_cpu_reset(void)
 	}
 
 	/* Map memory and I/O banks (for QEmu PPC implementation) */
-	map_banks();
+	map_banks0();
 
 	if (using_qemu()) {
 		impl.reset();

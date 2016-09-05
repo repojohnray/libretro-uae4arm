@@ -398,7 +398,7 @@ void hdf_hd_close (struct hd_hardfiledata *hfd)
 int hdf_hd_open (struct hd_hardfiledata *hfd)
 {
 	struct uaedev_config_info *ci = &hfd->hfd.ci;
-	if (hdf_open (&hfd->hfd) <= 0)
+	if (hdf_open1 (&hfd->hfd) <= 0)
 		return 0;
 	if (ci->physical_geometry) {
 		hfd->cyls = ci->pcyls;
@@ -585,7 +585,7 @@ end:
 	hdf_close_target (hfd);
 	return 0;
 }
-int hdf_open (struct hardfiledata *hfd)
+int hdf_open1 (struct hardfiledata *hfd)
 {
 	return hdf_open (hfd, NULL);
 }
@@ -790,7 +790,7 @@ int vhd_create (const TCHAR *name, uae_u64 size, uae_u32 dostype)
 	batsize &= ~511;
 	ret = 0;
 	b = NULL;
-	zf = zfile_fopen (name, _T("wb"), 0);
+	zf = zfile_fopen3 (name, _T("wb"), 0);
 	if (!zf)
 		goto end;
 	b = xcalloc (uae_u8, 512 + 1024 + batsize + 512);

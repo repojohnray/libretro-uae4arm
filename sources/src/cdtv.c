@@ -650,7 +650,7 @@ static void dma_do_thread (void)
 		if (!didread || readsector != (cdrom_offset / cdtv_sectorsize)) {
 			readsector = cdrom_offset / cdtv_sectorsize;
 			if (cdtv_sectorsize != 2048)
-				didread = sys_command_cd_rawread (unitnum, buffer, readsector, 1, cdtv_sectorsize);
+				didread = sys_command_cd_rawread5 (unitnum, buffer, readsector, 1, cdtv_sectorsize);
 			else
 				didread = sys_command_cd_read (unitnum, buffer, readsector, 1);
 			if (!didread) {
@@ -1539,7 +1539,7 @@ void cdtv_loadcardmem (uae_u8 *p, int size)
 	struct zfile *f;
 
 	memset (p, 0, size);
-	f = zfile_fopen (currprefs.flashfile, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb"), ZFD_NORMAL);
 	if (!f)
 		return;
 	zfile_fseek (f, CDTV_NVRAM_SIZE, SEEK_SET);
@@ -1551,7 +1551,7 @@ void cdtv_savecardmem (uae_u8 *p, int size)
 {
 	struct zfile *f;
 
-	f = zfile_fopen (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
 	if (!f)
 		return;
 	zfile_fseek (f, CDTV_NVRAM_SIZE, SEEK_SET);
@@ -1565,9 +1565,9 @@ static void cdtv_battram_reset (void)
 	int v;
 
 	memset (cdtv_battram, 0, CDTV_NVRAM_SIZE);
-	f = zfile_fopen (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
 	if (!f) {
-		f = zfile_fopen (currprefs.flashfile, _T("wb"), 0);
+		f = zfile_fopen3 (currprefs.flashfile, _T("wb"), 0);
 		if (f) {
 			zfile_fwrite (cdtv_battram, CDTV_NVRAM_SIZE, 1, f);
 			zfile_fclose (f);
@@ -1591,7 +1591,7 @@ void cdtv_battram_write (int addr, int v)
 	if (cdtv_battram[offset] == v)
 		return;
 	cdtv_battram[offset] = v;
-	f = zfile_fopen (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
 	if (!f)
 		return;
 	zfile_fseek (f, offset, SEEK_SET);

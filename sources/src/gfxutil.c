@@ -16,7 +16,7 @@
 
 #include <math.h>
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #define gamma gamma_table
 #endif
 
@@ -48,7 +48,7 @@ double getvsyncrate (double hz, int *mult)
 unsigned int doMask (int p, int bits, int shift)
 {
 	/* scale to 0..255, shift to align msb with mask, and apply mask */
-#ifdef FSUAE
+#if 1 //def FSUAE
 	// using uae_u32 here instead of long is important for 64-bit archs
 	// on non-Windows systems
 #endif

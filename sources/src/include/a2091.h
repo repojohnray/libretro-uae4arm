@@ -69,7 +69,7 @@ struct gvp_dmac
 	int bufoffset;
 };
 
-struct wd_state {
+typedef struct wd_state {
 	bool enabled;
 	int configured;
 	bool autoconfig;
@@ -96,7 +96,7 @@ struct wd_state {
 	struct wd_chip_state wc;
 	struct commodore_dmac cdmac;
 	struct gvp_dmac gdmac;
-};
+} wd_state;
 extern wd_state *wd_cdtv;
 
 extern void init_wd_scsi (struct wd_state*);

@@ -818,7 +818,7 @@ static void set_x_funcs (void)
 			x_do_cycles_post = do_cycles_ce_post;
 		} else if (currprefs.cpu_memory_cycle_exact) {
 			// cpu_memory_cycle_exact + cpu_compatible
-			x_prefetch = get_word_prefetch;
+			x_prefetch = get_word_prefetch_int;
 			x_get_ilong = NULL;
 			x_get_iword = get_iiword;
 			x_get_ibyte = get_iibyte;
@@ -835,7 +835,7 @@ static void set_x_funcs (void)
 			x_do_cycles_post = do_cycles_post;
 		} else if (currprefs.cpu_compatible) {
 			// cpu_compatible only
-			x_prefetch = get_word_prefetch;
+			x_prefetch = get_word_prefetch_int;
 			x_get_ilong = NULL;
 			x_get_iword = get_iiword;
 			x_get_ibyte = get_iibyte;
@@ -944,7 +944,7 @@ static void set_x_funcs (void)
 			if (false) {
 #ifdef CPUEMU_20
 			} else if (currprefs.cpu_model == 68020 && !currprefs.cachesize) {
-				x_prefetch = get_word_prefetch;
+				x_prefetch = get_word_prefetch_int;
 				x_get_ilong = get_long_020_prefetch;
 				x_get_iword = get_word_020_prefetch;
 				x_get_ibyte = NULL;
@@ -962,7 +962,7 @@ static void set_x_funcs (void)
 #endif
 #ifdef CPUEMU_22
 			} else if (currprefs.cpu_model == 68030 && !currprefs.cachesize) {
-				x_prefetch = get_word_prefetch;
+				x_prefetch = get_word_prefetch_int;
 				x_get_ilong = get_long_030_prefetch;
 				x_get_iword = get_word_030_prefetch;
 				x_get_ibyte = NULL;
@@ -4605,7 +4605,7 @@ static void opcodedebug (uae_u32 pc, uae_u16 opcode, bool full)
 		m68k_disasm_2 (buf, sizeof buf / sizeof (TCHAR), addr, NULL, 1, NULL, NULL, 0);
 		write_log (_T("%s\n"), buf);
 		if (full)
-			m68k_dumpstate (NULL);
+			m68k_dumpstate1 (NULL);
 	}
 }
 
@@ -6242,9 +6242,9 @@ void m68k_dumpstate (uaecptr pc, uaecptr *nextpc)
 			console_out_f (_T("Next PC: %08x\n"), *nextpc);
 	}
 }
-void m68k_dumpstate (uaecptr *nextpc)
+void m68k_dumpstate1 (uaecptr *nextpc)
 {
-	m68k_dumpstate (m68k_getpc (), nextpc);
+	m68k_dumpstate1 (m68k_getpc (), nextpc);
 }
 void m68k_dumpcache (void)
 {

@@ -46,7 +46,7 @@
 #include "rp.h"
 #endif
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 // SDL is not used directly here by FS-UAE, but USE_SDL is still defined when
 // compiling FS-UAE so we explicitly undef it here.
 #undef USE_SDL
@@ -72,7 +72,7 @@ TCHAR warning_buffer[256];
 
 TCHAR optionsfile[256];
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 // moved to random.cpp
 #else
 static uae_u32 randseed;
@@ -221,7 +221,7 @@ void fixup_prefs_dimensions (struct uae_prefs *prefs)
 
 void fixup_cpu (struct uae_prefs *p)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("fixup_cpu\n");
 #endif
 	if (p->cpu_frequency == 1000000)
@@ -699,13 +699,13 @@ void fixup_prefs (struct uae_prefs *p)
 	}
 #endif
 	if (p->maprom && !p->address_space_24) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		write_log("MAPROM: Setting address 0x0f000000 (was 0x%08x)\n", p->maprom);
 #endif
 		p->maprom = 0x0f000000;
 	}
 	if (((p->maprom & 0xff000000) && p->address_space_24) || (p->maprom && p->mbresmem_high_size >= 0x08000000)) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		write_log("MAPROM: Setting address 0x00e00000 (was 0x%08x)\n", p->maprom);
 #endif
 		p->maprom = 0x00e00000;
@@ -757,7 +757,7 @@ void uae_reset (int hardreset, int keyboardreset)
 
 void uae_quit (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("uae_quit\n");
 #endif
 	deactivate_debugger ();
@@ -769,7 +769,7 @@ void uae_quit (void)
 /* 0 = normal, 1 = nogui, -1 = disable nogui */
 void uae_restart (int opengui, const TCHAR *cfgfile)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("uae_restart\n");
 #endif
 	uae_quit ();
@@ -943,7 +943,7 @@ static void parse_cmdline (int argc, TCHAR **argv)
 			// check if it is config file or statefile
 			if (!loaded) {
 				TCHAR *txt = parsetextpath(argv[i]);
-				struct zfile *z = zfile_fopen(txt, _T("rb"), ZFD_NORMAL);
+				struct zfile *z = zfile_fopen3(txt, _T("rb"), ZFD_NORMAL);
 				if (z) {
 					int type = zfile_gettype(z);
 					zfile_fclose(z);
@@ -1072,7 +1072,7 @@ static int real_main2 (int argc, TCHAR **argv)
 	}
 
 #ifdef NATMEM_OFFSET
-#ifdef FSUAE
+#if 1 //def FSUAE
 	preinit_shm ();
 #else
 	//preinit_shm ();

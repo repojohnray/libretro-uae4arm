@@ -28,7 +28,7 @@ void aud2_handler (void);
 void aud3_handler (void);
 
 void AUDxDAT (int nr, uae_u16 value);
-void AUDxDAT (int nr, uae_u16 value, uaecptr addr);
+void AUDxDAT3 (int nr, uae_u16 value, uaecptr addr);
 void AUDxVOL (int nr, uae_u16 value);
 void AUDxPER (int nr, uae_u16 value);
 void AUDxLCH (int nr, uae_u16 value);

@@ -79,10 +79,10 @@
 #include "readcpu.h"
 #endif
 #include "newcpu.h"
-#include "comptbl.h"
+#include "../gen/comptbl.h"
 #ifdef UAE
 #include "compemu.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "codegen_udis86.h"
 #endif
 #else
@@ -93,7 +93,7 @@
 #endif
 
 #ifdef UAE
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "uae_fs.h"
 #endif
 #include "uae_log.h"
@@ -143,7 +143,7 @@ static inline int distrust_check(int value)
 	return 1;
 #else
 	int distrust = value;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	switch (value) {
 	case 0: distrust = 0; break;
 	case 1: distrust = 1; break;
@@ -1037,10 +1037,10 @@ static inline void reset_data_buffer(void)
  ********************************************************************/
 
 #if defined(CPU_arm)
-#include "codegen_arm.cpp"
+#include "codegen_arm.c"
 #endif
 #if defined(CPU_i386) || defined(CPU_x86_64)
-#include "codegen_x86.cpp"
+#include "codegen_x86.c"
 #endif
 
 
@@ -1136,28 +1136,28 @@ static inline bool ru_get(const uae_u16 *mask, int reg)
 #endif
 }
 
-static inline void ru_set_read(regusage *ru, int reg)
+static inline void ru_set_read(struct regusage *ru, int reg)
 {
 	ru_set(&ru->rmask, reg);
 }
 
-static inline void ru_set_write(regusage *ru, int reg)
+static inline void ru_set_write(struct regusage *ru, int reg)
 {
 	ru_set(&ru->wmask, reg);
 }
 
-static inline bool ru_read_p(const regusage *ru, int reg)
+static inline bool ru_read_p(const struct regusage *ru, int reg)
 {
 	return ru_get(&ru->rmask, reg);
 }
 
-static inline bool ru_write_p(const regusage *ru, int reg)
+static inline bool ru_write_p(const struct regusage *ru, int reg)
 {
 	return ru_get(&ru->wmask, reg);
 }
 
 #if 0
-static void ru_fill_ea(regusage *ru, int reg, amodes mode,
+static void ru_fill_ea(struct regusage *ru, int reg, amodes mode,
 					   wordsizes size, int write_mode)
 {
 	switch (mode) {
@@ -1205,7 +1205,7 @@ static void ru_fill_ea(regusage *ru, int reg, amodes mode,
 /* TODO: split into a static initialization part and a dynamic one
    (instructions depending on extension words) */
 
-static void ru_fill(regusage *ru, uae_u32 opcode)
+static void ru_fill(struct regusage *ru, uae_u32 opcode)
 {
 	m68k_pc_offset += 2;
 
@@ -2495,15 +2495,15 @@ static void fflags_into_flags_internal(uae_u32 tmp)
 
 
 #if defined(CPU_arm)
-#include "compemu_midfunc_arm.cpp"
+#include "compemu_midfunc_arm.c"
 
 #if defined(USE_JIT2)
-#include "compemu_midfunc_arm2.cpp"
+#include "compemu_midfunc_arm2.c"
 #endif
 #endif
 
 #if defined(CPU_i386) || defined(CPU_x86_64)
-#include "compemu_midfunc_x86.cpp"
+#include "compemu_midfunc_x86.c"
 #endif
 
 
@@ -3952,7 +3952,7 @@ static bool merge_blacklist()
 
 void build_comp(void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (!g_fs_uae_jit_compiler) {
 		jit_log("JIT: JIT compiler is not enabled");
 		return;
@@ -4233,7 +4233,7 @@ void flush_icache_range(uae_u32 start, uae_u32 length)
 		UNUSED(start);
 		UNUSED(length);
 #endif
-	flush_icache(-1);
+	flush_icache1(-1);
 }
 
 /*
@@ -4330,11 +4330,11 @@ void compiler_dumpstate(void)
 #endif
 
 #ifdef UAE
-void compile_block(cpu_history *pc_hist, int blocklen, int totcycles)
+void compile_block(struct cpu_history *pc_hist, int blocklen, int totcycles)
 {
 	if (letit && compiled_code && currprefs.cpu_model >= 68020) {
 #else
-static void compile_block(cpu_history* pc_hist, int blocklen)
+static void compile_block(struct cpu_history* pc_hist, int blocklen)
 {
 	if (letit && compiled_code) {
 #endif
@@ -4973,7 +4973,7 @@ setjmpagain:
 		}
 	}
 	CATCH(prb) {
-		flush_icache(0);
+		flush_icache1(0);
 		Exception(prb, 0);
 		goto setjmpagain;
 	}

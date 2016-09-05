@@ -37,13 +37,21 @@ these four paragraphs for those parts of this code that are retained.
 #include "softfloat.h"
 #include "softfloat-specialize.h"
 
+#ifdef BX_BIG_ENDIAN
+#define STRUCT_packFloatx80(zSign, zExp, zSig) { (Bit16u)(((zSign) << 15) + (zExp)), (Bit64u)(zSig) }
+#define STRUCT_packFloat1282(zHi, zLo) { (Bit64u)(zHi), (Bit64u)(zLo) }
+#else /*BX_BIG_ENDIAN*/
+#define STRUCT_packFloatx80(zSign, zExp, zSig) { (Bit64u)(zSig), (Bit16u)(((zSign) << 15) + (zExp)) }
+#define STRUCT_packFloat1282(zHi, zLo) { (Bit64u)(zLo), (Bit64u)(zHi) }
+#endif /*BX_BIG_ENDIAN*/
+
 /*----------------------------------------------------------------------------
 | Takes two single-precision floating-point values `a' and `b', one of which
 | is a NaN, and returns the appropriate NaN result.  If either `a' or `b' is a
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-float32 propagateFloat32NaN(float32 a, float32 b, float_status_t &status)
+float32 propagateFloat32NaN(float32 a, float32 b, float_status_t *status)
 {
     int aIsNaN, aIsSignalingNaN, bIsNaN, bIsSignalingNaN;
 
@@ -80,7 +88,7 @@ float32 propagateFloat32NaN(float32 a, float32 b, float_status_t &status)
 | signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-float64 propagateFloat64NaN(float64 a, float64 b, float_status_t &status)
+float64 propagateFloat64NaN(float64 a, float64 b, float_status_t *status)
 {
     int aIsNaN = float64_is_nan(a);
     int aIsSignalingNaN = float64_is_signaling_nan(a);
@@ -117,7 +125,7 @@ float64 propagateFloat64NaN(float64 a, float64 b, float_status_t &status)
 | `b' is a signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-floatx80 propagateFloatx80NaN(floatx80 a, floatx80 b, float_status_t &status)
+floatx80 propagateFloatx80NaN(floatx80 a, floatx80 b, float_status_t *status)
 {
     int aIsNaN = floatx80_is_nan(a);
     int aIsSignalingNaN = floatx80_is_signaling_nan(a);
@@ -146,7 +154,7 @@ floatx80 propagateFloatx80NaN(floatx80 a, floatx80 b, float_status_t &status)
 | The pattern for a default generated extended double-precision NaN.
 *----------------------------------------------------------------------------*/
 const floatx80 floatx80_default_nan =
-    packFloatx80(0, floatx80_default_nan_exp, floatx80_default_nan_fraction);
+    STRUCT_packFloatx80(0, floatx80_default_nan_exp, floatx80_default_nan_fraction);
 
 #endif /* FLOATX80 */
 
@@ -158,7 +166,7 @@ const floatx80 floatx80_default_nan =
 | `b' is a signaling NaN, the invalid exception is raised.
 *----------------------------------------------------------------------------*/
 
-float128 propagateFloat128NaN(float128 a, float128 b, float_status_t &status)
+float128 propagateFloat128NaN(float128 a, float128 b, float_status_t *status)
 {
     int aIsNaN, aIsSignalingNaN, bIsNaN, bIsSignalingNaN;
     aIsNaN = float128_is_nan(a);
@@ -188,6 +196,6 @@ float128 propagateFloat128NaN(float128 a, float128 b, float_status_t &status)
 | The pattern for a default generated quadruple-precision NaN.
 *----------------------------------------------------------------------------*/
 const float128 float128_default_nan =
-    packFloat128(float128_default_nan_hi, float128_default_nan_lo);
+    STRUCT_packFloat1282(float128_default_nan_hi, float128_default_nan_lo);
 
 #endif /* FLOAT128 */

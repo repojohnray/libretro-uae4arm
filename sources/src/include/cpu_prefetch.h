@@ -286,7 +286,7 @@ STATIC_INLINE void m68k_do_rts_ce030 (void)
 
 #endif
 
-STATIC_INLINE uae_u32 get_word_prefetch (int o)
+STATIC_INLINE uae_u32 get_word_prefetch_uaecptr (int o)
 {
 	uae_u32 v = regs.irc;
 	regs.irc = regs.db = get_wordi (m68k_getpci () + o);
@@ -298,7 +298,7 @@ STATIC_INLINE uae_u32 get_byte_prefetch (uaecptr addr)
 	regs.db = (v << 8) | v;
 	return v;
 }
-STATIC_INLINE uae_u32 get_word_prefetch (uaecptr addr)
+STATIC_INLINE uae_u32 get_word_prefetch_uaecptr (uaecptr addr)
 {
 	uae_u32 v = get_word (addr);
 	regs.db = v;

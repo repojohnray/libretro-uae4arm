@@ -1313,7 +1313,7 @@ STATIC_INLINE bool get_genlock_transparency(uae_u8 v)
 	}
 }
 
-#include "linetoscr.cpp"
+#include "linetoscr.c"
 
 #define LTPARMS src_pixel, start, stop
 

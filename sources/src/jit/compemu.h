@@ -164,11 +164,11 @@ extern uae_u32 get_jitted_size(void);
 #ifdef JIT
 extern void flush_icache(uaecptr ptr, int n);
 extern void flush_icache_hard(uaecptr ptr, int n);
-static inline void flush_icache(int n)
+static inline void flush_icache1(int n)
 {
 	flush_icache(0, n);
 }
-static inline void flush_icache_hard(int n)
+static inline void flush_icache_hard1(int n)
 {
 	flush_icache(0, n);
 }
@@ -445,7 +445,7 @@ void do_nothing(void);
 
 #else
 
-static inline void flush_icache(int) { }
+static inline void flush_icache1(int) { }
 static inline void build_comp() { }
 
 #endif /* !USE_JIT */

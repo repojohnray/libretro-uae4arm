@@ -135,7 +135,7 @@ static int load_rom8 (const TCHAR *xpath, uae_u8 *mem, int extra, const TCHAR *e
 		_tcscat (path, exts[0]);
 	}
 	//write_log (_T("%s\n"), path);
-	zf = zfile_fopen (path, _T("rb"), ZFD_NORMAL);
+	zf = zfile_fopen3 (path, _T("rb"), ZFD_NORMAL);
 	if (!zf)
 		goto end;
 	if (zfile_fread (tmp, 65536, 1, zf) == 0)
@@ -147,7 +147,7 @@ static int load_rom8 (const TCHAR *xpath, uae_u8 *mem, int extra, const TCHAR *e
 	if (exts)
 		_tcscat (path, exts[1]);
 	//write_log (_T("%s\n"), path);
-	zf = zfile_fopen (path, _T("rb"), ZFD_NORMAL);
+	zf = zfile_fopen3 (path, _T("rb"), ZFD_NORMAL);
 	if (!zf)
 		goto end;
 	if (zfile_fread (tmp + 65536, 65536, 1, zf) == 0)
@@ -440,9 +440,9 @@ int is_arcadia_rom (const TCHAR *path)
 
 static void nvram_write (void)
 {
-	struct zfile *f = zfile_fopen (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
+	struct zfile *f = zfile_fopen3 (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
 	if (!f) {
-		f = zfile_fopen (currprefs.flashfile, _T("wb"), 0);
+		f = zfile_fopen3 (currprefs.flashfile, _T("wb"), 0);
 		if (!f)
 			return;
 	}
@@ -454,7 +454,7 @@ static void nvram_read (void)
 {
 	struct zfile *f;
 
-	f = zfile_fopen (currprefs.flashfile, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb"), ZFD_NORMAL);
 	memset (arbmemory + nvram_offset, 0, NVRAM_SIZE);
 	if (!f)
 		return;

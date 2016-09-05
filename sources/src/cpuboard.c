@@ -33,7 +33,7 @@
 #include "scsi.h"
 #include "cpummu030.h"
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #include "uae_fs.h"
 #endif
 
@@ -834,7 +834,7 @@ static void cyberstorm_copymaprom(void)
 	} else if (blizzardmaprom_bank.baseaddr) {
 		uae_u8 *src = blizzardmaprom_bank.baseaddr;
 		uae_u8 *dst = kickmem_bank.baseaddr;
-#ifdef FSUAE
+#if 1 //def FSUAE
 		write_log("cyberstorm_copymaprom src=%p dst=%p\n", src, dst);
 #endif
 		protect_roms(false);
@@ -893,20 +893,20 @@ static void blizzardppc_maprom(void)
 }
 static void cyberstorm_maprom(void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("cyberstorm_maprom\n");
 #endif
 	if (a3000hmem_bank.allocated <= 2 * 524288)
 		return;
 	if (maprom_state && is_ppc()) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		write_log("map_banks(&blizzardmaprom2_bank\n");
 #endif
 		map_banks(&blizzardmaprom2_bank, CYBERSTORM_MAPROM_BASE >> 16, 524288 >> 16, 0);
 	} else {
 		map_banks(&blizzardmaprom_bank, CYBERSTORM_MAPROM_BASE >> 16, 524288 >> 16, 0);
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("cyberstorm_maprom (done)\n");
 #endif
 }
@@ -1306,13 +1306,13 @@ void cpuboard_vsync(void)
 
 void cpuboard_map(void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     write_log("cpuboard_map currprefs.cpuboard_type = %d\n", currprefs.cpuboard_type);
 #endif
 	if (!currprefs.cpuboard_type)
 		return;
 	if (is_blizzard() || is_blizzardppc()) {
-#ifdef FSUAE
+#if 1 //def FSUAE
     write_log("is_blizzard() || is_blizzardppc() -> cpuboard_size = %d\n", cpuboard_size);
 #endif
 		if (cpuboard_size) {
@@ -1601,7 +1601,7 @@ retry:
 			if (cpuboard_size) {
 #ifdef CPU_64_BIT
 				int vm_flags = UAE_VM_32BIT;
-#ifdef FSUAE
+#if 1 //def FSUAE
 				if (!g_fs_uae_jit_compiler) {
 					/* Not using the JIT compiler, so we do not need "32-bit memory". */
 					vm_flags &= ~UAE_VM_32BIT;
@@ -1987,7 +1987,7 @@ static struct zfile *flashfile_open(const TCHAR *name)
 
 	if (name == NULL || !name[0])
 		return NULL;
-	f = zfile_fopen(name, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3(name, _T("rb"), ZFD_NORMAL);
 	if (f) {
 		if (zfile_iscompressed(f)) {
 			rw = false;
@@ -1998,18 +1998,18 @@ static struct zfile *flashfile_open(const TCHAR *name)
 	}
 	if (!f) {
 		rw = true;
-		f = zfile_fopen(name, _T("rb+"), ZFD_NONE);
+		f = zfile_fopen3(name, _T("rb+"), ZFD_NONE);
 		if (!f) {
 			rw = false;
-			f = zfile_fopen(name, _T("rb"), ZFD_NORMAL);
+			f = zfile_fopen3(name, _T("rb"), ZFD_NORMAL);
 			if (!f) {
 				fetch_rompath(path, sizeof path / sizeof(TCHAR));
 				_tcscat(path, name);
 				rw = true;
-				f = zfile_fopen(path, _T("rb+"), ZFD_NONE);
+				f = zfile_fopen3(path, _T("rb+"), ZFD_NONE);
 				if (!f) {
 					rw = false;
-					f = zfile_fopen(path, _T("rb"), ZFD_NORMAL);
+					f = zfile_fopen3(path, _T("rb"), ZFD_NORMAL);
 				}
 			}
 		}
@@ -2025,27 +2025,27 @@ static struct zfile *flashfile_open(const TCHAR *name)
 static struct zfile *board_rom_open(int *roms, const TCHAR *name)
 {
 	struct zfile *zf = NULL;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("board_rom_open roms=... name=%s\n", name ? name : "(null)");
 #endif
 	struct romlist *rl = getromlistbyids(roms, name);
 	if (rl)
 		zf = read_rom(rl->rd);
 	if (!zf && name) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("zfile_fopen %s\n", name);
 #endif
-		zf = zfile_fopen(name, _T("rb"), ZFD_NORMAL);
+		zf = zfile_fopen3(name, _T("rb"), ZFD_NORMAL);
 		if (zf) {
 			return zf;
 		}
 		TCHAR path[MAX_DPATH];
 		fetch_rompath(path, sizeof path / sizeof(TCHAR));
 		_tcscat(path, name);
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log("zfile_fopen %s\n", path);
 #endif
-		zf = zfile_fopen(path, _T("rb"), ZFD_NORMAL);
+		zf = zfile_fopen3(path, _T("rb"), ZFD_NORMAL);
 	}
 	return zf;
 }
@@ -2230,9 +2230,9 @@ addrbank *cpuboard_autoconfig_init(struct romconfig *rc)
 	}
 	if (!isflashrom) {
 		if (romname)
-			autoconfig_rom = zfile_fopen(romname, _T("rb"));
+			autoconfig_rom = zfile_fopen2(romname, _T("rb"));
 		if (!autoconfig_rom && defaultromname)
-			autoconfig_rom = zfile_fopen(defaultromname, _T("rb"));
+			autoconfig_rom = zfile_fopen2(defaultromname, _T("rb"));
 		if (rl) {
 			if (autoconfig_rom) {
 				struct romdata *rd2 = getromdatabyids(roms);

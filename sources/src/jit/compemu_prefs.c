@@ -5,7 +5,7 @@ extern bool have_done_picasso;
 
 bool check_prefs_changed_comp (bool checkonly)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (!g_fs_uae_jit_compiler) {
 		return false;
 	}

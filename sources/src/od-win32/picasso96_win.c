@@ -58,7 +58,7 @@
 #include "rp.h"
 #endif
 #include "picasso96_win.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "picasso96.h"
 #endif
 #include "win32gfx.h"
@@ -76,7 +76,7 @@ int debug_rtg_blitter = 3;
 #define P96TRACING_ENABLED 0
 #define P96SPRTRACING_ENABLED 0
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 #include "uae_fs.h"
 
 // FIXME: justing setting static value here -FS
@@ -93,7 +93,7 @@ static int picasso96_BT = BT_uaegfx;
 static int picasso96_GCT = GCT_Unknown;
 static int picasso96_PCT = PCT_Unknown;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 int mman_GetWriteWatch (PVOID lpBaseAddress, SIZE_T dwRegionSize, PVOID *lpAddresses, PULONG_PTR lpdwCount, PULONG lpdwGranularity);
 void mman_ResetWatch (PVOID lpBaseAddress, SIZE_T dwRegionSize);
@@ -148,7 +148,7 @@ static uae_u8 *cursordata;
 static uae_u32 cursorrgb[4], cursorrgbn[4];
 static int cursordeactivate, setupcursor_needed;
 static bool cursorvisible;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 static HCURSOR wincursor;
 #endif
@@ -602,7 +602,7 @@ static void do_fillrect_frame_buffer (struct RenderInfo *ri, int X, int Y,
 
 static void setupcursor (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	UAE_LOG_STUB("");
 #else
 	uae_u8 *dptr = NULL;
@@ -651,7 +651,7 @@ static void disablemouse (void)
 		return;
 	if (!currprefs.gfx_api)
 		return;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	D3D_setcursor (0, 0, 0, 0, false, true);
 #endif
@@ -677,7 +677,7 @@ static void mouseupdate (void)
 
 	if (!currprefs.gfx_api)
 		return;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	if (currprefs.gf[1].gfx_filter_autoscale == RTG_MODE_CENTER) {
 		D3D_setcursor (x, y, WIN32GFX_GetWidth (), WIN32GFX_GetHeight(), cursorvisible, scalepicasso == 2);
@@ -708,7 +708,7 @@ void picasso_trigger_vblank (void)
 
 static bool rtg_render (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 	printf("rtg_render\n");
 #endif
@@ -723,7 +723,7 @@ static bool rtg_render (void)
 			flushed = picasso_flushpixels (gfxmem_bank.start + natmem_offset, picasso96_state.XYOffset - gfxmem_bank.start);
 		} else {
 			gfxboard_vsync_handler ();
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 			printf("flushed = true\n");
 #endif
@@ -738,7 +738,7 @@ static bool rtg_render (void)
 }
 static void rtg_show (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #ifdef DEBUG_SHOW_SCREEN
 	printf("rtg_show\n");
 #endif
@@ -996,7 +996,7 @@ static int getconvert (int rgbformat, int pixbytes)
 		if (d == 2)
 			v = RGBFB_B8G8R8A8_16;
 		else if (d == 4)
-#ifdef FSUAE
+#if 1 //def FSUAE
 			if (g_amiga_video_format == AMIGA_VIDEO_FORMAT_BGRA) {
 				v = RGBFB_B8G8R8A8_32;
 			}
@@ -1023,7 +1023,7 @@ static void setconvert (void)
 	static int ohost_mode, orgbformat;
 
 	picasso_convert = getconvert (picasso96_state.RGBFormat, picasso_vidinfo.pixbytes);
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (g_amiga_video_format == AMIGA_VIDEO_FORMAT_RGBA) {
 		host_mode = RGBFB_R8G8B8A8;
 	}
@@ -1110,7 +1110,7 @@ void picasso_refresh (void)
 			// Let's put a black-border around the case where we've got a sub-screen...
 			if (!picasso96_state.BigAssBitmap) {
 				if (picasso96_state.XOffset || picasso96_state.YOffset)
-#ifdef FSUAE
+#if 1 //def FSUAE
 					printf("DX_FILL..\n");
 #else
 					DX_Fill (0, 0, picasso96_state.Width, picasso96_state.Height, 0);
@@ -1129,54 +1129,54 @@ void picasso_refresh (void)
 #define BLT_MULT 1
 #define BLT_NAME BLIT_FALSE_32
 #define BLT_FUNC(s,d) *d = 0
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOR_32
 #define BLT_FUNC(s,d) *d = ~(*s | * d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYDST_32
 #define BLT_FUNC(s,d) *d = (*d) & ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTSRC_32
 #define BLT_FUNC(s,d) *d = ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYSRC_32
 #define BLT_FUNC(s,d) *d = (*s) & ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTDST_32
 #define BLT_FUNC(s,d) *d = ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_EOR_32
 #define BLT_FUNC(s,d) *d = (*s) ^ (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NAND_32
 #define BLT_FUNC(s,d) *d = ~((*s) & (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_AND_32
 #define BLT_FUNC(s,d) *d = (*s) & (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NEOR_32
 #define BLT_FUNC(s,d) *d = ~((*s) ^ (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYSRC_32
 #define BLT_FUNC(s,d) *d = ~(*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYDST_32
 #define BLT_FUNC(s,d) *d = ~(*d) | (*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_OR_32
 #define BLT_FUNC(s,d) *d = (*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_TRUE_32
-#ifdef FSUAE
+#if 1 //def FSUAE
 #define BLT_FUNC(s,d) memset(d, 0xff, sizeof (*d))
 #else
 #define BLT_FUNC(s,d) *d = 0xffffffff
 #endif
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_SWAP_32
 #define BLT_FUNC(s,d) tmp = *d ; *d = *s; *s = tmp;
 #define BLT_TEMP
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #undef BLT_SIZE
 #undef BLT_MULT
 
@@ -1184,54 +1184,54 @@ void picasso_refresh (void)
 #define BLT_MULT 1
 #define BLT_NAME BLIT_FALSE_24
 #define BLT_FUNC(s,d) *d = 0
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOR_24
 #define BLT_FUNC(s,d) *d = ~(*s | * d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYDST_24
 #define BLT_FUNC(s,d) *d = (*d) & ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTSRC_24
 #define BLT_FUNC(s,d) *d = ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYSRC_24
 #define BLT_FUNC(s,d) *d = (*s) & ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTDST_24
 #define BLT_FUNC(s,d) *d = ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_EOR_24
 #define BLT_FUNC(s,d) *d = (*s) ^ (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NAND_24
 #define BLT_FUNC(s,d) *d = ~((*s) & (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_AND_24
 #define BLT_FUNC(s,d) *d = (*s) & (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NEOR_24
 #define BLT_FUNC(s,d) *d = ~((*s) ^ (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYSRC_24
 #define BLT_FUNC(s,d) *d = ~(*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYDST_24
 #define BLT_FUNC(s,d) *d = ~(*d) | (*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_OR_24
 #define BLT_FUNC(s,d) *d = (*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_TRUE_24
-#ifdef FSUAE
+#if 1 //def FSUAE
 #define BLT_FUNC(s,d) memset(d, 0xff, sizeof (*d))
 #else
 #define BLT_FUNC(s,d) *d = 0xffffffff
 #endif
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_SWAP_24
 #define BLT_FUNC(s,d) tmp = *d ; *d = *s; *s = tmp;
 #define BLT_TEMP
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #undef BLT_SIZE
 #undef BLT_MULT
 
@@ -1239,54 +1239,54 @@ void picasso_refresh (void)
 #define BLT_MULT 2
 #define BLT_NAME BLIT_FALSE_16
 #define BLT_FUNC(s,d) *d = 0
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOR_16
 #define BLT_FUNC(s,d) *d = ~(*s | * d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYDST_16
 #define BLT_FUNC(s,d) *d = (*d) & ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTSRC_16
 #define BLT_FUNC(s,d) *d = ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYSRC_16
 #define BLT_FUNC(s,d) *d = (*s) & ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTDST_16
 #define BLT_FUNC(s,d) *d = ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_EOR_16
 #define BLT_FUNC(s,d) *d = (*s) ^ (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NAND_16
 #define BLT_FUNC(s,d) *d = ~((*s) & (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_AND_16
 #define BLT_FUNC(s,d) *d = (*s) & (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NEOR_16
 #define BLT_FUNC(s,d) *d = ~((*s) ^ (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYSRC_16
 #define BLT_FUNC(s,d) *d = ~(*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYDST_16
 #define BLT_FUNC(s,d) *d = ~(*d) | (*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_OR_16
 #define BLT_FUNC(s,d) *d = (*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_TRUE_16
-#ifdef FSUAE
+#if 1 //def FSUAE
 #define BLT_FUNC(s,d) memset(d, 0xff, sizeof (*d))
 #else
 #define BLT_FUNC(s,d) *d = 0xffffffff
 #endif
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_SWAP_16
 #define BLT_FUNC(s,d) tmp = *d ; *d = *s; *s = tmp;
 #define BLT_TEMP
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #undef BLT_SIZE
 #undef BLT_MULT
 
@@ -1294,54 +1294,54 @@ void picasso_refresh (void)
 #define BLT_MULT 4
 #define BLT_NAME BLIT_FALSE_8
 #define BLT_FUNC(s,d) *d = 0
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOR_8
 #define BLT_FUNC(s,d) *d = ~(*s | * d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYDST_8
 #define BLT_FUNC(s,d) *d = (*d) & ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTSRC_8
 #define BLT_FUNC(s,d) *d = ~(*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_ONLYSRC_8
 #define BLT_FUNC(s,d) *d = (*s) & ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTDST_8
 #define BLT_FUNC(s,d) *d = ~(*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_EOR_8
 #define BLT_FUNC(s,d) *d = (*s) ^ (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NAND_8
 #define BLT_FUNC(s,d) *d = ~((*s) & (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_AND_8
 #define BLT_FUNC(s,d) *d = (*s) & (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NEOR_8
 #define BLT_FUNC(s,d) *d = ~((*s) ^ (*d))
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYSRC_8
 #define BLT_FUNC(s,d) *d = ~(*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_NOTONLYDST_8
 #define BLT_FUNC(s,d) *d = ~(*d) | (*s)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_OR_8
 #define BLT_FUNC(s,d) *d = (*s) | (*d)
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_TRUE_8
-#ifdef FSUAE
+#if 1 //def FSUAE
 #define BLT_FUNC(s,d) memset(d, 0xff, sizeof (*d))
 #else
 #define BLT_FUNC(s,d) *d = 0xffffffff
 #endif
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #define BLT_NAME BLIT_SWAP_8
 #define BLT_FUNC(s,d) tmp = *d ; *d = *s; *s = tmp;
 #define BLT_TEMP
-#include "../p96_blit.cpp"
+#include "../p96_blit.c"
 #undef BLT_SIZE
 #undef BLT_MULT
 
@@ -1571,7 +1571,7 @@ STATIC_INLINE void putmousepixel (uae_u8 *d, int bpp, int idx)
 	}
 }
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 static void putwinmousepixel (HDC andDC, HDC xorDC, int x, int y, int c, uae_u32 *ct)
 {
@@ -1597,7 +1597,7 @@ extern uae_u32 sprite_0_colors[4];
 
 int createwindowscursor (uaecptr src, int w, int h, int hiressprite, int doubledsprite, int chipset)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	return 0;
 #else
 	HBITMAP andBM, xorBM;
@@ -1767,7 +1767,7 @@ exit:
 
 int picasso_setwincursor (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	UAE_LOG_STUB("");
 #else
 	if (wincursor) {
@@ -2128,7 +2128,7 @@ static void CopyLibResolutionStructureU2A (struct LibResolution *libres, uaecptr
 
 void picasso_allocatewritewatch (int gfxmemsize)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	SYSTEM_INFO si;
 
@@ -2141,14 +2141,14 @@ void picasso_allocatewritewatch (int gfxmemsize)
 #endif
 }
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 static ULONG_PTR writewatchcount;
 #endif
 static int watch_offset;
 void picasso_getwritewatch (int offset)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	ULONG ps;
 	writewatchcount = gwwbufsize;
@@ -2162,7 +2162,7 @@ void picasso_getwritewatch (int offset)
 }
 bool picasso_is_vram_dirty (uaecptr addr, int size)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	return true;
 #else
 	static ULONG_PTR last;
@@ -2202,7 +2202,7 @@ static void init_alloc (TrapContext *ctx, int size)
 	picasso96_amemend = picasso96_amem + size;
 	write_log (_T("P96 RESINFO: %08X-%08X (%d,%d)\n"), picasso96_amem, picasso96_amemend, size / PSSO_ModeInfo_sizeof, size);
 	picasso_allocatewritewatch (gfxmem_bank.allocated);
-#ifdef FSUAE
+#if 1 //def FSUAE
 	printf("setting gwwpagesize to something...\n");
 	gwwpagesize = 1024*1024*4; // FIXME:...
 
@@ -2249,7 +2249,7 @@ static int missmodes[] = { 320, 200, 320, 240, 320, 256, 640, 400, 640, 480, 640
 
 static uaecptr uaegfx_card_install (TrapContext *ctx, uae_u32 size);
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 
 static void add_mode (struct MultiDisplay *md, int w, int h, int d, int freq,
 		int lace) {
@@ -2353,7 +2353,7 @@ static void picasso96_alloc2 (TrapContext *ctx)
 	if (p96depth (32))
 		depths++;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 	printf("\n\npicasso96_alloc2\n\n\n");
 
 	MultiDisplay *md1 = Displays;
@@ -2423,7 +2423,7 @@ static void picasso96_alloc2 (TrapContext *ctx)
 #endif
 
 	for (int mon = 0; Displays[mon].monitorname; mon++) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		printf("monitor: %d\n", mon);
 #endif
 		struct PicassoResolution *DisplayModes = Displays[mon].DisplayModes;
@@ -2583,7 +2583,7 @@ static void inituaegfx (uaecptr ABI)
 		write_log (_T("P96: Blitter disabled in devs:monitors/uaegfx!\n"));
 	flags |= BIF_BLITTER | BIF_NOMEMORYMODEMIX;
 	flags &= ~BIF_HARDWARESPRITE;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (0) {
 		// FIXME: fix hardware sprite via OpenGL?
 #else
@@ -2861,7 +2861,7 @@ static void init_picasso_screen (void)
 		picasso_refresh ();
 	}
 	init_picasso_screen_called = 1;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	// printf("FIXME: not calling mman_ResetWatch (p96ram_start + natmem_offset, gfxmem_bank.allocated);\n");
 #else
 	mman_ResetWatch (gfxmem_bank.start + natmem_offset, gfxmem_bank.allocated);
@@ -3743,7 +3743,7 @@ static uae_u32 REGPARAM2 picasso_SetDisplay (TrapContext *ctx)
 
 void init_hz_p96 (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	if (0) {
 #else
 	if (currprefs.win32_rtgvblankrate < 0 || isvsync_rtg ())  {
@@ -4391,7 +4391,7 @@ void freertgbuffer (uae_u8 *dst)
 
 void picasso_invalidate (int x, int y, int w, int h)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	DX_Invalidate (x, y, w, h);
 #endif
@@ -4404,7 +4404,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 	uae_u8 *src_end;
 	int lock = 0;
 	uae_u8 *dst = NULL;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	uintptr_t gwwcnt;
 #else
 	ULONG_PTR gwwcnt;
@@ -4415,7 +4415,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 	int miny = pheight - 1;
 	int flushlines = 0, matchcount = 0;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 	picasso_vidinfo.extra_mem = 1;
 #endif
 
@@ -4428,7 +4428,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 		pwidth, pheight);
 #endif
 	if (!picasso_vidinfo.extra_mem || !gwwbuf || src_start >= src_end) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 		printf("%d %p %d returning\n", picasso_vidinfo.extra_mem, gwwbuf, src_start >= src_end);
 #endif
 		return false;
@@ -4446,7 +4446,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 		gwwcnt = 0;
 
 		if (doskip () && p96skipmode == 1) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 			printf("breaking\n");
 #endif
 			break;
@@ -4460,7 +4460,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 		} else {
 			ULONG ps;
 			gwwcnt = gwwbufsize;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 			if (mman_GetWriteWatch (src_start, src_end - src_start, gwwbuf, &gwwcnt, &ps))
 				break;
@@ -4483,7 +4483,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 		dst += picasso_vidinfo.offset;
 
 		if (doskip () && p96skipmode == 2) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 			printf("breaking (2)\n");
 #endif
 			break;
@@ -4586,7 +4586,7 @@ bool picasso_flushpixels (uae_u8 *src, int off)
 		if (doskip () && p96skipmode == 3) {
 			;
 		} else {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 			mman_ResetWatch (src_start, src_end - src_start);
 #endif
@@ -4628,7 +4628,7 @@ void InitPicasso96 (void)
 			| ((i & 2) ? 0x0100 : 0)
 			| ((i & 1) ? 0x01 : 0));
 	}
-#ifdef FSUAE
+#if 1 //def FSUAE
 	picasso_vidinfo.pixbytes = g_amiga_video_bpp;
 #endif
 }

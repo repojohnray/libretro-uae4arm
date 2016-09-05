@@ -10,7 +10,7 @@
 #define UAE_AUTOCONF_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "uae_memory.h"
 #include "uae_limits.h"
 #endif
@@ -94,7 +94,7 @@ extern void filesys_start_threads (void);
 extern void filesys_flush_cache (void);
 extern void filesys_free_handles (void);
 extern void filesys_vsync (void);
-#ifdef FSUAE
+#if 1 //def FSUAE
 extern void filesys_hsync (void);
 #endif
 

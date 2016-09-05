@@ -10,7 +10,7 @@
 #define UAE_ZFILE_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include <stddef.h>
 #endif
 
@@ -43,11 +43,11 @@ struct fs_filehandle
 
 typedef int (*zfile_callback)(struct zfile*, void*);
 
-extern struct zfile *zfile_fopen (const TCHAR *, const TCHAR *, int mask);
-extern struct zfile *zfile_fopen (const TCHAR *, const TCHAR *);
+extern struct zfile *zfile_fopen3 (const TCHAR *, const TCHAR *, int mask);
+extern struct zfile *zfile_fopen2 (const TCHAR *, const TCHAR *);
 extern struct zfile *zfile_fopen (const TCHAR *, const TCHAR *, int mask, int index);
 extern struct zfile *zfile_fopen_empty (struct zfile*, const TCHAR *name, uae_u64 size);
-extern struct zfile *zfile_fopen_empty (struct zfile*, const TCHAR *name);
+extern struct zfile *zfile_fopen_empty2 (struct zfile*, const TCHAR *name);
 extern struct zfile *zfile_fopen_data (const TCHAR *name, uae_u64 size, const uae_u8 *data);
 extern struct zfile *zfile_fopen_load_zfile (struct zfile *f);
 extern uae_u8 *zfile_load_data (const TCHAR *name, const uae_u8 *data,int datalen, int *outlen);
@@ -121,7 +121,7 @@ extern const TCHAR *uae_archive_extensions[];
 extern const TCHAR *uae_ignoreextensions[];
 extern const TCHAR *uae_diskimageextensions[];
 
-extern struct zvolume *zfile_fopen_archive (const TCHAR *filename);
+extern struct zvolume *zfile_fopen_archive1 (const TCHAR *filename);
 extern struct zvolume *zfile_fopen_archive (const TCHAR *filename, int flags);
 extern struct zvolume *zfile_fopen_archive_root (const TCHAR *filename, int flags);
 extern void zfile_fclose_archive (struct zvolume *zv);
@@ -154,7 +154,7 @@ struct mystat
 	uae_s64 size;
 	uae_u32 mode;
 	struct mytimeval mtime;
-#ifdef FSUAE
+#if 1 //def FSUAE
 	uae_s64 st_blocks;
 #endif
 };

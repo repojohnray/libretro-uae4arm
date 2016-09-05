@@ -17,7 +17,7 @@ struct audsettings {
 
 typedef void(*audio_callback_fn) (void *opaque, int avail);
 
-struct SWVoiceOut
+typedef struct SWVoiceOut
 {
 	int dummy;
 	int event_time;
@@ -31,11 +31,11 @@ struct SWVoiceOut
 	int freq, ch, bits;
 	audfmt_e fmt;
 	int left_volume, right_volume;
-};
-struct SWVoiceIn
+} SWVoiceOut;
+typedef struct SWVoiceIn
 {
 	int dummy;
-};
+} SWVoiceIn;
 typedef struct QEMUSoundCard {
 	int dummy;
 } QEMUSoundCard;

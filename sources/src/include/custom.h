@@ -10,7 +10,7 @@
 #define UAE_CUSTOM_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #include "uae_inline.h"
 #include "options.h"
 #else
@@ -58,7 +58,7 @@ extern void set_picasso_hack_rate (int hz);
 extern int bogusframe;
 extern unsigned long int hsync_counter, vsync_counter;
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 extern int g_uae_vsync_counter;
 // extern int g_uae_hsync_counter;
 #endif

@@ -2132,7 +2132,7 @@ static void write_battclock (void)
 {
 	if (!currprefs.rtcfile[0] || currprefs.cs_rtc == 0)
 		return;
-	struct zfile *f = zfile_fopen (currprefs.rtcfile, _T("wb"));
+	struct zfile *f = zfile_fopen2 (currprefs.rtcfile, _T("wb"));
 	if (f) {
 		struct tm *ct;
 #ifdef FSUAE
@@ -2179,7 +2179,7 @@ void rtc_hardreset (void)
 		rtc_alarm[10] = 1; /* 24H mode */
 	}
 	if (currprefs.rtcfile[0]) {
-		struct zfile *f = zfile_fopen (currprefs.rtcfile, _T("rb"));
+		struct zfile *f = zfile_fopen2 (currprefs.rtcfile, _T("rb"));
 		if (f) {
 			uae_u8 empty[13];
 			zfile_fread (empty, 13, 1, f);

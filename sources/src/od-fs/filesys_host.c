@@ -135,7 +135,7 @@ struct my_opendir_s *my_opendir(const TCHAR *name, const TCHAR *mask) {
     return mod;
 }
 
-struct my_opendir_s *my_opendir(const TCHAR *name) {
+struct my_opendir_s *my_opendir1(const TCHAR *name) {
     return my_opendir(name, _T("*.*"));
 }
 

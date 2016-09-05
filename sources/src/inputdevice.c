@@ -195,7 +195,7 @@ static int isdevice (struct uae_input_device *id)
 
 static void check_enable(int ei);
 
-int inputdevice_uaelib (const TCHAR *s, const TCHAR *parm)
+int inputdevice_uaelib2 (const TCHAR *s, const TCHAR *parm)
 {
 	int i;
 
@@ -2701,7 +2701,7 @@ static int handle_custom_event (const TCHAR *custom)
 			p += 4;
 			if (pp)
 				*pp++ = 0;
-			inputdevice_uaelib (p, pp);
+			inputdevice_uaelib2 (p, pp);
 		} else {
 			cfgfile_parse_line (&changed_prefs, p, 0);
 		}
@@ -3975,7 +3975,7 @@ static int switchdevice (struct uae_input_device *id, int num, bool buttonmode)
 #if 1
 			write_log (_T("inputdevice gameports change '%s':%d->%d %d,%d\n"), name, num, newport, currprefs.input_selected_setting, currprefs.jports[newport].id);
 #endif
-			inputdevice_unacquire ();
+			inputdevice_unacquire0 ();
 			if (fname)
 				statusline_add_message(_T("Port %d: %s"), newport, fname);
 
@@ -4109,7 +4109,7 @@ static int switchdevice (struct uae_input_device *id, int num, bool buttonmode)
 			}
 		}
 		write_log (_T("inputdevice input change '%s':%d->%d\n"), name, num, newport);
-		inputdevice_unacquire ();
+		inputdevice_unacquire0 ();
 		if (fname)
 			statusline_add_message(_T("Port %d: %s"), newport, fname);
 		inputdevice_copyconfig (&currprefs, &changed_prefs);
@@ -5978,7 +5978,7 @@ void inputdevice_devicechange (struct uae_prefs *prefs)
 			jports_configname[i] = my_strdup(prefs->jports[i].configname);
 	}
 
-	inputdevice_unacquire ();
+	inputdevice_unacquire0 ();
 	idev[IDTYPE_JOYSTICK].close ();
 	idev[IDTYPE_MOUSE].close ();
 	idev[IDTYPE_KEYBOARD].close ();
@@ -7106,7 +7106,7 @@ void inputdevice_unacquire(bool emulationactive, int inputmask)
 		idev[IDTYPE_KEYBOARD].unacquire(-1);
 }
 
-void inputdevice_unacquire(void)
+void inputdevice_unacquire0(void)
 {
 	inputdevice_unacquire(false, 0);
 }

@@ -24,14 +24,14 @@
 #include "serial.h"
 #include "enforcer.h"
 
-#include "parser.h"
+#include "od-win32/parser.h"
 
 #define SERIALLOGGING 0
 #define SERIALDEBUG 0 /* 0, 1, 2 3 */
 #define SERIALHSDEBUG 0
 #define SERIAL_HSYNC_BEFORE_OVERFLOW 200
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 #define SERIAL_MAP
 #endif
@@ -517,7 +517,7 @@ void serial_hsynchandler (void)
 	extern void hsyncstuff(void);
 	hsyncstuff();
 #endif
-#ifdef FSUAE
+#if 1 //def FSUAE
 	/* no read_log implementation */
 #else
 	if (seriallog && !data_in_serdatr && gotlogwrite) {

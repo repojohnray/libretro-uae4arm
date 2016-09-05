@@ -104,7 +104,9 @@ static char * simm(int val, int hex, int s)
 }
 
 // Simple instruction form + reserved bitmask.
-static void put(const char * mnem, u32 mask, u32 chkval=0, int iclass=PPC_DISA_OTHER)
+#define put2(a1,a2) put(a1,a2,0,PPC_DISA_OTHER)
+#define put3(a1,a2,a3) put(a1,a2,a3,PPC_DISA_OTHER)
+static void put(const char * mnem, u32 mask, u32 chkval, int iclass) //static void put(const char * mnem, u32 mask, u32 chkval=0, int iclass=PPC_DISA_OTHER)
 {
     if( (Instr & mask) != chkval ) { ill(); return; }
     o->iclass |= iclass;
@@ -182,7 +184,10 @@ static void trap(int L, int imm)
 // dab LSB bits : [D][A][B] (D should always present)
 // 'hex' for logic opcodes, 's' for alu opcodes, 'crfD' and 'L' for cmp opcodes
 // 'imm': 1 to show immediate operand
-static void integer(const char *mnem, char form, int dab, int hex=0, int s=1, int crfD=0, int L=0, int imm=1)
+#define integer3(a1,a2,a3)       	integer(a1,a2,a3, 0, 1, 0, 0, 1)
+#define integer5(a1,a2,a3,a4,a5)	integer(a1,a2,a3,a4,a5, 0 ,0, 1)
+#define integer7(a1,a2,a3,a4,a5,a6,a7)	integer(a1,a2,a3,a4,a5,a6,a7, 1)
+static void integer(const char *mnem, char form, int dab, int hex, int s, int crfD, int L, int imm) // (const char *mnem, char form, int dab, int hex=0, int s=1, int crfD=0, int L=0, int imm=1)
 {
     char * ptr = o->operands;
     int rd = DIS_RD, ra = DIS_RA, rb = DIS_RB;
@@ -280,11 +285,11 @@ static void cmp(const char *l, const char *i)
 
 #ifdef  SIMPLIFIED
     sprintf(mnem, "cmp%s%c%s", l, (rd & 1) ? 'd' : 'w', i);
-    integer(mnem, (*i == 'i') ? 'D' : 'X', DAB_A|DAB_B, 0, 1, (rd >> 2) ? 1 : 0, 0);
+    integer7(mnem, (*i == 'i') ? 'D' : 'X', DAB_A|DAB_B, 0, 1, (rd >> 2) ? 1 : 0, 0);
     o->iclass |= PPC_DISA_SIMPLIFIED;
 #else
     sprintf(mnem, "cmp%s%s", l, i);
-    integer(mnem, (*i == 'i') ? 'D' : 'X', DAB_A|DAB_B, 0, 1, 1, 1);
+    integer7(mnem, (*i == 'i') ? 'D' : 'X', DAB_A|DAB_B, 0, 1, 1, 1);
 #endif
 }
 
@@ -296,13 +301,13 @@ static void addi(const char *suffix)
 #ifdef  SIMPLIFIED
     if( (suffix[0] == '\0') && (DIS_RA == 0) )  // Load immediate
     {
-        integer("li", 'D', DAB_D, 0, 1);
+        integer5("li", 'D', DAB_D, 0, 1);
         o->iclass |= PPC_DISA_SIMPLIFIED;
         return;
     }
     if( (suffix[0] == 's') && (DIS_RA == 0) )   // Load address HI
     {
-        integer("lis", 'D', DAB_D, 1, 0);
+        integer5("lis", 'D', DAB_D, 1, 0);
         o->iclass |= PPC_DISA_SIMPLIFIED;
         return;
     }
@@ -314,17 +319,17 @@ static void addi(const char *suffix)
         u16 value = (u16)(~(DIS_UIMM) + 1);
         Instr = (Instr & ~0xFFFF) | value;
 
-        integer(mnem, 'D', DAB_D|DAB_A, 0, 1);
+        integer5(mnem, 'D', DAB_D|DAB_A, 0, 1);
         o->iclass |= PPC_DISA_SIMPLIFIED;
     }
     else
     {
         sprintf(mnem, "addi%s", suffix);
-        integer(mnem, 'D', DAB_D|DAB_A, 0, 0);
+        integer5(mnem, 'D', DAB_D|DAB_A, 0, 0);
     }
 #else
     sprintf(mnem, "addi%s", suffix);
-    integer(mnem, 'D', DAB_D|DAB_A);
+    integer3(mnem, 'D', DAB_D|DAB_A);
 #endif
 }
 
@@ -461,7 +466,9 @@ static void mcrf(void)
 }
 
 // CR logic operations
-static void crop(const char *name, const char *simp="", int ddd=0, int daa=0)
+#define crop1(a1) crop(a1,"",0,0)
+#define crop3(a1,a2,a3) crop(a1,a2,a3,0)
+static void crop(const char *name, const char *simp, int ddd, int daa) // crop(const char *name, const char *simp="", int ddd=0, int daa=0)
 {
     if(Instr & 1) { ill(); return; }
 
@@ -506,7 +513,8 @@ static void crop(const char *name, const char *simp="", int ddd=0, int daa=0)
 }
 
 // Rotate left word.
-static void rlw(const char *name, int rb, int ins=0)
+#define rlw2(a1,a2) rlw(a1,a2,0)
+static void rlw(const char *name, int rb, int ins) // rlw(const char *name, int rb, int ins=0)
 {
     int mb = DIS_MB, me = DIS_ME;
     char * ptr = o->operands;
@@ -564,9 +572,13 @@ static void rld(char *name, int rb, int mtype)
 }
 
 // Load/Store.
-static void ldst(const char *name, int x/*indexed*/, int load=1, int L=0, int string=0, int fload=0)
+#define ldst2(a1,a2) ldst(a1,a2,1,0,0,0)
+#define ldst3(a1,a2,a3) ldst(a1,a2,a3,0,0,0)
+#define ldst4(a1,a2,a3,a4) ldst(a1,a2,a3,a4,0,0)
+#define ldst5(a1,a2,a3,a4,a5) ldst(a1,a2,a3,a4,a5,0)
+static void ldst(const char *name, int x/*indexed*/, int load, int L, int string, int fload) // ldst(const char *name, int x/*indexed*/, int load=1, int L=0, int string=0, int fload=0)
 {
-    if(x) integer(name, fload ? 'F' : 'X', DAB_D|DAB_A|DAB_B);
+    if(x) integer3(name, fload ? 'F' : 'X', DAB_D|DAB_A|DAB_B);
     else
     {
         int rd = DIS_RD, ra = DIS_RA;
@@ -586,12 +598,13 @@ static void ldst(const char *name, int x/*indexed*/, int load=1, int L=0, int st
 }
 
 // Cache.
-static void cache(const char *name, int flag=PPC_DISA_OTHER)
+#define cache1(a1) cache(a1,PPC_DISA_OTHER)
+static void cache(const char *name, int flag) // cache(const char *name, int flag=PPC_DISA_OTHER)
 {
     if (DIS_RD) { ill(); return; }
     else
     {
-        integer(name, 'X', DAB_A|DAB_B);
+        integer3(name, 'X', DAB_A|DAB_B);
         o->r[0] = o->r[1];
         o->r[1] = o->r[2];
         o->r[2] = 0;
@@ -874,7 +887,8 @@ static void lsswi(const char *name)
 #define FPU_DACB    4
 #define FPU_D       5
 
-static void fpu(const char *name, u32 mask, int type, int flag=PPC_DISA_OTHER)
+#define fpu3(a1,a2,a3) fpu(a1,a2,a3,PPC_DISA_OTHER)
+static void fpu(const char *name, u32 mask, int type, int flag) // fpu(const char *name, u32 mask, int type, int flag=PPC_DISA_OTHER)
 {
     int d = DIS_RD, a = DIS_RA, c = DIS_RC, b = DIS_RB;
 
@@ -1109,8 +1123,8 @@ void PPCDisasm(PPCD_CB *discb)
         case 002: trap(1, 1); break;                                        // tdi
 #endif
         case 003: trap(0, 1); break;                                        // twi
-        case 007: integer("mulli", 'D', DAB_D|DAB_A); break;                // mulli
-        case 010: integer("subfic", 'D', DAB_D|DAB_A); break;               // subfic
+        case 007: integer3("mulli", 'D', DAB_D|DAB_A); break;                // mulli
+        case 010: integer3("subfic", 'D', DAB_D|DAB_A); break;               // subfic
         case 012: cmp("l", "i"); break;                                     // cmpli
         case 013: cmp("", "i"); break;                                      // cmpi
         case 014: addi("c"); break;                                         // addic
@@ -1118,38 +1132,38 @@ void PPCDisasm(PPCD_CB *discb)
         case 016: addi(""); break;                                          // addi
         case 017: addi("s"); break;                                         // addis
         case 020: bcx(1, 0); break;                                         // bcx
-        case 021: put("sc", 0x03ffffff, 2); break;                          // sc
+        case 021: put3("sc", 0x03ffffff, 2); break;                          // sc
         case 022: bx(); break;                                              // bx
         case 024: rlw("imi", 0, 1); break;                                  // rlwimix
-        case 025: rlw("inm", 0); break;                                     // rlwinmx
-        case 027: rlw("nm", 1); break;                                      // rlwnmx
+        case 025: rlw2("inm", 0); break;                                     // rlwinmx
+        case 027: rlw2("nm", 1); break;                                      // rlwnmx
         case 030:                                                           // ori
 #ifdef SIMPLIFIED
                   if(Instr == 0x60000000) put("nop", 0, 0, PPC_DISA_INTEGER | PPC_DISA_SIMPLIFIED);
                   else
 #endif
-                  integer("ori", 'S', ASB_A|ASB_S, 1, 0); break;
-        case 031: integer("oris", 'S', ASB_A|ASB_S, 1, 0); break;           // oris
-        case 032: integer("xori", 'S', ASB_A|ASB_S, 1, 0); break;           // xori
-        case 033: integer("xoris", 'S', ASB_A|ASB_S, 1, 0); break;          // xoris
-        case 034: integer("andi.", 'S', ASB_A|ASB_S, 1, 0); break;          // andi.
-        case 035: integer("andis.", 'S', ASB_A|ASB_S, 1, 0); break;         // andis.
-        case 040: ldst("lwz", 0, 1); break;                                 // lwz
-        case 041: ldst("lwzu", 0, 1); break;                                // lwzu
-        case 042: ldst("lbz", 0, 1); break;                                 // lbz
-        case 043: ldst("lbzu", 0, 1); break;                                // lbzu
-        case 044: ldst("stw", 0, 0); break;                                 // stw
-        case 045: ldst("stwu", 0, 0); break;                                // stwu
-        case 046: ldst("stb", 0, 0); break;                                 // stb
-        case 047: ldst("stbu", 0, 0); break;                                // stbu
-        case 050: ldst("lhz", 0, 1); break;                                 // lhz
-        case 051: ldst("lhzu", 0, 1); break;                                // lhzu
-        case 052: ldst("lha", 0, 1); break;                                 // lha
-        case 053: ldst("lhau", 0, 1); break;                                // lhau
-        case 054: ldst("sth", 0, 0); break;                                 // sth
-        case 055: ldst("sthu", 0, 0); break;                                // sthu
-        case 056: ldst("lmw", 0, 1, 0, 1); break;                           // lmw
-        case 057: ldst("stmw", 0, 0, 0, 1); break;                          // stmw
+                  integer5("ori", 'S', ASB_A|ASB_S, 1, 0); break;
+        case 031: integer5("oris", 'S', ASB_A|ASB_S, 1, 0); break;           // oris
+        case 032: integer5("xori", 'S', ASB_A|ASB_S, 1, 0); break;           // xori
+        case 033: integer5("xoris", 'S', ASB_A|ASB_S, 1, 0); break;          // xoris
+        case 034: integer5("andi.", 'S', ASB_A|ASB_S, 1, 0); break;          // andi.
+        case 035: integer5("andis.", 'S', ASB_A|ASB_S, 1, 0); break;         // andis.
+        case 040: ldst3("lwz", 0, 1); break;                                 // lwz
+        case 041: ldst3("lwzu", 0, 1); break;                                // lwzu
+        case 042: ldst3("lbz", 0, 1); break;                                 // lbz
+        case 043: ldst3("lbzu", 0, 1); break;                                // lbzu
+        case 044: ldst3("stw", 0, 0); break;                                 // stw
+        case 045: ldst3("stwu", 0, 0); break;                                // stwu
+        case 046: ldst3("stb", 0, 0); break;                                 // stb
+        case 047: ldst3("stbu", 0, 0); break;                                // stbu
+        case 050: ldst3("lhz", 0, 1); break;                                 // lhz
+        case 051: ldst3("lhzu", 0, 1); break;                                // lhzu
+        case 052: ldst3("lha", 0, 1); break;                                 // lha
+        case 053: ldst3("lhau", 0, 1); break;                                // lhau
+        case 054: ldst3("sth", 0, 0); break;                                 // sth
+        case 055: ldst3("sthu", 0, 0); break;                                // sthu
+        case 056: ldst5("lmw", 0, 1, 0, 1); break;                           // lmw
+        case 057: ldst5("stmw", 0, 0, 0, 1); break;                          // stmw
         case 060: ldst("lfs", 0, 1, 0, 0, 1); break;                        // lfs
         case 061: ldst("lfsu", 0, 1, 0, 0, 1); break;                       // lfsu
         case 062: ldst("lfd", 0, 1, 0, 0, 1); break;                        // lfd
@@ -1168,15 +1182,15 @@ void PPCDisasm(PPCD_CB *discb)
         case 00020: bcx(0, 1); break;                                       // bclrx
         case 01020: bcx(0, 0); break;                                       // bcctrx
         case 00000: mcrf(); break;                                          // mcrf
-        case 00401: crop("and"); break;                                     // crand
-        case 00201: crop("andc"); break;                                    // crandc
-        case 00441: crop("eqv", "set", 1); break;                           // creqv
-        case 00341: crop("nand"); break;                                    // crnand
+        case 00401: crop1("and"); break;                                     // crand
+        case 00201: crop1("andc"); break;                                    // crandc
+        case 00441: crop3("eqv", "set", 1); break;                           // creqv
+        case 00341: crop1("nand"); break;                                    // crnand
         case 00041: crop("nor", "not", 0, 1); break;                        // crnor
         case 00701: crop("or", "move", 0, 1); break;                        // cror
-        case 00641: crop("orc"); break;                                     // crorc
-        case 00301: crop("xor", "clr", 1); break;                           // crxor
-        case 00226: put("isync", 0x3fff801); break;                         // isync
+        case 00641: crop1("orc"); break;                                     // crorc
+        case 00301: crop3("xor", "clr", 1); break;                           // crxor
+        case 00226: put2("isync", 0x3fff801); break;                         // isync
 #ifdef  POWERPC_32
         case 00062: put("rfi", 0x3fff801, 0, PPC_DISA_OEA | PPC_DISA_BRIDGE ); break; // rfi
 #endif
@@ -1217,180 +1231,180 @@ void PPCDisasm(PPCD_CB *discb)
                     else
 #endif
                     trap(0, 0); break;
-        case 00020: integer("subfc", 'X', DAB_D|DAB_A|DAB_B); break;        // subfcx
-        case 00020|OE: integer("subfco", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00021: integer("subfc.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00021|OE: integer("subfco.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00024: integer("addc", 'X', DAB_D|DAB_A|DAB_B); break;         // addcx
-        case 00024|OE: integer("addco", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00025: integer("addc.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00025|OE: integer("addco.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00026: integer("mulhwu", 'X', DAB_D|DAB_A|DAB_B); break;       // mulhwu
-        case 00027: integer("mulhwu.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00020: integer3("subfc", 'X', DAB_D|DAB_A|DAB_B); break;        // subfcx
+        case 00020|OE: integer3("subfco", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00021: integer3("subfc.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00021|OE: integer3("subfco.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00024: integer3("addc", 'X', DAB_D|DAB_A|DAB_B); break;         // addcx
+        case 00024|OE: integer3("addco", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00025: integer3("addc.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00025|OE: integer3("addco.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00026: integer3("mulhwu", 'X', DAB_D|DAB_A|DAB_B); break;       // mulhwu
+        case 00027: integer3("mulhwu.", 'X', DAB_D|DAB_A|DAB_B); break;
         case 00046: if(DIS_RA | DIS_RB) ill();                              // mfcr
                     else { integer("mfcr", 'D', DAB_D, 0,0,0,0,0); o->iclass = PPC_DISA_OTHER; } break;
-        case 00050: ldst("lwarx", 1); break;                                // lwarx
-        case 00056: ldst("lwzx", 1); break;                                 // lwzx
-        case 00060: integer("slw", 'Z', ASB_A|ASB_S|ASB_B); break;          // slwx
-        case 00061: integer("slw.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 00050: ldst2("lwarx", 1); break;                                // lwarx
+        case 00056: ldst2("lwzx", 1); break;                                 // lwzx
+        case 00060: integer3("slw", 'Z', ASB_A|ASB_S|ASB_B); break;          // slwx
+        case 00061: integer3("slw.", 'Z', ASB_A|ASB_S|ASB_B); break;
         case 00064: if(DIS_RB) ill();                                       // cntlzwx
                     else integer("cntlzw", 'S', ASB_A|ASB_S, 0,0,0,0,0); break;
         case 00065: if(DIS_RB) ill();
                     else integer("cntlzw.", 'S', ASB_A|ASB_S, 0,0,0,0,0); break;
-        case 00070: integer("and", 'Z', ASB_A|ASB_S|ASB_B); break;          // andx
-        case 00071: integer("and.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 00070: integer3("and", 'Z', ASB_A|ASB_S|ASB_B); break;          // andx
+        case 00071: integer3("and.", 'Z', ASB_A|ASB_S|ASB_B); break;
         case 00100: cmp("l", ""); break;                                    // cmpl
-        case 00120: integer("subf", 'X', DAB_D|DAB_A|DAB_B); break;         // subfx
-        case 00120|OE: integer("subfo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00121: integer("subf.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00121|OE: integer("subfo.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00154: cache("dcbst"); break;                                  // dcbst
-        case 00156: ldst("lwzux", 1); break;                                // lwzux
-        case 00170: integer("andc", 'Z', ASB_A|ASB_S|ASB_B); break;         // andcx
-        case 00171: integer("andc.", 'Z', ASB_A|ASB_S|ASB_B); break;
-        case 00226: integer("mulhw", 'X', DAB_D|DAB_A|DAB_B); break;        // mulhw
-        case 00227: integer("mulhw.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00120: integer3("subf", 'X', DAB_D|DAB_A|DAB_B); break;         // subfx
+        case 00120|OE: integer3("subfo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00121: integer3("subf.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00121|OE: integer3("subfo.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00154: cache1("dcbst"); break;                                  // dcbst
+        case 00156: ldst2("lwzux", 1); break;                                // lwzux
+        case 00170: integer3("andc", 'Z', ASB_A|ASB_S|ASB_B); break;         // andcx
+        case 00171: integer3("andc.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 00226: integer3("mulhw", 'X', DAB_D|DAB_A|DAB_B); break;        // mulhw
+        case 00227: integer3("mulhw.", 'X', DAB_D|DAB_A|DAB_B); break;
         case 00246: if(DIS_RA || DIS_RB) ill();                             // mfmsr
-                    else { integer("mfmsr", 'X', DAB_D); o->iclass = PPC_DISA_OEA; } break;
-        case 00254: cache("dcbf"); break;                                   // dcbf
-        case 00256: ldst("lbzx", 1, 1, 0); break;                           // lbzx
+                    else { integer3("mfmsr", 'X', DAB_D); o->iclass = PPC_DISA_OEA; } break;
+        case 00254: cache1("dcbf"); break;                                   // dcbf
+        case 00256: ldst4("lbzx", 1, 1, 0); break;                           // lbzx
         case 00320: if(DIS_RB) ill();                                       // negx
-                    else integer("neg", 'X', DAB_D|DAB_A); break;
+                    else integer3("neg", 'X', DAB_D|DAB_A); break;
         case 00321: if(DIS_RB) ill();
-                    else integer("neg.", 'X', DAB_D|DAB_A); break;
+                    else integer3("neg.", 'X', DAB_D|DAB_A); break;
         case 00320|OE: if(DIS_RB) ill();
-                    else integer("nego", 'X', DAB_D|DAB_A); break;
+                    else integer3("nego", 'X', DAB_D|DAB_A); break;
         case 00321|OE: if(DIS_RB) ill();
-                    else integer("nego.", 'X', DAB_D|DAB_A); break;
-        case 00356: ldst("lbzux", 1, 1); break;                             // lbzux
+                    else integer3("nego.", 'X', DAB_D|DAB_A); break;
+        case 00356: ldst3("lbzux", 1, 1); break;                             // lbzux
         case 00370:                                                         // norx
 #ifdef SIMPLIFIED
-                    if(DIS_RS == DIS_RB) { integer("not", 'Z', ASB_A|ASB_S); o->iclass |= PPC_DISA_SIMPLIFIED; }
+                    if(DIS_RS == DIS_RB) { integer3("not", 'Z', ASB_A|ASB_S); o->iclass |= PPC_DISA_SIMPLIFIED; }
                     else
 #endif
-                    integer("nor", 'Z', ASB_A|ASB_S|ASB_B); break;
-        case 00371: integer("nor.", 'Z', ASB_A|ASB_S|ASB_B); break;
-        case 00420: integer("subfe", 'X', DAB_D|DAB_A|DAB_B); break;        // subfex
-        case 00420|OE: integer("subfeo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00421: integer("subfe.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00421|OE: integer("subfeo.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00424: integer("adde", 'X', DAB_D|DAB_A|DAB_B); break;         // addex
-        case 00424|OE: integer("addeo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00425: integer("adde.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00425|OE: integer("addeo.", 'X', DAB_D|DAB_A|DAB_B); break;
+                    integer3("nor", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 00371: integer3("nor.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 00420: integer3("subfe", 'X', DAB_D|DAB_A|DAB_B); break;        // subfex
+        case 00420|OE: integer3("subfeo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00421: integer3("subfe.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00421|OE: integer3("subfeo.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00424: integer3("adde", 'X', DAB_D|DAB_A|DAB_B); break;         // addex
+        case 00424|OE: integer3("addeo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00425: integer3("adde.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00425|OE: integer3("addeo.", 'X', DAB_D|DAB_A|DAB_B); break;
         case 00440: mtcrf(); break;                                         // mtcrf
 #ifdef POWERPC_32
         case 00444: if(DIS_RA || DIS_RB) ill();                             // mtmsr
-                    else { integer("mtmsr", 'X', DAB_D); o->iclass = PPC_DISA_OEA | PPC_DISA_BRIDGE; } break;
+                    else { integer3("mtmsr", 'X', DAB_D); o->iclass = PPC_DISA_OEA | PPC_DISA_BRIDGE; } break;
 #endif
-        case 00455: ldst("stwcx.", 1, 0, 0); break;                         // stwcx.
-        case 00456: ldst("stwx", 1, 0, 0); break;                           // stwx
-        case 00556: ldst("stwux", 1, 0, 0); break;                          // stwux
+        case 00455: ldst4("stwcx.", 1, 0, 0); break;                         // stwcx.
+        case 00456: ldst4("stwx", 1, 0, 0); break;                           // stwx
+        case 00556: ldst4("stwux", 1, 0, 0); break;                          // stwux
         case 00620: if(DIS_RB) ill();                                       // subfzex
-                    else integer("subfze", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfze", 'X', DAB_D|DAB_A); break;
         case 00620|OE: if(DIS_RB) ill();
-                    else integer("subfzeo", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfzeo", 'X', DAB_D|DAB_A); break;
         case 00621: if(DIS_RB) ill();
-                    else integer("subfze.", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfze.", 'X', DAB_D|DAB_A); break;
         case 00621|OE: if(DIS_RB) ill();
-                    else integer("subfzeo.", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfzeo.", 'X', DAB_D|DAB_A); break;
         case 00624: if(DIS_RB) ill();                                       // addzex
-                    else integer("addze", 'X', DAB_D|DAB_A); break;
+                    else integer3("addze", 'X', DAB_D|DAB_A); break;
         case 00624|OE: if(DIS_RB) ill();
-                    else integer("addzeo", 'X', DAB_D|DAB_A); break;
+                    else integer3("addzeo", 'X', DAB_D|DAB_A); break;
         case 00625: if(DIS_RB) ill();
-                    else integer("addze.", 'X', DAB_D|DAB_A); break;
+                    else integer3("addze.", 'X', DAB_D|DAB_A); break;
         case 00625|OE: if(DIS_RB) ill();
-                    else integer("addzeo.", 'X', DAB_D|DAB_A); break;
+                    else integer3("addzeo.", 'X', DAB_D|DAB_A); break;
 #ifdef POWERPC_32
         case 00644: movesr("mtsr", 0, 0, 0); break;                         // mtsr
 #endif
-        case 00656: ldst("stbx", 1, 0, 0); break;                           // stbx
+        case 00656: ldst4("stbx", 1, 0, 0); break;                           // stbx
         case 00720: if(DIS_RB) ill();                                       // subfmex
-                    else integer("subfme", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfme", 'X', DAB_D|DAB_A); break;
         case 00720|OE: if(DIS_RB) ill();
-                    else integer("subfmeo", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfmeo", 'X', DAB_D|DAB_A); break;
         case 00721: if(DIS_RB) ill();
-                    else integer("subfme.", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfme.", 'X', DAB_D|DAB_A); break;
         case 00721|OE: if(DIS_RB) ill();
-                    else integer("subfmeo.", 'X', DAB_D|DAB_A); break;
+                    else integer3("subfmeo.", 'X', DAB_D|DAB_A); break;
         case 00724: if(DIS_RB) ill();                                       // addmex
-                    else integer("addme", 'X', DAB_D|DAB_A); break;
+                    else integer3("addme", 'X', DAB_D|DAB_A); break;
         case 00724|OE: if(DIS_RB) ill();
-                    else integer("addmeo", 'X', DAB_D|DAB_A); break;
+                    else integer3("addmeo", 'X', DAB_D|DAB_A); break;
         case 00725: if(DIS_RB) ill();
-                    else integer("addme.", 'X', DAB_D|DAB_A); break;
+                    else integer3("addme.", 'X', DAB_D|DAB_A); break;
         case 00725|OE: if(DIS_RB) ill();
-                    else integer("addmeo.", 'X', DAB_D|DAB_A); break;
-        case 00726: integer("mullw", 'X', DAB_D|DAB_A|DAB_B); break;        // mullwx
-        case 00726|OE: integer("mullwo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00727: integer("mullw.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 00727|OE: integer("mullwo.", 'X', DAB_D|DAB_A|DAB_B); break;
+                    else integer3("addmeo.", 'X', DAB_D|DAB_A); break;
+        case 00726: integer3("mullw", 'X', DAB_D|DAB_A|DAB_B); break;        // mullwx
+        case 00726|OE: integer3("mullwo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00727: integer3("mullw.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 00727|OE: integer3("mullwo.", 'X', DAB_D|DAB_A|DAB_B); break;
 #ifdef POWERPC_32
         case 00744: movesr("mtsrin", 0, 0, 1); break;                       // mtsrin
 #endif
-        case 00754: cache("dcbtst"); break;                                 // dcbtst
-        case 00756: ldst("stbux", 1, 0, 0); break;                          // stbux
-        case 01024: integer("add", 'X', DAB_D|DAB_A|DAB_B); break;          // addx
-        case 01024|OE: integer("addo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01025: integer("add.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01025|OE: integer("addo.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01054: cache("dcbt"); break;                                   // dcbt
-        case 01056: ldst("lhzx", 1); break;                                 // lhzx
-        case 01070: integer("eqv", 'Z', ASB_A|ASB_S|ASB_B); break;          // eqvx
-        case 01071: integer("eqv.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 00754: cache1("dcbtst"); break;                                 // dcbtst
+        case 00756: ldst4("stbux", 1, 0, 0); break;                          // stbux
+        case 01024: integer3("add", 'X', DAB_D|DAB_A|DAB_B); break;          // addx
+        case 01024|OE: integer3("addo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01025: integer3("add.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01025|OE: integer3("addo.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01054: cache1("dcbt"); break;                                   // dcbt
+        case 01056: ldst2("lhzx", 1); break;                                 // lhzx
+        case 01070: integer3("eqv", 'Z', ASB_A|ASB_S|ASB_B); break;          // eqvx
+        case 01071: integer3("eqv.", 'Z', ASB_A|ASB_S|ASB_B); break;
         case 01144: if(DIS_RD || DIS_RA) ill();                             // tlbie
-                    else { integer("tlbie", 'X', DAB_B); o->iclass = PPC_DISA_OEA | PPC_DISA_OPTIONAL; o->r[0] = o->r[2]; o->r[2] = 0; } break;
-        case 01154: integer("eciwx", 'X', DAB_D|DAB_A|DAB_B); o->iclass = PPC_DISA_OPTIONAL; break; // eciwx
-        case 01156: ldst("lhzux", 1); break;                                // lhzux
-        case 01170: integer("xor", 'Z', ASB_A|ASB_S|ASB_B); break;          // xorx
-        case 01171: integer("xor.", 'Z', ASB_A|ASB_S|ASB_B); break;
+                    else { integer3("tlbie", 'X', DAB_B); o->iclass = PPC_DISA_OEA | PPC_DISA_OPTIONAL; o->r[0] = o->r[2]; o->r[2] = 0; } break;
+        case 01154: integer3("eciwx", 'X', DAB_D|DAB_A|DAB_B); o->iclass = PPC_DISA_OPTIONAL; break; // eciwx
+        case 01156: ldst2("lhzux", 1); break;                                // lhzux
+        case 01170: integer3("xor", 'Z', ASB_A|ASB_S|ASB_B); break;          // xorx
+        case 01171: integer3("xor.", 'Z', ASB_A|ASB_S|ASB_B); break;
         case 01246: movespr(1); break;                                      // mfspr
-        case 01256: ldst("lhax", 1); break;                                 // lhax
+        case 01256: ldst2("lhax", 1); break;                                 // lhax
 #if !defined(GEKKO)
         case 01344: put("tlbia", 0x03FFF800, 0, PPC_DISA_OEA | PPC_DISA_OPTIONAL); break; // tlbia
 #endif
         case 01346: movetbr(); break;                                       // mftb
-        case 01356: ldst("lhaux", 1); break;                                // lhaux
-        case 01456: ldst("sthx", 1, 0); break;                              // sthx
-        case 01470: integer("orc", 'Z', ASB_A|ASB_S|ASB_B); break;          // orcx
-        case 01471: integer("orc.", 'Z', ASB_A|ASB_S|ASB_B); break;
-        case 01554: integer("ecowx", 'X', DAB_D|DAB_A|DAB_B); o->iclass = PPC_DISA_OPTIONAL; break; // ecowx
-        case 01556: ldst("sthux", 1, 0); break;                             // sthux
-        case 01570: integer("or", 'Z', ASB_A|ASB_S|ASB_B); break;           // orx
-        case 01571: integer("or.", 'Z', ASB_A|ASB_S|ASB_B); break;
-        case 01626: integer("divwu", 'X', DAB_D|DAB_A|DAB_B); break;        // divwux
-        case 01626|OE: integer("divwuo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01627: integer("divwu.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01627|OE: integer("divwuo.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01356: ldst2("lhaux", 1); break;                                // lhaux
+        case 01456: ldst3("sthx", 1, 0); break;                              // sthx
+        case 01470: integer3("orc", 'Z', ASB_A|ASB_S|ASB_B); break;          // orcx
+        case 01471: integer3("orc.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 01554: integer3("ecowx", 'X', DAB_D|DAB_A|DAB_B); o->iclass = PPC_DISA_OPTIONAL; break; // ecowx
+        case 01556: ldst3("sthux", 1, 0); break;                             // sthux
+        case 01570: integer3("or", 'Z', ASB_A|ASB_S|ASB_B); break;           // orx
+        case 01571: integer3("or.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 01626: integer3("divwu", 'X', DAB_D|DAB_A|DAB_B); break;        // divwux
+        case 01626|OE: integer3("divwuo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01627: integer3("divwu.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01627|OE: integer3("divwuo.", 'X', DAB_D|DAB_A|DAB_B); break;
         case 01646: movespr(0); break;                                      // mtspr
         case 01654: cache("dcbi", PPC_DISA_OEA); break;                     // dcbi
-        case 01670: integer("nand", 'Z', ASB_A|ASB_S|ASB_B); break;         // nandx
-        case 01671: integer("nand.", 'Z', ASB_A|ASB_S|ASB_B); break;
-        case 01726: integer("divw", 'X', DAB_D|DAB_A|DAB_B); break;         // divwx
-        case 01726|OE: integer("divwo", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01727: integer("divw.", 'X', DAB_D|DAB_A|DAB_B); break;
-        case 01727|OE: integer("divwo.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01670: integer3("nand", 'Z', ASB_A|ASB_S|ASB_B); break;         // nandx
+        case 01671: integer3("nand.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 01726: integer3("divw", 'X', DAB_D|DAB_A|DAB_B); break;         // divwx
+        case 01726|OE: integer3("divwo", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01727: integer3("divw.", 'X', DAB_D|DAB_A|DAB_B); break;
+        case 01727|OE: integer3("divwo.", 'X', DAB_D|DAB_A|DAB_B); break;
         case 02000: mcrxr(); break;                                         // mcrxr
-        case 02052: ldst("lswx", 1, 1, 0, 1); break;                        // lswx
-        case 02054: ldst("lwbrx", 1); break;                                // lwbrx
+        case 02052: ldst5("lswx", 1, 1, 0, 1); break;                        // lswx
+        case 02054: ldst2("lwbrx", 1); break;                                // lwbrx
         case 02056: ldst("lfsx", 1, 1, 0, 0, 1); break;                     // lfsx
-        case 02060: integer("srw", 'Z', ASB_A|ASB_S|ASB_B); break;          // srwx
-        case 02061: integer("srw.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 02060: integer3("srw", 'Z', ASB_A|ASB_S|ASB_B); break;          // srwx
+        case 02061: integer3("srw.", 'Z', ASB_A|ASB_S|ASB_B); break;
         case 02154: put("tlbsync", 0x03FFF800, 0, PPC_DISA_OEA | PPC_DISA_OPTIONAL); break; // tlbsync
         case 02156: ldst("lfsux", 1, 1, 0, 0, 1); break;                    // lfsux
 #ifdef POWERPC_32
         case 02246: movesr("mfsr", 1, 0, 0); break;                         // mfsr
 #endif
         case 02252: lsswi("lswi"); break;                                   // lswi
-        case 02254: put("sync", 0x03FFF800, 0); break;                      // sync
+        case 02254: put3("sync", 0x03FFF800, 0); break;                      // sync
         case 02256: ldst("lfdx", 1, 1, 0, 0, 1); break;                     // lfdx
         case 02356: ldst("lfdux", 1, 1, 0, 0, 1); break;                    // lfdux
 #ifdef POWERPC_32
         case 02446: movesr("mfsrin", 1, 0, 1); break;                       // mfsrin
 #endif
-        case 02452: ldst("stswx", 1, 1, 0, 1); break;                       // stswx
-        case 02454: ldst("stwbrx", 1, 0); break;                            // stwbrx
+        case 02452: ldst5("stswx", 1, 1, 0, 1); break;                       // stswx
+        case 02454: ldst3("stwbrx", 1, 0); break;                            // stwbrx
         case 02456: ldst("stfsx", 1, 1, 0, 0, 1); break;                    // stfsx
         case 02556: ldst("stfsux", 1, 1, 0, 0, 1); break;                   // stfsux
         case 02652: lsswi("stswi"); break;                                  // stswi
@@ -1399,13 +1413,13 @@ void PPCDisasm(PPCD_CB *discb)
         case 02754: cache("dcba", PPC_DISA_OPTIONAL); break;                // dcba
 #endif
         case 02756: ldst("stfdux", 1, 1, 0, 0, 1); break;                   // stfdux
-        case 03054: ldst("lhbrx", 1); break;                                // lhbrx
-        case 03060: integer("sraw", 'Z', ASB_A|ASB_S|ASB_B); break;         // srawx
-        case 03061: integer("sraw.", 'Z', ASB_A|ASB_S|ASB_B); break;
+        case 03054: ldst2("lhbrx", 1); break;                                // lhbrx
+        case 03060: integer3("sraw", 'Z', ASB_A|ASB_S|ASB_B); break;         // srawx
+        case 03061: integer3("sraw.", 'Z', ASB_A|ASB_S|ASB_B); break;
         case 03160: srawi(); break;                                         // srawi
         case 03161: srawi(); break;
-        case 03254: put("eieio", 0x03FFF800, 0); break;                     // eieio
-        case 03454: ldst("sthbrx", 1, 0); break;                            // sthbrx
+        case 03254: put3("eieio", 0x03FFF800, 0); break;                     // eieio
+        case 03454: ldst3("sthbrx", 1, 0); break;                            // sthbrx
         case 03464: if(DIS_RB) ill();                                       // extshx
                     else integer("extsh", 'S', ASB_A|ASB_S, 0,0,0,0,0); break;
         case 03465: if(DIS_RB) ill();
@@ -1414,56 +1428,56 @@ void PPCDisasm(PPCD_CB *discb)
                     else integer("extsb", 'S', ASB_A|ASB_S, 0,0,0,0,0); break;
         case 03565: if(DIS_RB) ill();
                     else integer("extsb.", 'S', ASB_A|ASB_S, 0,0,0,0,0); break;
-        case 03654: cache("icbi"); break;                                   // icbi
+        case 03654: cache1("icbi"); break;                                   // icbi
         case 03656: ldst("stfiwx", 1, 1, 0, 0, 1); o->iclass |= PPC_DISA_OPTIONAL; break; // stfiwx
-        case 03754: cache("dcbz"); break;                                   // dcbz
+        case 03754: cache1("dcbz"); break;                                   // dcbz
 #ifdef POWERPC_64
-        case 00022: integer("mulhdu", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // mulhdux
-        case 00023: integer("mulhdu.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 00052: ldst("ldx", 1, 1, 1); break;                            // ldx
-        case 00066: integer("sld", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break; // sldx
-        case 00067: integer("sld.", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break;
-        case 00152: ldst("ldux", 1, 1, 1); break;                           // ldux
+        case 00022: integer3("mulhdu", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // mulhdux
+        case 00023: integer3("mulhdu.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 00052: ldst4("ldx", 1, 1, 1); break;                            // ldx
+        case 00066: integer3("sld", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break; // sldx
+        case 00067: integer3("sld.", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break;
+        case 00152: ldst4("ldux", 1, 1, 1); break;                           // ldux
         case 00164: if(DIS_RB) ill();                                       // cntlzdx
                     else integer("cntlzd", 'S', ASB_A|ASB_S, 0,0,0,0,0); o->iclass |= PPC_DISA_64; break;
         case 00165: if(DIS_RB) ill();
                     else integer("cntlzd.", 'S', ASB_A|ASB_S, 0,0,0,0,0); o->iclass |= PPC_DISA_64; break;
         case 00210: trap(1, 0); break;
-        case 00222: integer("mulhd", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // mulhdx
-        case 00223: integer("mulhd.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 00222: integer3("mulhd", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // mulhdx
+        case 00223: integer3("mulhd.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
         case 00244: movesr("mtsrd", 0, 1, 0); break;                        // mtrsd
-        case 00250: ldst("ldarx", 1, 1, 1); break;                          // ldarx
+        case 00250: ldst4("ldarx", 1, 1, 1); break;                          // ldarx
         case 00344: movesr("mtsrdin", 0, 1, 1); break;                      // mtrsdin
-        case 00452: ldst("stdx", 1, 0, 1); break;                           // stdx
+        case 00452: ldst4("stdx", 1, 0, 1); break;                           // stdx
         case 00544: if(DIS_RA || DIS_RB) ill();                             // mtmsrd
-                    else { integer("mtmsrd", 'X', DAB_D); o->iclass = PPC_DISA_OEA | PPC_DISA_64; } break;
-        case 00552: ldst("stdux", 1, 0, 1); break;                          // stdux
-        case 00655: ldst("stdcx.", 1, 0, 1); break;                         // stdcx.
-        case 00722: integer("mulld", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // mulldx
-        case 00722|OE: integer("mulldo", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 00723: integer("mulld.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 00723|OE: integer("mulldo.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 01252: ldst("lwax", 1, 1, 1); break;                           // lwax
-        case 01352: ldst("lwaux", 1, 1, 1); break;                          // lwaux
+                    else { integer3("mtmsrd", 'X', DAB_D); o->iclass = PPC_DISA_OEA | PPC_DISA_64; } break;
+        case 00552: ldst4("stdux", 1, 0, 1); break;                          // stdux
+        case 00655: ldst4("stdcx.", 1, 0, 1); break;                         // stdcx.
+        case 00722: integer3("mulld", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // mulldx
+        case 00722|OE: integer3("mulldo", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 00723: integer3("mulld.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 00723|OE: integer3("mulldo.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 01252: ldst4("lwax", 1, 1, 1); break;                           // lwax
+        case 01352: ldst4("lwaux", 1, 1, 1); break;                          // lwaux
         case 03164: sradi(); break;                                         // sradi
         case 03165: sradi(); break;
         case 03166: sradi(); break;
         case 03167: sradi(); break;
         case 01544: if(DIS_RD || DIS_RA) ill();                             // slbie
-                    else { integer("slbie", 'X', DAB_B); o->iclass = PPC_DISA_64 | PPC_DISA_OEA | PPC_DISA_OPTIONAL; o->r[0] = o->r[2]; o->r[2] = 0; } break;
-        case 01622: integer("divdu", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // divdux
-        case 01622|OE: integer("divduo", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 01623: integer("divdu.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 01623|OE: integer("divduo.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 01722: integer("divd", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // divdx
-        case 01722|OE: integer("divdo", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 01723: integer("divd.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
-        case 01723|OE: integer("divdo.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+                    else { integer3("slbie", 'X', DAB_B); o->iclass = PPC_DISA_64 | PPC_DISA_OEA | PPC_DISA_OPTIONAL; o->r[0] = o->r[2]; o->r[2] = 0; } break;
+        case 01622: integer3("divdu", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // divdux
+        case 01622|OE: integer3("divduo", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 01623: integer3("divdu.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 01623|OE: integer3("divduo.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 01722: integer3("divd", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break; // divdx
+        case 01722|OE: integer3("divdo", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 01723: integer3("divd.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
+        case 01723|OE: integer3("divdo.", 'X', DAB_D|DAB_A|DAB_B); o->iclass |= PPC_DISA_64; break;
         case 01744: put("slbia", 0x03FFF800, 0, PPC_DISA_64 | PPC_DISA_OEA | PPC_DISA_OPTIONAL); break; // slbia
-        case 02066: integer("srd", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break; // srdx
-        case 02067: integer("srd.", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break;
-        case 03064: integer("srad", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break; // sradx
-        case 03065: integer("srad.", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break;
+        case 02066: integer3("srd", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break; // srdx
+        case 02067: integer3("srd.", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break;
+        case 03064: integer3("srad", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break; // sradx
+        case 03065: integer3("srad.", 'Z', ASB_A|ASB_S|ASB_B); o->iclass |= PPC_DISA_64; break;
         case 03664: if(DIS_RB) ill();                                       // extswx
                     else { integer("extsw", 'S', ASB_A|ASB_S, 0,0,0,0,0); o->iclass |= PPC_DISA_64; } break;
         case 03665: if(DIS_RB) ill();
@@ -1479,9 +1493,9 @@ void PPCDisasm(PPCD_CB *discb)
 #ifdef POWERPC_64
         case 072:
     switch(Instr & 3) {
-        case 0: Instr &= ~3; ldst("ld", 0, 1, 1); break;                    // ld
-        case 1: Instr &= ~3; ldst("ldu", 0, 1, 1); break;                   // ldu
-        case 2: Instr &= ~3; ldst("lwa", 0, 1, 1); break;                   // lwa
+        case 0: Instr &= ~3; ldst4("ld", 0, 1, 1); break;                    // ld
+        case 1: Instr &= ~3; ldst4("ldu", 0, 1, 1); break;                   // ldu
+        case 2: Instr &= ~3; ldst4("lwa", 0, 1, 1); break;                   // lwa
         default: ill(); break;
     } break;
 #endif
@@ -1496,28 +1510,28 @@ void PPCDisasm(PPCD_CB *discb)
     #define MASK_C  (0x1F <<  6)
         case 073:
     switch(Instr & 0x3F) {
-        case 044: fpu("fdivs", MASK_C, FPU_DAB); break;                     // fdivsx
-        case 045: fpu("fdivs.", MASK_C, FPU_DAB); break;
-        case 050: fpu("fsubs", MASK_C, FPU_DAB); break;                     // fsubsx
-        case 051: fpu("fsubs.", MASK_C, FPU_DAB); break;
-        case 052: fpu("fadds", MASK_C, FPU_DAB); break;                     // faddsx
-        case 053: fpu("fadds.", MASK_C, FPU_DAB); break;
+        case 044: fpu3("fdivs", MASK_C, FPU_DAB); break;                     // fdivsx
+        case 045: fpu3("fdivs.", MASK_C, FPU_DAB); break;
+        case 050: fpu3("fsubs", MASK_C, FPU_DAB); break;                     // fsubsx
+        case 051: fpu3("fsubs.", MASK_C, FPU_DAB); break;
+        case 052: fpu3("fadds", MASK_C, FPU_DAB); break;                     // faddsx
+        case 053: fpu3("fadds.", MASK_C, FPU_DAB); break;
 #if !defined(GEKKO)
         case 054: fpu("fsqrts", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break; // fsqrtsx
         case 055: fpu("fsqrts.", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break;
 #endif
         case 060: fpu("fres", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break; // fresx
         case 061: fpu("fres.", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break;
-        case 062: fpu("fmuls", MASK_B, FPU_DAC); break;                     // fmulsx
-        case 063: fpu("fmuls.", MASK_B, FPU_DAC); break;
-        case 070: fpu("fmsubs", 0, FPU_DACB); break;                        // fmsubsx
-        case 071: fpu("fmsubs.", 0, FPU_DACB); break;
-        case 072: fpu("fmadds", 0, FPU_DACB); break;                        // fmaddsx
-        case 073: fpu("fmadds.", 0, FPU_DACB); break;
-        case 074: fpu("fnmsubs", 0, FPU_DACB); break;                       // fnmsubsx
-        case 075: fpu("fnmsubs.", 0, FPU_DACB); break;
-        case 076: fpu("fnmadds", 0, FPU_DACB); break;                       // fnmaddsx
-        case 077: fpu("fnmadds.", 0, FPU_DACB); break;
+        case 062: fpu3("fmuls", MASK_B, FPU_DAC); break;                     // fmulsx
+        case 063: fpu3("fmuls.", MASK_B, FPU_DAC); break;
+        case 070: fpu3("fmsubs", 0, FPU_DACB); break;                        // fmsubsx
+        case 071: fpu3("fmsubs.", 0, FPU_DACB); break;
+        case 072: fpu3("fmadds", 0, FPU_DACB); break;                        // fmaddsx
+        case 073: fpu3("fmadds.", 0, FPU_DACB); break;
+        case 074: fpu3("fnmsubs", 0, FPU_DACB); break;                       // fnmsubsx
+        case 075: fpu3("fnmsubs.", 0, FPU_DACB); break;
+        case 076: fpu3("fnmadds", 0, FPU_DACB); break;                       // fnmaddsx
+        case 077: fpu3("fnmadds.", 0, FPU_DACB); break;
         default: ill(); break;
     } break;
 
@@ -1528,8 +1542,8 @@ void PPCDisasm(PPCD_CB *discb)
 #ifdef POWERPC_64
         case 076:
     switch(Instr & 3) {
-        case 0: Instr &= ~3; ldst("std", 0, 0, 1); break;                   // std
-        case 1: Instr &= ~3; ldst("stdu", 0, 0, 1); break;                  // stdu
+        case 0: Instr &= ~3; ldst4("std", 0, 0, 1); break;                   // std
+        case 1: Instr &= ~3; ldst4("stdu", 0, 0, 1); break;                  // stdu
         default: ill(); break;
     } break;
 #endif
@@ -1570,7 +1584,7 @@ void PPCDisasm(PPCD_CB *discb)
         case 016:
         switch(DIS_RC)
         {
-            case 18: fpu("mffs", MASK_A|MASK_B, FPU_D); break;              // mffs
+            case 18: fpu3("mffs", MASK_A|MASK_B, FPU_D); break;              // mffs
             case 22: mtfsf(); break;                                        // mtfsf
             default: ill(); break;
         }
@@ -1578,7 +1592,7 @@ void PPCDisasm(PPCD_CB *discb)
         case 017:
         switch(DIS_RC)
         {
-            case 18: fpu("mffs.", MASK_A|MASK_B, FPU_D); break;             // mffs.
+            case 18: fpu3("mffs.", MASK_A|MASK_B, FPU_D); break;             // mffs.
             case 22: mtfsf(); break;                                        // mtfsf.
             default: ill(); break;
         }
@@ -1586,44 +1600,44 @@ void PPCDisasm(PPCD_CB *discb)
         case 020:
         switch(DIS_RC)
         {
-            case 1: fpu("fneg", MASK_A, FPU_DB); break;                     // fneg
-            case 2: fpu("fmr", MASK_A, FPU_DB); break;                      // fmr
-            case 4: fpu("fnabs", MASK_A, FPU_DB); break;                    // fnabs
-            case 8: fpu("fabs", MASK_A, FPU_DB); break;                     // fabs
+            case 1: fpu3("fneg", MASK_A, FPU_DB); break;                     // fneg
+            case 2: fpu3("fmr", MASK_A, FPU_DB); break;                      // fmr
+            case 4: fpu3("fnabs", MASK_A, FPU_DB); break;                    // fnabs
+            case 8: fpu3("fabs", MASK_A, FPU_DB); break;                     // fabs
             default: ill(); break;
         }
         break;
         case 021:
         switch(DIS_RC)
         {
-            case 1: fpu("fneg.", MASK_A, FPU_DB); break;                    // fneg
-            case 2: fpu("fmr.", MASK_A, FPU_DB); break;                     // fmr
-            case 4: fpu("fnabs.", MASK_A, FPU_DB); break;                   // fnabs
-            case 8: fpu("fabs.", MASK_A, FPU_DB); break;                    // fabs
+            case 1: fpu3("fneg.", MASK_A, FPU_DB); break;                    // fneg
+            case 2: fpu3("fmr.", MASK_A, FPU_DB); break;                     // fmr
+            case 4: fpu3("fnabs.", MASK_A, FPU_DB); break;                   // fnabs
+            case 8: fpu3("fabs.", MASK_A, FPU_DB); break;                    // fabs
             default: ill(); break;
         }
         break;
         case 030:
         switch(DIS_RC)
         {
-            case 0: fpu("frsp", MASK_A, FPU_DB); break;                     // frsp
+            case 0: fpu3("frsp", MASK_A, FPU_DB); break;                     // frsp
             default: ill(); break;
         }
         break;
         case 031:
         switch(DIS_RC)
         {
-            case 0: fpu("frsp.", MASK_A, FPU_DB); break;                    // frsp.
+            case 0: fpu3("frsp.", MASK_A, FPU_DB); break;                    // frsp.
             default: ill(); break;
         }
         break;
         case 034:
         switch(DIS_RC)
         {
-            case 0: fpu("fctiw", MASK_A, FPU_DB); break;                    // fctiw
+            case 0: fpu3("fctiw", MASK_A, FPU_DB); break;                    // fctiw
 #ifdef POWERPC_64
-            case 25: fpu("fctid", MASK_A, FPU_DB); break;                   // fctid
-            case 26: fpu("fcfid", MASK_A, FPU_DB); break;                   // fcfid
+            case 25: fpu3("fctid", MASK_A, FPU_DB); break;                   // fctid
+            case 26: fpu3("fcfid", MASK_A, FPU_DB); break;                   // fcfid
 #endif
             default: ill(); break;
         }
@@ -1631,10 +1645,10 @@ void PPCDisasm(PPCD_CB *discb)
         case 035:
         switch(DIS_RC)
         {
-            case 0: fpu("fctiw.", MASK_A, FPU_DB); break;                   // fctiw.
+            case 0: fpu3("fctiw.", MASK_A, FPU_DB); break;                   // fctiw.
 #ifdef POWERPC_64
-            case 25: fpu("fctid.", MASK_A, FPU_DB); break;                  // fctid.
-            case 26: fpu("fcfid.", MASK_A, FPU_DB); break;                  // fcfid.
+            case 25: fpu3("fctid.", MASK_A, FPU_DB); break;                  // fctid.
+            case 26: fpu3("fcfid.", MASK_A, FPU_DB); break;                  // fcfid.
 #endif
             default: ill(); break;
         }
@@ -1642,9 +1656,9 @@ void PPCDisasm(PPCD_CB *discb)
         case 036:
         switch(DIS_RC)
         {
-            case 0: fpu("fctiwz", MASK_A, FPU_DB); break;                   // fctiwz
+            case 0: fpu3("fctiwz", MASK_A, FPU_DB); break;                   // fctiwz
 #ifdef POWERPC_64
-            case 25: fpu("fctidz", MASK_A, FPU_DB); break;                  // fctidz
+            case 25: fpu3("fctidz", MASK_A, FPU_DB); break;                  // fctidz
 #endif
             default: ill(); break;
         }
@@ -1652,37 +1666,37 @@ void PPCDisasm(PPCD_CB *discb)
         case 037:
         switch(DIS_RC)
         {
-            case 0: fpu("fctiwz.", MASK_A, FPU_DB); break;                  // fctiwz.
+            case 0: fpu3("fctiwz.", MASK_A, FPU_DB); break;                  // fctiwz.
 #ifdef POWERPC_64
-            case 25: fpu("fctidz.", MASK_A, FPU_DB); break;                 // fctidz.
+            case 25: fpu3("fctidz.", MASK_A, FPU_DB); break;                 // fctidz.
 #endif
             default: ill(); break;
         }
         break;
-        case 044: fpu("fdiv", MASK_C, FPU_DAB); break;                      // fdivx
-        case 045: fpu("fdiv.", MASK_C, FPU_DAB); break;
-        case 050: fpu("fsub", MASK_C, FPU_DAB); break;                      // fsubx
-        case 051: fpu("fsub.", MASK_C, FPU_DAB); break;
-        case 052: fpu("fadd", MASK_C, FPU_DAB); break;                      // faddx
-        case 053: fpu("fadd.", MASK_C, FPU_DAB); break;
+        case 044: fpu3("fdiv", MASK_C, FPU_DAB); break;                      // fdivx
+        case 045: fpu3("fdiv.", MASK_C, FPU_DAB); break;
+        case 050: fpu3("fsub", MASK_C, FPU_DAB); break;                      // fsubx
+        case 051: fpu3("fsub.", MASK_C, FPU_DAB); break;
+        case 052: fpu3("fadd", MASK_C, FPU_DAB); break;                      // faddx
+        case 053: fpu3("fadd.", MASK_C, FPU_DAB); break;
 #if !defined(GEKKO)
         case 054: fpu("fsqrt", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break; // fsqrtx
         case 055: fpu("fsqrt.", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break;
 #endif
         case 056: fpu("fsel", 0, FPU_DACB, PPC_DISA_OPTIONAL); break;       // fselx
         case 057: fpu("fsel.", 0, FPU_DACB, PPC_DISA_OPTIONAL); break;
-        case 062: fpu("fmul", MASK_B, FPU_DAC); break;                      // fmulx
-        case 063: fpu("fmul.", MASK_B, FPU_DAC); break;
+        case 062: fpu3("fmul", MASK_B, FPU_DAC); break;                      // fmulx
+        case 063: fpu3("fmul.", MASK_B, FPU_DAC); break;
         case 064: fpu("frsqrte", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break; // frsqrtex
         case 065: fpu("frsqrte.", MASK_A|MASK_C, FPU_DB, PPC_DISA_OPTIONAL); break;
-        case 070: fpu("fmsub", 0, FPU_DACB); break;                         // fmsubx
-        case 071: fpu("fmsub.", 0, FPU_DACB); break;
-        case 072: fpu("fmadd", 0, FPU_DACB); break;                         // fmaddx
-        case 073: fpu("fmadd.", 0, FPU_DACB); break;
-        case 074: fpu("fnmsub", 0, FPU_DACB); break;                        // fnmsubx
-        case 075: fpu("fnmsub.", 0, FPU_DACB); break;
-        case 076: fpu("fnmadd", 0, FPU_DACB); break;                        // fnmaddx
-        case 077: fpu("fnmadd.", 0, FPU_DACB); break;
+        case 070: fpu3("fmsub", 0, FPU_DACB); break;                         // fmsubx
+        case 071: fpu3("fmsub.", 0, FPU_DACB); break;
+        case 072: fpu3("fmadd", 0, FPU_DACB); break;                         // fmaddx
+        case 073: fpu3("fmadd.", 0, FPU_DACB); break;
+        case 074: fpu3("fnmsub", 0, FPU_DACB); break;                        // fnmsubx
+        case 075: fpu3("fnmsub.", 0, FPU_DACB); break;
+        case 076: fpu3("fnmadd", 0, FPU_DACB); break;                        // fnmaddx
+        case 077: fpu3("fnmadd.", 0, FPU_DACB); break;
         default: ill(); break;
     } break;
 

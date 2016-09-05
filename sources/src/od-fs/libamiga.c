@@ -452,7 +452,7 @@ int amiga_floppy_set_from_list(int drive, int index) {
     write_log("perform disk_swap drive %d floppy entry %d\n", drive, index);
     strcpy(changed_prefs.floppyslots[drive].df, currprefs.dfxlist[index]);
     //strcpy(currprefs.floppyslots[drive].df, currprefs.dfxlist[entry]);
-    disk_insert(drive, currprefs.floppyslots[drive].df);
+    disk_insert2(drive, currprefs.floppyslots[drive].df);
     /*
     int i;
     // eject disk from other drive (if inserted)

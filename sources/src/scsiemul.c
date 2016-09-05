@@ -484,7 +484,7 @@ static int command_cd_read (struct devstruct *dev, uaecptr data, uae_u64 offset,
 	while (length > 0) {
 		uae_u8 temp[4096];
 		if (blocksize != 2048) {
-			if (!sys_command_cd_rawread (dev->unitnum, temp, sector, 1, blocksize))
+			if (!sys_command_cd_rawread5 (dev->unitnum, temp, sector, 1, blocksize))
 				return 20;
 		} else {
 			if (!sys_command_cd_read (dev->unitnum, temp, sector, 1))
@@ -905,7 +905,7 @@ static int dev_do_io_cd (struct devstruct *dev, uaecptr request)
 	{
 		int start = io_offset;
 		int end = io_length + start;
-		if (!sys_command_cd_play (dev->di.unitnum, start, end, 0))
+		if (!sys_command_cd_play4 (dev->di.unitnum, start, end, 0))
 			io_error = IOERR_BADADDRESS;
 	}
 	break;
@@ -913,7 +913,7 @@ static int dev_do_io_cd (struct devstruct *dev, uaecptr request)
 	{
 		int start = msf2lsn (io_offset);
 		int end = msf2lsn (io_length) + start;
-		if (!sys_command_cd_play (dev->di.unitnum, start, end, 0))
+		if (!sys_command_cd_play4 (dev->di.unitnum, start, end, 0))
 			io_error = IOERR_BADADDRESS;
 	}
 	break;
@@ -924,7 +924,7 @@ static int dev_do_io_cd (struct devstruct *dev, uaecptr request)
 		if (sys_command_cd_toc (dev->di.unitnum, &toc)) {
 			for (int i = toc.first_track_offset; i < toc.last_track_offset; i++) {
 				if (i == io_offset && i + io_length <= toc.last_track_offset) {
-					ok = sys_command_cd_play (dev->di.unitnum, toc.toc[i].address, toc.toc[i + io_length].address, 0);
+					ok = sys_command_cd_play4 (dev->di.unitnum, toc.toc[i].address, toc.toc[i + io_length].address, 0);
 					break;
 				}
 			}

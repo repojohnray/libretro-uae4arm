@@ -2,7 +2,7 @@
 #define __DXWRAP_H__
 
 #include "rtgmodes.h"
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 #include <ddraw.h>
 #include <d3d9.h>
@@ -13,7 +13,7 @@
 extern int ddforceram;
 extern int useoverlay;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 struct ddstuff
 {
@@ -75,9 +75,9 @@ struct PicassoResolution
 	bool lace; // all modes lace
 };
 
-struct MultiDisplay {
+typedef struct MultiDisplay {
 	bool primary;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	GUID ddguid;
 #endif
@@ -85,11 +85,11 @@ struct MultiDisplay {
 	TCHAR *monitorname, *monitorid;
 	TCHAR *fullname;
 	struct PicassoResolution *DisplayModes;
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	RECT rect;
 #endif
-};
+} MultiDisplay;
 extern struct MultiDisplay Displays[MAX_DISPLAYS + 1];
 
 typedef enum
@@ -99,7 +99,7 @@ typedef enum
 	blue_mask
 } DirectDraw_Mask_e;
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 extern const TCHAR *DXError (HRESULT hr);
 extern TCHAR *outGUID (const GUID *guid);

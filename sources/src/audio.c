@@ -76,7 +76,7 @@ STATIC_INLINE bool usehacks(void)
  * sufficient for all imaginable purposes. This must be power of two. */
 #define SINC_QUEUE_LENGTH 256
 
-#include "sinctable.cpp"
+#include "sinctable.c"
 
 typedef struct {
 	int time, output;
@@ -226,7 +226,7 @@ void audio_sampleripper (int mode)
 			namesplit (name);
 			_tcscpy (extension, _T("wav"));
 			_stprintf (filename, _T("%s%s%s%03d.%s"), path, name, underline, cnt, extension);
-			wavfile = zfile_fopen (filename, _T("wb"), 0);
+			wavfile = zfile_fopen3 (filename, _T("wb"), 0);
 			if (wavfile) {
 				int freq = rs->per > 0 ? (currprefs.ntscmode ? 3579545 : 3546895 / rs->per) : 8000;
 				write_wavheader (wavfile, 0, 0);
@@ -1380,7 +1380,7 @@ static void loaddat (int nr, bool modper)
 		cdp->dat2 = cdp->dat;
 	}
 }
-static void loaddat (int nr)
+static void loaddat1 (int nr)
 {
 	loaddat (nr, false);
 }
@@ -1465,7 +1465,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 		} else if (cdp->dat_written && !isirq (nr)) {
 			cdp->state = 2;
 			setirq (nr, 0);
-			loaddat (nr);
+			loaddat1 (nr);
 			if (usehacks() && cdp->per < 10 * CYCLE_UNIT) {
 				// make sure audio.device AUDxDAT startup returns to idle state before DMA is enabled
 				newsample (nr, (cdp->dat2 >> 0) & 0xff);
@@ -1516,7 +1516,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 			cdp->ptx_written = 0;
 			cdp->lc = cdp->ptx;
 		}
-		loaddat (nr);
+		loaddat1 (nr);
 		if (napnav)
 			setdr (nr);
 		cdp->state = 2;
@@ -1567,7 +1567,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 		if (!perfin)
 			return;
 		if (chan_ena) {
-			loaddat (nr);
+			loaddat1 (nr);
 			if (cdp->intreq2 && napnav)
 				setirq (nr, 31);
 			if (napnav)
@@ -1581,7 +1581,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 				zerostate (nr);
 				return;
 			}
-			loaddat (nr);
+			loaddat1 (nr);
 			if (napnav)
 				setirq (nr, 32);
 		}
@@ -1988,7 +1988,7 @@ void audio_hsync (void)
 	update_audio ();
 }
 
-void AUDxDAT (int nr, uae_u16 v, uaecptr addr)
+void AUDxDAT3 (int nr, uae_u16 v, uaecptr addr)
 {
 	struct audio_channel_data *cdp = audio_channel + nr;
 	int chan_ena = (dmacon & DMA_MASTER) && (dmacon & (1 << nr));
@@ -2032,7 +2032,7 @@ void AUDxDAT (int nr, uae_u16 v, uaecptr addr)
 }
 void AUDxDAT (int nr, uae_u16 v)
 {
-	AUDxDAT (nr, v, 0xffffffff);
+	AUDxDAT3 (nr, v, 0xffffffff);
 }
 
 uaecptr audio_getpt (int nr, bool reset)

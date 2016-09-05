@@ -8,7 +8,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#ifdef FSUAE
+#if 1 //def FSUAE
 void write_log (const char *fmt, ...)
 #else
 void write_log_standard (const char *fmt, ...)

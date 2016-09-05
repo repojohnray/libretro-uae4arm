@@ -397,7 +397,7 @@ static int fake_dma_write(void *opaque, uint8_t *buf, int len)
 static int fake2_dma_read(void *opaque, uint8_t *buf, int len)
 {
 	struct ncr9x_state *ncr = (struct ncr9x_state*)opaque;
-	esp_dma_enable(ncr->devobject.lsistate, 0);
+	esp_dma_enable2(ncr->devobject.lsistate, 0);
 	if (ncr->data_valid) {
 		*buf = ncr->data;
 		ncr->data_valid = false;
@@ -407,7 +407,7 @@ static int fake2_dma_read(void *opaque, uint8_t *buf, int len)
 static int fake2_dma_write(void *opaque, uint8_t *buf, int len)
 {
 	struct ncr9x_state *ncr = (struct ncr9x_state*)opaque;
-	esp_dma_enable(ncr->devobject.lsistate, 0);
+	esp_dma_enable2(ncr->devobject.lsistate, 0);
 	if (!ncr->data_valid) {
 		ncr->data = *buf;
 		ncr->data_valid = true;
@@ -749,7 +749,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 			} else {
 				ncr->data = val;
 				ncr->data_valid = true;
-				esp_dma_enable(ncr->devobject.lsistate, 1);
+				esp_dma_enable2(ncr->devobject.lsistate, 1);
 #if NCR_DEBUG > 2
 				write_log(_T("MASOBOSHI DMA %08X PUT %02x %08x\n"), addr, val & 0xff, M68K_GETPC);
 #endif
@@ -775,7 +775,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 		} else if (addr >= OKTAGON_DMA_START && addr < OKTAGON_DMA_END) {
 			ncr->data = val;
 			ncr->data_valid = true;
-			esp_dma_enable(ncr->devobject.lsistate, 1);
+			esp_dma_enable2(ncr->devobject.lsistate, 1);
 			return;
 		} else if (addr == OKTAGON_INTENA) {
 			ncr->states[0] = val;
@@ -792,9 +792,9 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 				int oldstate = ncr->states[0];
 				ncr->states[0] = val;
 				if (!(oldstate & FLSC_PB_ENABLE_DMA) && (ncr->states[0] & FLSC_PB_ENABLE_DMA))
-					esp_dma_enable(ncr->devobject.lsistate, 1);
+					esp_dma_enable2(ncr->devobject.lsistate, 1);
 				else if ((oldstate & FLSC_PB_ENABLE_DMA) && !(ncr->states[0] & FLSC_PB_ENABLE_DMA))
-					esp_dma_enable(ncr->devobject.lsistate, 0);
+					esp_dma_enable2(ncr->devobject.lsistate, 0);
 				set_irq2_fastlane(ncr);
 			} else if (addr == FASTLANE_RESETDMA) {
 				ncr->dma_cnt = 4;
@@ -808,7 +808,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 			ncr->dma_ptr |= (val & 0xff) << (addr * 8);
 			ncr->dma_cnt--;
 			if (ncr->dma_cnt == 0 && (ncr->states[0] & FLSC_PB_ENABLE_DMA))
-				esp_dma_enable(ncr->devobject.lsistate, 1);
+				esp_dma_enable2(ncr->devobject.lsistate, 1);
 			return;
 		}
 	} else if (ISCPUBOARD(BOARD_BLIZZARD, BOARD_BLIZZARD_SUB_2060)) {
@@ -821,7 +821,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 			ncr->dma_ptr &= ~(0xff << (addr * 8));
 			ncr->dma_ptr |= (val & 0xff) << (addr * 8);
 			if (addr == 3)
-				esp_dma_enable(ncr->devobject.lsistate, 1);
+				esp_dma_enable2(ncr->devobject.lsistate, 1);
 			return;
 		} else if (addr >= BLIZZARD_2060_LED_OFFSET) {
 			ncr->led = val;
@@ -840,7 +840,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 				ncr->dma_ptr |= (uae_u8)val;
 				ncr->dma_cnt--;
 				if (ncr->dma_cnt == 0)
-					esp_dma_enable(ncr->devobject.lsistate, 1);
+					esp_dma_enable2(ncr->devobject.lsistate, 1);
 			}
 			//write_log(_T("Blizzard DMA PUT %08x %02X\n"), oldaddr, (uae_u8)val);
 			return;
@@ -848,7 +848,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 	} else if (ISCPUBOARD(BOARD_CYBERSTORM, BOARD_CYBERSTORM_SUB_MK1)) {
 		if (addr >= CYBERSTORM_MK1_JUMPER_OFFSET) {
 			if (addr == CYBERSTORM_MK1_JUMPER_OFFSET)
-				esp_dma_enable(ncr->devobject.lsistate, 1);
+				esp_dma_enable2(ncr->devobject.lsistate, 1);
 		} else if (addr >= CYBERSTORM_MK1_DMA_OFFSET) {
 			addr &= 7;
 			addr >>= 1;
@@ -868,7 +868,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 			ncr->dma_ptr &= ~(0xff << (addr * 8));
 			ncr->dma_ptr |= (val & 0xff) << (addr * 8);
 			if (addr == 0)
-				esp_dma_enable(ncr->devobject.lsistate, 1);
+				esp_dma_enable2(ncr->devobject.lsistate, 1);
 			return;
 		 } else if (addr >= CYBERSTORM_MK2_LED_OFFSET) {
 			 ncr->led = val;
@@ -877,7 +877,7 @@ static void ncr9x_io_bput(struct ncr9x_state *ncr, uaecptr addr, uae_u32 val)
 	} else if (ISCPUBOARD(BOARD_DKB, BOARD_DKB_SUB_12x0)) {
 		if (addr == 0x10100) {
 			ncr->states[0] = val;
-			esp_dma_enable(ncr->devobject.lsistate, 1);
+			esp_dma_enable2(ncr->devobject.lsistate, 1);
 			//write_log(_T("DKB IO PUT %02x %08x\n"), val & 0xff, M68K_GETPC);
 			return;
 		}
@@ -1027,7 +1027,7 @@ static uae_u32 ncr9x_io_bget(struct ncr9x_state *ncr, uaecptr addr)
 		}
 #endif
 		if (addr >= MASOBOSHI_DMA_START && addr < MASOBOSHI_DMA_END) {
-			esp_dma_enable(ncr->devobject.lsistate, 1);
+			esp_dma_enable2(ncr->devobject.lsistate, 1);
 			v = ncr->data;
 			ncr->data_valid = false;
 #if NCR_DEBUG > 2
@@ -1050,7 +1050,7 @@ static uae_u32 ncr9x_io_bget(struct ncr9x_state *ncr, uaecptr addr)
 		} else if (addr == OKTAGON_EEPROM_SDA) {
 			return eeprom_i2c_set(ncr->eeprom, BITBANG_I2C_SDA, -1) ? 0x80 : 0x00;
 		} else if (addr >= OKTAGON_DMA_START && addr < OKTAGON_DMA_END) {
-			esp_dma_enable(ncr->devobject.lsistate, 1);
+			esp_dma_enable2(ncr->devobject.lsistate, 1);
 			v = ncr->data;
 			ncr->data_valid = false;
 			return v;
@@ -1838,21 +1838,21 @@ void ematrix_add_scsi_unit(int ch, struct uaedev_config_info *ci, struct romconf
 {
 	ncr9x_add_scsi_unit(&ncr_ematrix530_scsi, ch, ci, rc);
 	ncr9x_esp_scsi_init(ncr_ematrix530_scsi, fake_dma_read_ematrix, fake_dma_write_ematrix, set_irq2);
-	esp_dma_enable(ncr_ematrix530_scsi->devobject.lsistate, 1);
+	esp_dma_enable2(ncr_ematrix530_scsi->devobject.lsistate, 1);
 }
 
 void multievolution_add_scsi_unit(int ch, struct uaedev_config_info *ci, struct romconfig *rc)
 {
 	ncr9x_add_scsi_unit(&ncr_multievolution_scsi, ch, ci, rc);
 	ncr9x_esp_scsi_init(ncr_multievolution_scsi, fake_dma_read, fake_dma_write, set_irq2);
-	esp_dma_enable(ncr_multievolution_scsi->devobject.lsistate, 1);
+	esp_dma_enable2(ncr_multievolution_scsi->devobject.lsistate, 1);
 }
 
 void golemfast_add_scsi_unit(int ch, struct uaedev_config_info *ci, struct romconfig *rc)
 {
 	ncr9x_add_scsi_unit(&ncr_golemfast_scsi[ci->controller_type_unit], ch, ci, rc);
 	ncr9x_esp_scsi_init(ncr_golemfast_scsi[ci->controller_type_unit], fake_dma_read, fake_dma_write, set_irq2_golemfast);
-	esp_dma_enable(ncr_golemfast_scsi[ci->controller_type_unit]->devobject.lsistate, 1);
+	esp_dma_enable2(ncr_golemfast_scsi[ci->controller_type_unit]->devobject.lsistate, 1);
 }
 
 #endif

@@ -3093,7 +3093,7 @@ generate_includes (FILE * f)
 	fprintf (f, "#include \"sysdeps.h\"\n");
 #ifdef UAE
 	fprintf (f, "#include \"options.h\"\n");
-	fprintf (f, "#include \"uae/memory.h\"\n");
+	fprintf (f, "#include \"uae_memory.h\"\n");
 #else
 	fprintf (f, "#include \"m68k.h\"\n");
 	fprintf (f, "#include \"memory-uae.h\"\n");
@@ -3419,9 +3419,9 @@ generate_func (int noflags)
 		 "#define PART_8 1\n"
 		 "#endif\n\n");
 #ifdef UAE
-	printf ("extern void comp_fpp_opp();\n"
-		"extern void comp_fscc_opp();\n"
-		"extern void comp_fbcc_opp();\n\n");
+	printf ("// extern void comp_fpp_opp();\n"
+		"// extern void comp_fscc_opp();\n"
+		"// extern void comp_fbcc_opp();\n\n");
 #endif
 
 	rp = 0;
@@ -3473,8 +3473,8 @@ int main(int argc, char *argv[])
 		"extern const struct comptbl op_smalltbl_0_comp_ff[];\n" \
 		"");
 
-	stblfile = fopen (GEN_PATH "compstbl.cpp", "wb");
-	if (freopen (GEN_PATH "compemu.cpp", "wb", stdout) == NULL) {
+	stblfile = fopen (GEN_PATH "compstbl.c", "wb");
+	if (freopen (GEN_PATH "compemu.c", "wb", stdout) == NULL) {
 		abort();
 	}
 

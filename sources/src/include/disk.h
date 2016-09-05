@@ -62,7 +62,7 @@ extern uae_u8 DISK_status_ciaa (void);
 extern uae_u8 DISK_status_ciab (uae_u8);
 extern void disk_eject (int num);
 extern int disk_empty (int num);
-extern void disk_insert (int num, const TCHAR *name);
+extern void disk_insert2 (int num, const TCHAR *name);
 extern void disk_insert (int num, const TCHAR *name, bool forcedwriteprotect);
 extern void disk_insert_force (int num, const TCHAR *name, bool forcedwriteprotect);
 extern void DISK_vsync (void);

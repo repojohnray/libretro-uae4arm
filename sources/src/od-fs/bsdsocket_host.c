@@ -2,5 +2,5 @@
 #include "../od-win32/bsdsock.cpp"
 HWND hAmigaWnd = 0;
 #else
-#include "bsdsocket_posix.cpp"
+#include "bsdsocket_posix.c"
 #endif

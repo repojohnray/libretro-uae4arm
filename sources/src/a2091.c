@@ -529,7 +529,7 @@ static void set_status (struct wd_chip_state *wd, uae_u8 status, int delay)
 	wd->queue_index++;
 }
 
-static void set_status (struct wd_chip_state *wd, uae_u8 status)
+static void set_status2 (struct wd_chip_state *wd, uae_u8 status)
 {
 	set_status (wd, status, 0);
 }
@@ -1256,9 +1256,9 @@ static void wd_cmd_trans_addr(struct wd_chip_state *wd, struct wd_state *wds)
 	wd->wdregs[WD_SECTOR] = sectors;
 
 	if (cyls >= tcyls)
-		set_status(wd, CSR_BAD_STATUS);
+		set_status2(wd, CSR_BAD_STATUS);
 	else
-		set_status(wd, CSR_TRANS_ADDR);
+		set_status2(wd, CSR_TRANS_ADDR);
 }
 
 static void wd_cmd_sel (struct wd_chip_state *wd, struct wd_state *wds, bool atn)
@@ -1570,7 +1570,7 @@ static void xt_default_geometry(struct wd_state *wds)
 }
 
 
-static void xt_set_status(struct wd_state *wds, uae_u8 state)
+static void xt_set_status2(struct wd_state *wds, uae_u8 state)
 {
 	wds->cdmac.xt_status = state;
 	wds->cdmac.xt_status |= XT_STAT_SELECT;
@@ -1609,7 +1609,7 @@ static void xt_command_done(struct wd_state *wds)
 		}
 	}
 
-	xt_set_status(wds, XT_STAT_INTERRUPT);
+	xt_set_status2(wds, XT_STAT_INTERRUPT);
 	if (wds->cdmac.xt_control & XT_INT)
 		dmac_a2091_xt_int(wds);
 	wds->cdmac.xt_datalen = 0;
@@ -1621,7 +1621,7 @@ static void xt_command_done(struct wd_state *wds)
 
 static void xt_wait_data(struct wd_state *wds, int len)
 {
-	xt_set_status(wds, XT_STAT_REQUEST);
+	xt_set_status2(wds, XT_STAT_REQUEST);
 	wds->cdmac.xt_offset = 0;
 	wds->cdmac.xt_datalen = len;
 }
@@ -1640,10 +1640,10 @@ static void xt_command(struct wd_state *wds)
 	scsi_emulate_analyze(scsi);
 	scsi_start_transfer(scsi);
 	if (scsi->direction > 0) {
-		xt_set_status(wds, XT_STAT_REQUEST);
+		xt_set_status2(wds, XT_STAT_REQUEST);
 	} else if (scsi->direction < 0) {
 		scsi_emulate_cmd(scsi);
-		xt_set_status(wds, XT_STAT_INPUT);
+		xt_set_status2(wds, XT_STAT_INPUT);
 	} else {
 		xt_command_done(wds);
 	}
@@ -1709,7 +1709,7 @@ static void write_xt_reg(struct wd_state *wds, int reg, uae_u8 v)
 	case XD_DATA:
 		if (!(wds->cdmac.xt_status & XT_STAT_REQUEST)) {
 			wds->cdmac.xt_offset = 0;
-			xt_set_status(wds, XT_STAT_COMMAND | XT_STAT_REQUEST);
+			xt_set_status2(wds, XT_STAT_COMMAND | XT_STAT_REQUEST);
 		}
 		if (wds->cdmac.xt_status & XT_STAT_REQUEST) {
 			if (wds->cdmac.xt_status & XT_STAT_COMMAND) {
@@ -1717,7 +1717,7 @@ static void write_xt_reg(struct wd_state *wds, int reg, uae_u8 v)
 				write_log(_T("XT command write %02X (%d/6)\n"), v, wds->cdmac.xt_offset);
 #endif
 				wds->cdmac.xt_cmd[wds->cdmac.xt_offset++] = v;
-				xt_set_status(wds, XT_STAT_COMMAND | XT_STAT_REQUEST);
+				xt_set_status2(wds, XT_STAT_COMMAND | XT_STAT_REQUEST);
 				if (wds->cdmac.xt_offset == 6) {
 					xt_command(wds);
 				}
@@ -1745,7 +1745,7 @@ static void write_xt_reg(struct wd_state *wds, int reg, uae_u8 v)
 #if XT_DEBUG > 1
 		write_log(_T("XT select %02X\n"), v);
 #endif
-		xt_set_status(wds, XT_STAT_SELECT);
+		xt_set_status2(wds, XT_STAT_SELECT);
 		break;
 	case XD_CONTROL:
 #if XT_DEBUG > 1
@@ -2284,7 +2284,7 @@ static void dmac_a2091_write_byte (struct wd_state *wd, uaecptr addr, uae_u32 b)
 	}
 }
 
-static uae_u32 REGPARAM2 dmac_a2091_lget (struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_a2091_lget2 (struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= 65535;
@@ -2293,7 +2293,7 @@ static uae_u32 REGPARAM2 dmac_a2091_lget (struct wd_state *wd, uaecptr addr)
 	return v;
 }
 
-static uae_u32 REGPARAM2 dmac_a2091_wget(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_a2091_wget2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= 65535;
@@ -2301,7 +2301,7 @@ static uae_u32 REGPARAM2 dmac_a2091_wget(struct wd_state *wd, uaecptr addr)
 	return v;
 }
 
-static uae_u32 REGPARAM2 dmac_a2091_bget(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_a2091_bget2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= 65535;
@@ -2309,14 +2309,14 @@ static uae_u32 REGPARAM2 dmac_a2091_bget(struct wd_state *wd, uaecptr addr)
 	return v;
 }
 
-static void REGPARAM2 dmac_a2091_lput(struct wd_state *wd, uaecptr addr, uae_u32 l)
+static void REGPARAM2 dmac_a2091_lput3(struct wd_state *wd, uaecptr addr, uae_u32 l)
 {
 	addr &= 65535;
 	dmac_a2091_write_word(wd, addr + 0, l >> 16);
 	dmac_a2091_write_word(wd, addr + 2, l);
 }
 
-static void REGPARAM2 dmac_a2091_wput(struct wd_state *wd, uaecptr addr, uae_u32 w)
+static void REGPARAM2 dmac_a2091_wput3(struct wd_state *wd, uaecptr addr, uae_u32 w)
 {
 	addr &= 65535;
 	dmac_a2091_write_word(wd, addr, w);
@@ -2324,7 +2324,7 @@ static void REGPARAM2 dmac_a2091_wput(struct wd_state *wd, uaecptr addr, uae_u32
 
 extern addrbank dmaca2091_bank;
 
-static void REGPARAM2 dmac_a2091_bput(struct wd_state *wd, uaecptr addr, uae_u32 b)
+static void REGPARAM2 dmac_a2091_bput3(struct wd_state *wd, uaecptr addr, uae_u32 b)
 {
 	b &= 0xff;
 	addr &= 65535;
@@ -2347,7 +2347,7 @@ static void REGPARAM2 dmac_a2091_bput(struct wd_state *wd, uaecptr addr, uae_u32
 	dmac_a2091_write_byte(wd, addr, b);
 }
 
-static uae_u32 REGPARAM2 dmac_a2091_wgeti(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_a2091_wgeti2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v = 0xffff;
 	addr &= 65535;
@@ -2357,21 +2357,21 @@ static uae_u32 REGPARAM2 dmac_a2091_wgeti(struct wd_state *wd, uaecptr addr)
 		write_log(_T("Invalid DMAC instruction access %08x\n"), addr);
 	return v;
 }
-static uae_u32 REGPARAM2 dmac_a2091_lgeti(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_a2091_lgeti2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= 65535;
-	v = dmac_a2091_wgeti(wd, addr) << 16;
-	v |= dmac_a2091_wgeti(wd, addr + 2);
+	v = dmac_a2091_wgeti2(wd, addr) << 16;
+	v |= dmac_a2091_wgeti2(wd, addr + 2);
 	return v;
 }
 
-static int REGPARAM2 dmac_a2091_check(struct wd_state *wd, uaecptr addr, uae_u32 size)
+static int REGPARAM2 dmac_a2091_check3(struct wd_state *wd, uaecptr addr, uae_u32 size)
 {
 	return 1;
 }
 
-static uae_u8 *REGPARAM2 dmac_a2091_xlate(struct wd_state *wd, uaecptr addr)
+static uae_u8 *REGPARAM2 dmac_a2091_xlate2(struct wd_state *wd, uaecptr addr)
 {
 	addr &= 0xffff;
 	addr += wd->rombank * wd->rom_size;
@@ -2384,68 +2384,68 @@ static uae_u8 *REGPARAM2 dmac_a2091_xlate (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_xlate(wd, addr);
+		return dmac_a2091_xlate2(wd, addr);
 	return default_xlate(0);
 }
 static int REGPARAM2 dmac_a2091_check (uaecptr addr, uae_u32 size)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_check(wd, addr, size);
+		return dmac_a2091_check3(wd, addr, size);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_a2091_lgeti (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_lgeti(wd, addr);
+		return dmac_a2091_lgeti2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_a2091_wgeti (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_wgeti(wd, addr);
+		return dmac_a2091_wgeti2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_a2091_bget (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_bget(wd, addr);
+		return dmac_a2091_bget2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_a2091_wget (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_wget(wd, addr);
+		return dmac_a2091_wget2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_a2091_lget (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_a2091_lget(wd, addr);
+		return dmac_a2091_lget2(wd, addr);
 	return 0;
 }
 static void REGPARAM2 dmac_a2091_bput (uaecptr addr, uae_u32 b)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		dmac_a2091_bput(wd, addr, b);
+		dmac_a2091_bput3(wd, addr, b);
 }
 static void REGPARAM2 dmac_a2091_wput (uaecptr addr, uae_u32 b)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		dmac_a2091_wput(wd, addr, b);
+		dmac_a2091_wput3(wd, addr, b);
 }
 static void REGPARAM2 dmac_a2091_lput (uaecptr addr, uae_u32 b)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		dmac_a2091_lput(wd, addr, b);
+		dmac_a2091_lput3(wd, addr, b);
 }
 
 addrbank dmaca2091_bank = {
@@ -2800,7 +2800,7 @@ static void dmac_gvp_write_word(struct wd_state *wd, uaecptr addr, uae_u32 b)
 	}
 }
 
-static uae_u32 REGPARAM2 dmac_gvp_lget(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_gvp_lget2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= wd->board_mask;
@@ -2809,7 +2809,7 @@ static uae_u32 REGPARAM2 dmac_gvp_lget(struct wd_state *wd, uaecptr addr)
 	return v;
 }
 
-static uae_u32 REGPARAM2 dmac_gvp_wget(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_gvp_wget2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= wd->board_mask;
@@ -2817,7 +2817,7 @@ static uae_u32 REGPARAM2 dmac_gvp_wget(struct wd_state *wd, uaecptr addr)
 	return v;
 }
 
-static uae_u32 REGPARAM2 dmac_gvp_bget(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_gvp_bget2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= wd->board_mask;
@@ -2825,19 +2825,19 @@ static uae_u32 REGPARAM2 dmac_gvp_bget(struct wd_state *wd, uaecptr addr)
 	return v;
 }
 
-static void REGPARAM2 dmac_gvp_lput(struct wd_state *wd, uaecptr addr, uae_u32 l)
+static void REGPARAM2 dmac_gvp_lput3(struct wd_state *wd, uaecptr addr, uae_u32 l)
 {
 	addr &= wd->board_mask;
 	dmac_gvp_write_word(wd, addr + 0, l >> 16);
 	dmac_gvp_write_word(wd, addr + 2, l);
 }
 
-static void REGPARAM2 dmac_gvp_wput(struct wd_state *wd, uaecptr addr, uae_u32 w)
+static void REGPARAM2 dmac_gvp_wput3(struct wd_state *wd, uaecptr addr, uae_u32 w)
 {
 	addr &= wd->board_mask;
 	dmac_gvp_write_word(wd, addr, w);
 }
-static void REGPARAM2 dmac_gvp_bput(struct wd_state *wd, uaecptr addr, uae_u32 b)
+static void REGPARAM2 dmac_gvp_bput3(struct wd_state *wd, uaecptr addr, uae_u32 b)
 {
 	b &= 0xff;
 	addr &= wd->board_mask;
@@ -2860,7 +2860,7 @@ static void REGPARAM2 dmac_gvp_bput(struct wd_state *wd, uaecptr addr, uae_u32 b
 	dmac_gvp_write_byte(wd, addr, b);
 }
 
-static uae_u32 REGPARAM2 dmac_gvp_wgeti(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_gvp_wgeti2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v = 0xffff;
 	addr &= wd->board_mask;
@@ -2872,12 +2872,12 @@ static uae_u32 REGPARAM2 dmac_gvp_wgeti(struct wd_state *wd, uaecptr addr)
 	}
 	return v;
 }
-static uae_u32 REGPARAM2 dmac_gvp_lgeti(struct wd_state *wd, uaecptr addr)
+static uae_u32 REGPARAM2 dmac_gvp_lgeti2(struct wd_state *wd, uaecptr addr)
 {
 	uae_u32 v;
 	addr &= wd->board_mask;
-	v = dmac_gvp_wgeti(wd, addr) << 16;
-	v |= dmac_gvp_wgeti(wd, addr + 2);
+	v = dmac_gvp_wgeti2(wd, addr) << 16;
+	v |= dmac_gvp_wgeti2(wd, addr + 2);
 	return v;
 }
 
@@ -2885,53 +2885,53 @@ static void REGPARAM2 dmac_gvp_bput (uaecptr addr, uae_u32 b)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		dmac_gvp_bput(wd, addr, b);
+		dmac_gvp_bput3(wd, addr, b);
 }
 static void REGPARAM2 dmac_gvp_wput (uaecptr addr, uae_u32 b)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		dmac_gvp_wput(wd, addr, b);
+		dmac_gvp_wput3(wd, addr, b);
 }
 static void REGPARAM2 dmac_gvp_lput (uaecptr addr, uae_u32 b)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		dmac_gvp_lput(wd, addr, b);
+		dmac_gvp_lput3(wd, addr, b);
 }
 static uae_u32 REGPARAM2 dmac_gvp_bget (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_gvp_bget(wd, addr);
+		return dmac_gvp_bget2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_gvp_wget (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_gvp_wget(wd, addr);
+		return dmac_gvp_wget2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_gvp_lget (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_gvp_lget(wd, addr);
+		return dmac_gvp_lget2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_gvp_wgeti (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_gvp_wgeti(wd, addr);
+		return dmac_gvp_wgeti2(wd, addr);
 	return 0;
 }
 static uae_u32 REGPARAM2 dmac_gvp_lgeti (uaecptr addr)
 {
 	struct wd_state *wd = getscsiboard(addr);
 	if (wd)
-		return dmac_gvp_lgeti(wd, addr);
+		return dmac_gvp_lgeti2(wd, addr);
 	return 0;
 }
 static int REGPARAM2 dmac_gvp_check(uaecptr addr, uae_u32 size)
