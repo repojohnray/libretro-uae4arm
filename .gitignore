@@ -122,7 +122,6 @@ libuae/od-win32/lib
 log
 *.log
 /Makefile
-/Makefile.in
 /missing
 *.mo
 /*.nvr
