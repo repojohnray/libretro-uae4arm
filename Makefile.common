@@ -12,7 +12,7 @@ QEMUVGA	 = $(CORE_DIR)/sources/src/qemuvga
 LIBFSEMU = $(CORE_DIR)/sources/libfsemu/src
 GEN      = $(CORE_DIR)/sources/gen
 
-INCFLAGS := -I$(EMU) -I$(EMU)/include -I$(LIBRETRO) -I$(LIBRETRO)/libco -I$(LIBUTILS) -I$(ODFS) -I$(ODFS)/include -I$(EMU)/../softfloat -I$(CORE_DIR) -I$(LIBFSEMU)/../include
+INCFLAGS := -I$(EMU) -I$(EMU)/include -I$(LIBRETRO) -I$(CORE_DIR)/libretro-include -I$(LIBUTILS) -I$(ODFS) -I$(ODFS)/include -I$(EMU)/../softfloat -I$(CORE_DIR) -I$(LIBFSEMU)/../include
 
 SOURCES_C =
 SOURCES_C +=  $(EMU)/main.c \
@@ -219,7 +219,7 @@ SOURCES_C += $(GUI)/dialog.c\
 				 $(GUI)/sdlgui.c
 
 SOURCES_C += $(LIBRETRO)/libretro.c \
-				 $(LIBRETRO)/libco/libco.c \
+				 $(CORE_DIR)/libco/libco.c \
 				 $(LIBRETRO)/libretro-mapper.c \
 				 $(LIBRETRO)/vkbd.c \
 				 $(LIBRETRO)/graph.c \
