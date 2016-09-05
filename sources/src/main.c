@@ -19,7 +19,7 @@
 #include "uae_memory.h"
 #include "custom.h"
 #include "serial.h"
-#include "newcpu.h"
+//#include "newcpu.h"
 #include "disk.h"
 #include "debug.h"
 #include "xwin.h"
@@ -35,9 +35,9 @@
 #include "blkdev.h"
 #include "consolehook.h"
 #include "gfxboard.h"
-#include "luascript.h"
+//#include "luascript.h"
 #include "uaenative.h"
-#include "tabletlibrary.h"
+//#include "tabletlibrary.h"
 #include "cpuboard.h"
 #include "uae_ppc.h"
 #include "devices.h"
@@ -1047,6 +1047,12 @@ void do_start_program (void)
 
 void start_program (void)
 {
+#ifdef RETRO
+# ifdef DEBUG
+  fprintf(stderr, "%s %d %s -------------------- (do_start_program)\n", __FILE__, __LINE__, __FUNCTION__);
+# endif
+        gui_display (-1);
+#endif
 	do_start_program ();
 }
 
@@ -1183,6 +1189,7 @@ static int real_main2 (int argc, TCHAR **argv)
 			activate_debugger ();
 
 		if (!init_audio ()) {
+		  fprintf(stderr, "init_audio... disabling...\n");
 			if (sound_available && currprefs.produce_sound > 1) {
 				write_log (_T("Sound driver unavailable: Sound output disabled\n"));
 			}

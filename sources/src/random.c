@@ -1,8 +1,8 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "custom.h"
 #include "options.h"
+#include "custom.h"
 #include "uae.h"
 #include <stdint.h>
 

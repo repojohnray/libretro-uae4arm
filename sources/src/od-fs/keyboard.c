@@ -2,9 +2,11 @@
 #include "sysdeps.h"
 
 #include "uae_fs.h"
+#include "options.h"
 #include "inputdevice.h"
 #include "keyboard.h"
 #include "keybuf.h"
+#include "uae_log.h"
 
 static int init_kb (void)
 {
@@ -75,6 +77,7 @@ static int get_kb_flags (int num)
 	return 0;
 }
 
+#if 0 /*ZZ*/
 struct inputdevice_functions inputdevicefunc_keyboard = {
 	init_kb,
 	close_kb,
@@ -89,6 +92,7 @@ struct inputdevice_functions inputdevicefunc_keyboard = {
 	get_kb_widget_first,
 	get_kb_flags
 };
+#endif /*ZZ*/
 
 int input_get_default_keyboard (int num)
 {
@@ -102,6 +106,7 @@ int target_checkcapslock (int scancode, int *state)
 	return 0;
 }
 
+#if 0 /*ZZ*/
 int getcapslockstate (void)
 {
 	UAE_LOG_STUB_MAX (1, "");
@@ -112,6 +117,7 @@ void setcapslockstate (int state)
 {
 	UAE_LOG_STUB_MAX (1, "");
 }
+#endif /*ZZ*/
 
 static struct uae_input_device_kbr_default keytrans_amiga[] = {
 	{ INPUTEVENT_KEY_CAPS_LOCK, { { INPUTEVENT_KEY_CAPS_LOCK, ID_FLAG_TOGGLE } } },

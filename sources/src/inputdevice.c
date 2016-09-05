@@ -20,6 +20,8 @@
 #define SWITCH_DEBUG 0
 #define INPUT_DEBUG 0
 
+#include <ctype.h>
+
 #include "sysconfig.h"
 #include "sysdeps.h"
 
@@ -56,13 +58,13 @@
 #ifdef AVIOUTPUT
 #include "avioutput.h"
 #endif
-#include "tabletlibrary.h"
+//#include "tabletlibrary.h"
 #include "statusline.h"
 
 #ifdef FSUAE // NL
 
 #include "uae_fs.h"
-#include "uae_glib.h"
+#include "uae/glib.h"
 // FIXME
 #include <fs/emu.h>
 
@@ -1621,6 +1623,7 @@ static void inputdevice_mh_abs (int x, int y, uae_u32 buttonbits)
 		p += 0x10;
 		memcpy(tmp, p, 2 * 4);
 		if (picasso_on) {
+#if defined(PICASSO96)
 			// RTG host resolution width
 			p[0 * 2 + 0] = picasso_vidinfo.width >> 8;
 			p[0 * 2 + 1] = (uae_u8)picasso_vidinfo.width;
@@ -1633,6 +1636,7 @@ static void inputdevice_mh_abs (int x, int y, uae_u32 buttonbits)
 			// RTG resolution height
 			p[3 * 2 + 0] = picasso96_state.Height >> 8;
 			p[3 * 2 + 1] = (uae_u8)picasso96_state.Height;
+#endif
 		} else {
 			p[2 * 0 + 0] = 0;
 			p[2 * 0 + 1] = 0;
@@ -1805,7 +1809,7 @@ static void mousehack_helper (uae_u32 buttonmask)
 
 	getgfxoffset (&fdx, &fdy, &fmx, &fmy);
 
-#ifdef PICASSO96
+#if defined(PICASSO96)
 	if (picasso_on) {
 		x -= picasso96_state.XOffset;
 		y -= picasso96_state.YOffset;
@@ -2680,7 +2684,7 @@ static int handle_custom_event (const TCHAR *custom)
 					de = de->next;
 				}
 				if (!de) {
-					de = xcalloc (delayed_event, 1);
+					de = xcalloc (struct delayed_event, 1);
 					de->next = delayed_events;
 					delayed_events = de;
 					de->delay = delay;

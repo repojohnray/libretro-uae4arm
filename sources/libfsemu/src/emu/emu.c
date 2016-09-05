@@ -355,9 +355,11 @@ void fs_emu_init_2(int options) {
 #ifdef FS_EMU_DRIVERS
 
 #else
+#ifndef RETRO
     fs_ml_video_set_update_function(fs_emu_video_update_function);
     fs_ml_video_set_render_function(fs_emu_video_render_function);
     fs_ml_video_set_post_render_function(fs_emu_video_after_update);
+#endif /*RETRO*/
 
     if (options & FS_EMU_INIT_VIDEO) {
         char *title;

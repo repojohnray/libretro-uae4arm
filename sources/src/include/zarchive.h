@@ -1,7 +1,6 @@
 #ifndef UAE_ZARCHIVE_H
 #define UAE_ZARCHIVE_H
 
-#include "uae_types.h"
 #ifdef FSUAE
 #include "zfile.h"
 #include <stdio.h>

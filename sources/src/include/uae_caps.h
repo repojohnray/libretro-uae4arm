@@ -3,6 +3,6 @@
 
 #include "uae_types.h"
 
-#include "caps_win32.h"
+#include "od-win32/caps/caps_win32.h"
 
 #endif /* UAE_CAPS_H */

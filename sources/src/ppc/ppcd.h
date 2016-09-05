@@ -17,11 +17,11 @@ typedef unsigned long long  u64;
 typedef signed   long long  s64;
 
 #ifndef __cplusplus
-typedef enum { false = 0, true } bool;
+//typedef enum { false = 0, true } bool;
 #endif
 
 #define FASTCALL    __fastcall
-#define INLINE      __inline
+//#define INLINE      __inline
 
 // See some documentation in CPP file.
 

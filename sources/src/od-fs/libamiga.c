@@ -1,4 +1,4 @@
-#include <fs/filesys.h>
+//#include <fs/filesys.h>
 #include "sysconfig.h"
 #include "sysdeps.h"
 
@@ -8,8 +8,8 @@
 #include <string.h>
 
 #include "uae_memory.h"
-#include "autoconf.h"
 #include "options.h"
+#include "autoconf.h"
 #include "blkdev.h"
 #include "custom.h"
 #include "keyboard.h"
@@ -17,12 +17,15 @@
 #include "disk.h"
 #include "gui.h"
 #include "events.h"
-#include "luascript.h"
+#include "custom.h"
+//#include "luascript.h"
 
 #include "uae_fs.h"
 #include "uae_log.h"
 #include "uae_glib.h"
 #include "uae_time.h"
+#include "uae_memory.h"
+#include "od-fs/target.h"
 
 void keyboard_settrans (void);
 libamiga_callbacks g_libamiga_callbacks = {};
@@ -48,18 +51,22 @@ int g_fs_uae_writable_disk_images = 0;
 // This is called from the main UAE thread to inform the GUI that a floppy
 // disk has been inserted or ejected.
 
+#if 0
 void gui_filename (int num, const char *name) {
     if (g_amiga_media_function) {
         g_amiga_media_function(num, name);
     }
 }
+#endif /*0*/
 
 uae_callback_function *uae_on_save_state_finished = NULL;
 uae_callback_function *uae_on_restore_state_finished = NULL;
 uae_callback_function *uae_on_update_leds = NULL;
 
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 int amiga_set_min_first_line(int line, int ntsc) {
     if (line < 0 || line > 100) {
@@ -647,9 +654,12 @@ void amiga_set_gui_message_function(log_function function) {
     g_amiga_gui_message_function = function;
 }
 
+#ifdef __cplusplus
 } // extern "C"
+#endif
 
-int disk_setwriteprotect (int num, const TCHAR *name, bool writeprotected);
+#if 0
+//int disk_setwriteprotect (int num, const TCHAR *name, bool writeprotected);
 void gui_disk_image_change (int unitnum, const TCHAR *name, bool writeprotected) {
     if (name && strlen(name) > 0) {
         write_log("gui_disk_image_change drive %d name %s write protected %d\n",
@@ -666,6 +676,7 @@ void gui_disk_image_change (int unitnum, const TCHAR *name, bool writeprotected)
     }
 
 }
+#endif
 
 bool get_plugin_path (TCHAR *out, int size, const TCHAR *path) {
     // static char* plugin_path_none = NULL;

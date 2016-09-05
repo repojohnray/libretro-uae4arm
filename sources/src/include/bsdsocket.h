@@ -10,7 +10,6 @@
 #ifndef UAE_BSDSOCKET_H
 #define UAE_BSDSOCKET_H
 
-#include "uae_types.h"
 #if 1 //def FSUAE
 #include "traps.h"
 #include "threaddep/thread.h"

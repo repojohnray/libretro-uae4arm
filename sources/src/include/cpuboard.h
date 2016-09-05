@@ -6,6 +6,7 @@
 #include "uae_memory.h"
 #endif
 
+struct romconfig;
 extern addrbank *cpuboard_autoconfig_init(struct romconfig*);
 extern bool cpuboard_maprom(void);
 extern void cpuboard_map(void);

@@ -7,13 +7,6 @@
 #ifndef UAE_DRAWING_H
 #define UAE_DRAWING_H
 
-#include "uae_types.h"
-#ifdef FSUAE
-#include "uae_inline.h"
-#include "custom.h"
-#include "xwin.h"
-#endif
-
 #define SMART_UPDATE 1
 
 #ifdef SUPPORT_PENGUINS
@@ -311,6 +304,7 @@ extern bool notice_interlace_seen (bool);
 extern void notice_resolution_seen (int, bool);
 extern void frame_drawn (void);
 extern void redraw_frame (void);
+struct vidbuffer;
 extern bool draw_frame (struct vidbuffer*);
 extern int get_custom_limits (int *pw, int *ph, int *pdx, int *pdy, int *prealh);
 extern void store_custom_limits (int w, int h, int dx, int dy);

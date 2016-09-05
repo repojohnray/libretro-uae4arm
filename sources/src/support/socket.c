@@ -16,6 +16,7 @@
 
 #ifndef _WIN32
 #define SOCKADDR_INET sockaddr_storage
+typedef struct sockaddr_storage sockaddr_storage;
 #endif
 
 #if SIZEOF_TCHAR == 1

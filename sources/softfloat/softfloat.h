@@ -391,10 +391,10 @@ static BX_CPP_INLINE int float16_is_denormal(float16);
 *----------------------------------------------------------------------------*/
 
 #ifdef BX_BIG_ENDIAN
-struct floatx80 {	// leave alignment to compiler
+typedef struct floatx80 {	// leave alignment to compiler
     Bit16u exp;
     Bit64u fraction;
-};
+} floatx80;
 #else
 typedef struct floatx80 {
     Bit64u fraction;

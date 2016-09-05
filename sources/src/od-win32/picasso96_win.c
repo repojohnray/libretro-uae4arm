@@ -66,6 +66,7 @@
 #include "clipboard.h"
 #include "gfxboard.h"
 #include "gfxfilter.h"
+#include "uae_log.h"
 
 int debug_rtg_blitter = 3;
 

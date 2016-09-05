@@ -10,7 +10,9 @@
 #ifndef UAE_FSDB_H
 #define UAE_FSDB_H
 
-#include "uae_types.h"
+struct mystat;
+struct mytimeval;
+
 #if 1 //def FSUAE
 #include <stdio.h>
 #endif

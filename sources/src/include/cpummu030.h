@@ -1,11 +1,13 @@
 #ifndef UAE_CPUMMU030_H
 #define UAE_CPUMMU030_H
 
-#include "uae_types.h"
+
+/*#include "uae/types.h"
 #ifdef FSUAE
-#include "uae_inline.h"
+#include "uae/inline.h"
 #include "newcpu.h"
 #endif
+*/
 
 #include "mmu_common.h"
 

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef RETRO
 static struct {
     int use_stdout;
     FILE *file;
@@ -119,3 +120,14 @@ void fs_log(const char *format, ...)
     fs_log_string(buffer);
     g_free(buffer);
 }
+#else /*RETRO*/
+void fs_log(const char *format, ...)
+{
+    va_list ap;
+    va_start(ap, format);
+    char *buffer = g_strdup_vprintf(format, ap);
+    va_end(ap);
+    fprintf(stderr, buffer);
+    g_free(buffer);
+}
+#endif /*RETRO*/

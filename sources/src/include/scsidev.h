@@ -11,7 +11,7 @@
 #ifndef UAE_SCSIDEV_H
 #define UAE_SCSIDEV_H
 
-#include "uae_types.h"
+struct uaedev_config_info;
 
 uaecptr scsidev_startup (uaecptr resaddr);
 void scsidev_install (void);

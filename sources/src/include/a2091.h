@@ -3,6 +3,8 @@
 
 #ifdef A2091
 
+struct uaedev_config_info;
+struct hd_hardfiledata;
 #define WD_STATUS_QUEUE 2
 
 struct wd_chip_state {

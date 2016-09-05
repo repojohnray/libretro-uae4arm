@@ -16,8 +16,9 @@
 #include "uae.h"
 #include "uae_memory.h"
 #include "rommgr.h"
-#include "custom.h"
 #include "newcpu.h"
+#include "autoconf.h"
+#include "custom.h"
 #include "savestate.h"
 #include "zfile.h"
 #include "catweasel.h"
@@ -2892,6 +2893,7 @@ const struct expansionromtype expansionroms[] = {
 		NULL, 0,
 		false, EXPANSIONTYPE_SCSI | EXPANSIONTYPE_IDE
 	},
+#if 0 /*ZZ*/
 	{
 		_T("grex"), _T("G-REX"), _T("DCE"),
 		grex_init, NULL, NULL, ROMTYPE_GREX | ROMTYPE_NOT, 0, 0, BOARD_NONAUTOCONFIG_BEFORE, true,
@@ -2971,6 +2973,7 @@ const struct expansionromtype expansionroms[] = {
 		NULL, 0,
 		true, EXPANSIONTYPE_SCSI | EXPANSIONTYPE_CUSTOM_SECONDARY
 	},
+#endif /*ZZ*/
 	{
 		_T("a2091"), _T("A590/A2091"), _T("Commodore"),
 		a2091_init, NULL, a2091_add_scsi_unit, ROMTYPE_A2091 | ROMTYPE_NONE, 0, 0, BOARD_AUTOCONFIG_Z2, false,
@@ -2978,6 +2981,7 @@ const struct expansionromtype expansionroms[] = {
 		true, EXPANSIONTYPE_SCSI | EXPANSIONTYPE_CUSTOM_SECONDARY,
 		0, 0, 0, true, NULL
 	},
+#if 0 /*ZZ*/
 	{
 		_T("a4091"), _T("A4091"), _T("Commodore"),
 		ncr710_a4091_autoconfig_init, NULL, a4091_add_scsi_unit, ROMTYPE_A4091, 0, 0, BOARD_AUTOCONFIG_Z3, false,
@@ -3125,6 +3129,7 @@ const struct expansionromtype expansionroms[] = {
 		supra_sub, 0,
 		true, EXPANSIONTYPE_SCSI
 	},
+#endif /*ZZ*/
 #if 0 /* driver is MIA, 3rd party ScottDevice driver is not enough for full implementation. */
 	{
 		_T("microforge"), _T("Hard Disk"), _T("Micro Forge"),
@@ -3133,6 +3138,7 @@ const struct expansionromtype expansionroms[] = {
 		false, EXPANSIONTYPE_SASI | EXPANSIONTYPE_SCSI
 	},
 #endif
+#if 0 /*ZZ*/
 
 	{
 		_T("omtiadapter"), _T("OMTI-Adapter"), _T("C't"),
@@ -3170,6 +3176,7 @@ const struct expansionromtype expansionroms[] = {
 		NULL, 0,
 		false, EXPANSIONTYPE_SASI | EXPANSIONTYPE_SCSI
 	},
+#endif /*ZZ*/
 #if 0
 	{
 		_T("kronos"), _T("Kronos"), _T("C-Ltd"),
@@ -3180,6 +3187,7 @@ const struct expansionromtype expansionroms[] = {
 		{ 0xd1, 4, 0x00, 0x00, 0x03, 0xec, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00 },
 	},
 #endif
+#if 0 /*ZZ*/
 	{
 		_T("hda506"), _T("HDA-506"), _T("Spirit Technology"),
 		hda506_init, NULL, hda506_add_scsi_unit, ROMTYPE_HDA506 | ROMTYPE_NOT, 0, 0, BOARD_AUTOCONFIG_Z2, true,
@@ -3193,7 +3201,7 @@ const struct expansionromtype expansionroms[] = {
 		_T("amax"), _T("AMAX ROM dongle"), _T("ReadySoft"),
 		NULL, NULL, NULL, ROMTYPE_AMAX | ROMTYPE_NONE, 0, 0, 0, false
 	},
-
+#endif /*ZZ*/
 #if 0
 	{
 		_T("x86_xt_hd"), _T("x86 XT"), _T("x86"),
@@ -3202,6 +3210,7 @@ const struct expansionromtype expansionroms[] = {
 		false, EXPANSIONTYPE_CUSTOM | EXPANSIONTYPE_SCSI
 	},
 #endif
+#if 0 /*ZZ*/
 	{
 		_T("x86athdprimary"), _T("AT IDE Primary"), _T("x86"),
 		x86_at_hd_init_1, NULL, x86_add_at_hd_unit_1, ROMTYPE_X86_AT_HD1 | ROMTYPE_NOT, 0, 0, BOARD_NONAUTOCONFIG_AFTER_Z2, true,
@@ -3283,7 +3292,7 @@ const struct expansionromtype expansionroms[] = {
 		NULL, 0,
 		false, EXPANSIONTYPE_RTG,
 	},
-
+#endif
 	{
 		NULL
 	}

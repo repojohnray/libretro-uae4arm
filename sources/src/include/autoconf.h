@@ -9,11 +9,7 @@
 #ifndef UAE_AUTOCONF_H
 #define UAE_AUTOCONF_H
 
-#include "uae_types.h"
-#if 1 //def FSUAE
-#include "uae_memory.h"
-#include "uae_limits.h"
-#endif
+struct uaedev_mount_info;
 
 #define RTAREA_DEFAULT 0xf00000
 #define RTAREA_BACKUP  0xef0000
@@ -82,6 +78,7 @@ int filesys_insert (int nr, const TCHAR *volume, const TCHAR *rootdir, bool read
 int filesys_eject (int nr);
 int filesys_media_change (const TCHAR *rootdir, int inserted, struct uaedev_config_data *uci);
 
+struct zvolume;
 extern TCHAR *filesys_createvolname (const TCHAR *volname, const TCHAR *rootdir, struct zvolume *zv, const TCHAR *def);
 extern int target_get_volume_name (struct uaedev_mount_info *mtinf, const TCHAR *volumepath, TCHAR *volumename, int size, bool inserted, bool fullcheck);
 
@@ -115,6 +112,7 @@ extern void uaegfx_install_code (uaecptr);
 
 extern uae_u32 emulib_target_getcpurate (uae_u32, uae_u32*);
 
+struct romconfig;
 typedef addrbank*(*DEVICE_INIT)(struct romconfig*);
 typedef void(*DEVICE_ADD)(int, struct uaedev_config_info*, struct romconfig*);
 typedef bool(*E8ACCESS)(int, uae_u32*, int, bool);

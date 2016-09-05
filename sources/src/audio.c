@@ -2180,7 +2180,9 @@ void audio_update_adkmasks (void)
 
 int init_audio (void)
 {
-	return init_sound ();
+  #warning init_audio disabled...
+  fprintf(stderr, "init_audio=0... disabling"); return 0;
+  //return init_sound ();
 }
 
 void led_filter_audio (void)

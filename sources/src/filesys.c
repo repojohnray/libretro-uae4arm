@@ -73,6 +73,7 @@
 
 #if 1 //def FSUAE // NL
 #undef _WIN32
+#include "od-fs/target.h"
 #endif
 
 #define TRACING_ENABLED 1
@@ -4648,9 +4649,9 @@ static uae_u32 REGPARAM2 fsmisc_helper (TrapContext *context)
 	case 2:
 	return filesys_media_change_reply (context, 1);
 	case 3:
-		uae_u32 t = getlocaltime ();
+	        { uae_u32 t = getlocaltime ();
 		uae_u32 secs = (uae_u32)t - (8 * 365 + 2) * 24 * 60 * 60;
-		return secs;
+		return secs; }
 	}
 	return 0;
 }
@@ -8595,7 +8596,7 @@ void filesys_install_code (void)
 	bootrom_header = 3 * 4;
 	align(4);
 	a = here ();
-#include "filesys_bootrom.cpp"
+#include "filesys_bootrom.c"
 
 	items = dlg (a + 8) & 0xffff;
 	/* The last offset comes from the code itself, look for it near the top. */

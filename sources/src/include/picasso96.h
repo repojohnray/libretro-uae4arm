@@ -1,16 +1,14 @@
 #ifndef UAE_PICASSO96_H
 #define UAE_PICASSO96_H
 
-#include "uae_types.h"
+//#include "uae/types.h"
 #include "traps.h"
 
 void picasso96_alloc (TrapContext* ctx);
 uae_u32 picasso_demux (uae_u32 arg, TrapContext *ctx);
 
-#ifdef FSUAE // NL
-
-#include "picasso96_win.h"
-
+#if 1 /*def FSUAE*/ // NL
+#include "../od-win32/picasso96_win.h"
 #else
 
 #ifdef WIN32

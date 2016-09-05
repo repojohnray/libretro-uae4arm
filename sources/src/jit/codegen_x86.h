@@ -198,7 +198,7 @@ enum {
 #define _rXP(R)		((R) > 0 && _rR(R) > 7)
 #else
 #define _rN(R)		((R) & 0x07)
-#define _rR(R)		(int(R))
+#define _rR(R)		((int)(R))
 #define _rXP(R)		(_rR(R) > 7 && _rR(R) < 16)
 #endif
 
@@ -223,7 +223,7 @@ enum {
 #endif
 
 #define _rSP()		(X86_TARGET_64BIT ? (int)X86_RSP : (int)X86_ESP)
-#define _r1e8lP(R)	(int(R) >= X86_SPL && int(R) <= X86_DIL)
+#define _r1e8lP(R)	((int)(R) >= X86_SPL && (int)(R) <= X86_DIL)
 #define _rbpP(R)	(_rR(R) == _rR(X86_RBP))
 #define _rspP(R)	(_rR(R) == _rR(X86_RSP))
 #define _rbp13P(R)	(_rN(R) == _rN(X86_RBP))

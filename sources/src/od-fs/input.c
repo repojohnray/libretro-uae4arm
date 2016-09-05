@@ -1,6 +1,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
+#include "options.h"
 #include "custom.h"
 #include "gui.h"
 #include "inputdevice.h"
@@ -8,6 +9,8 @@
 #include "options.h"
 #include "xwin.h"
 #include "uae_fs.h"
+#include "newcpu.h"
+#include "od-fs/target.h"
 
 int tablet_log = 0;
 
@@ -71,7 +74,7 @@ static int handle_custom_action(int action, int state)
 
 #include <fs/emu/hacks.h>
 
-extern "C" {
+//extern "C" {
 
 int amiga_send_input_event(int input_event, int state)
 {
@@ -83,9 +86,11 @@ int amiga_send_input_event(int input_event, int state)
         initialized = 1;
     }
 
+#if 0
     if (g_fs_log_input) {
         write_log("amiga_send_input_event %d %d\n", input_event, state);
     }
+#endif
 
     if (input_event > INPUTEVENT_PRIVATE_START) {
         return handle_custom_action(input_event, state);
@@ -155,8 +160,9 @@ int amiga_send_input_event(int input_event, int state)
     return result;
 }
 
-} // extern "C"
+//} // extern "C"
 
+#if 0
 bool handle_events (void) {
 #ifdef DEBUG_SYNC
     static int count = 0;
@@ -172,18 +178,23 @@ bool handle_events (void) {
     //filesys_handle_events();
     return false;
 }
+#endif /*0*/
 
 int input_get_default_lightpen (struct uae_input_device *uid, int i, int port, int af, bool gp, bool joymouseswap) {
     return 0;
 }
 
+#if 0
 void gui_gameport_axis_change (int port, int axis, int state, int max) {
 
 }
+#endif
 
+#if 0
 void gui_gameport_button_change (int port, int button, int onoff) {
 
 }
+#endif
 
 #ifdef WINDOWS
 #include <Windows.h>

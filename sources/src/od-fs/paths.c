@@ -175,7 +175,9 @@ void fetch_rompath(TCHAR *out, int size)
 	uae_tcslcpy(out, currprefs.path_rom.path[k], size);
 }
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 void amiga_set_native_library_dirs(const char **library_dirs)
 {
@@ -194,4 +196,6 @@ void amiga_set_module_ripper_dir(const char *path)
 	g_module_ripper_dir = strdup(path);
 }
 
+#ifdef __cplusplus
 } // extern "C"
+#endif

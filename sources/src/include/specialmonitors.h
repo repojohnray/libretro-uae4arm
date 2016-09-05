@@ -1,7 +1,6 @@
 #ifndef UAE_SPECIALMONITORS_H
 #define UAE_SPECIALMONITORS_H
 
-#include "uae_memory.h"
 #ifdef FSUAE
 #include "xwin.h"
 #endif

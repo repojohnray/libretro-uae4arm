@@ -9,11 +9,10 @@
 #ifndef UAE_FILESYS_H
 #define UAE_FILESYS_H
 
-#include "uae_types.h"
-#ifdef FSUAE
+//#ifdef FSUAE
 #include "options.h"
 #include <time.h>
-#endif
+//#endif
 
 struct hardfilehandle;
 
@@ -129,7 +128,7 @@ extern struct uaedev_mount_info options_mountinfo;
 
 extern struct hardfiledata *get_hardfile_data (int nr);
 #define FILESYS_MAX_BLOCKSIZE 2048
-extern int hdf_open (struct hardfiledata *hfd);
+extern int hdf_open1 (struct hardfiledata *hfd);
 extern int hdf_open (struct hardfiledata *hfd, const TCHAR *altname);
 extern int hdf_dup (struct hardfiledata *dhfd, const struct hardfiledata *shfd);
 extern void hdf_close (struct hardfiledata *hfd);

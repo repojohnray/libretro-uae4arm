@@ -9,8 +9,6 @@
 #ifndef UAE_GUI_H
 #define UAE_GUI_H
 
-#include "uae_types.h"
-
 extern int gui_init (void);
 extern int gui_update (void);
 extern void gui_exit (void);

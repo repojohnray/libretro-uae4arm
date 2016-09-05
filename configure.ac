@@ -6,7 +6,7 @@ AC_INIT([FS-UAE], [2.7.14dev],
         [frode@fs-uae.net], [fs-uae], [http://fs-uae.net])
 AC_CONFIG_AUX_DIR([.])
 AC_CANONICAL_HOST
-AC_CONFIG_SRCDIR([src/main.cpp])
+AC_CONFIG_SRCDIR([sources/src/main.c])
 AC_CONFIG_HEADERS([config.h])
 
 # AC_CONFIG_MACRO_DIRS requires newer autoconf/automake than is found in
@@ -158,13 +158,6 @@ AC_CHECK_LIB([Iphlpapi], [main])
 
 AM_CONDITIONAL([BUILTIN_GLEE], [false])
 
-AC_ARG_WITH(glew, AS_HELP_STRING(
-    [--without-glew], [do not use GLEW library]))
-AS_IF([test "x$with_glew" != xno], [
-    PKG_CHECK_MODULES([GLEW], [glew])
-    AC_DEFINE([WITH_GLEW], [1], [Define to 1 to use GLEW])
-])
-
 AC_ARG_WITH(libmpeg2, AS_HELP_STRING(
     [--without-libmpeg2], [or --with-libmpeg=builtin to use included version]))
 AM_CONDITIONAL([BUILTIN_LIBMPEG2], [test x$with_libmpeg2 = xbuiltin])
@@ -243,29 +236,16 @@ PKG_CHECK_MODULES([OPENGL], [gl], [
 AC_DEFINE([USE_PNG], [1], [Define to 1 to use libpng])
 PKG_CHECK_MODULES([PNG], [libpng])
 
-AC_ARG_WITH(qt, AS_HELP_STRING(
-    [--with-qt], [use QT]))
-AS_IF([test "x$with_qt" = xyes], [
-    AC_DEFINE([WITH_QT], [1], [Define to 1 to use QT])
-    PKG_CHECK_MODULES([QT], [Qt5Gui])
-])
+dnl AC_ARG_WITH(qt, AS_HELP_STRING( [--with-qt], [use QT]))
+dnl AS_IF([test "x$with_qt" = xyes], [AC_DEFINE([WITH_QT], [1], [Define to 1 to use QT])
+dnl    PKG_CHECK_MODULES([QT], [Qt5Gui])
+dnl ])
 
-AC_DEFINE([USE_SDL2], [1], [Define to 1 to use SDL 2.0])
-PKG_CHECK_MODULES([SDL2], [sdl2])
-AC_DEFINE([USE_SDL_VIDEO], [1], [Define to 1 to use SDL for video])
-AC_DEFINE([USE_SDL_INPUT], [1], [Define to 1 to use SDL for input])
+dnl AC_DEFINE([USE_SDL2], [1], [Define to 1 to use SDL 2.0])
+dnl PKG_CHECK_MODULES([SDL2], [sdl2])
+dnl AC_DEFINE([USE_SDL_VIDEO], [1], [Define to 1 to use SDL for video])
+dnl AC_DEFINE([USE_SDL_INPUT], [1], [Define to 1 to use SDL for input])
 
-AS_CASE([$host_os],
-[mingw*], [],
-[darwin*], [],
-[
-    X11_LIBS="-lX11"
-    AC_DEFINE([USE_X11], [1], [Define to 1 to use X11])
-
-#    X11_LIBS="$X11_LIBS -lXtst"
-#    AC_DEFINE([USE_X11_XTEST], [1], [Define to 1 to use X11 XTEST extension])
-])
-AC_SUBST([X11_LIBS])
 
 AC_DEFINE([USE_ZLIB], [1], [Define to 1 to use zlib])
 PKG_CHECK_MODULES([ZLIB], [zlib], [
@@ -587,78 +567,42 @@ AC_TRY_LINK([
 # compiling without them may not work (without further changes to
 # source code).
 
-OPT_FEATURE([A2065], [a2065], [a2065],
-            [A2065 ethernet card])
-REQ_FEATURE([A2091], [a2091], [a2091],
-            [A590/A2091 SCSI])
-OPT_FEATURE([ACTION_REPLAY], [action_replay], [action-replay],
-            [Action Replay 1/2/3 support])
-OPT_FEATURE([AGA], [aga], [aga],
-            [AGA chipset emulation])
-DIS_FEATURE([AHI], [ahi], [ahi],
-            [builtin AHI device (unsupported)])
-OPT_FEATURE([ARCADIA], [arcadia], [arcadia],
-            [Arcadia arcade system])
-REQ_FEATURE([AUTOCONFIG], [autoconfig], [autoconfig],
-            [autoconfig support, fast ram, harddrives etc...])
-OPT_FEATURE([BSDSOCKET], [bsdsocket], [bsdsocket],
-            [built-in bsdsocket.library])
-DIS_FEATURE([WITH_BUILTIN_SLIRP], [builtin_slirp], [builtin-slirp],
-            [built-in SLIRP implementation (unsupported)])
-OPT_FEATURE([CAPS], [caps], [caps],
-            [IPF support via libcapsimage])
-OPT_FEATURE([CD32], [cd32], [cd32],
-            [CD32 emulation])
-OPT_FEATURE([CDTV], [cdtv], [cdtv],
-            [CDTV emulation])
-OPT_FEATURE([CODEGEN], [codegen], [codegen],
-            [Code generation (disable for cross-compilation)])
-OPT_FEATURE([CPUEMU_0], [cpuemu_0], [cpuemu-0],
-            [generic 680x0 emulation])
-OPT_FEATURE([CPUEMU_11], [cpuemu_11], [cpuemu-11],
-            [68000/68010 prefetch emulation])
-REQ_FEATURE([CPUEMU_13], [cpuemu_13], [cpuemu-13],
-            [68000/68010 cycle-exact cpu&blitter])
-OPT_FEATURE([CPUEMU_20], [cpuemu_20], [cpuemu-20],
-            [68020 prefetch])
-OPT_FEATURE([CPUEMU_21], [cpuemu_21], [cpuemu-21],
-            [68020 "cycle-exact" + blitter])
-OPT_FEATURE([CPUEMU_22], [cpuemu_22], [cpuemu-22],
-            [68030 prefetch])
-OPT_FEATURE([CPUEMU_23], [cpuemu_23], [cpuemu-23],
-            [68030 "cycle-exact" + blitter])
-OPT_FEATURE([CPUEMU_24], [cpuemu_24], [cpuemu-24],
-            [68060 "cycle-exact" + blitter])
-OPT_FEATURE([CPUEMU_25], [cpuemu_25], [cpuemu-25],
-            [68040 "cycle-exact" + blitter (needs cpuemu-24)])
-OPT_FEATURE([CPUEMU_31], [cpuemu_31], [cpuemu-31],
-            [Aranym 68040 MMU])
-OPT_FEATURE([CPUEMU_32], [cpuemu_32], [cpuemu-32],
-            [Previous 68030 MMU])
-OPT_FEATURE([CPUEMU_33], [cpuemu_33], [cpuemu-33],
-            [68060 MMU])
-OPT_FEATURE([CPUEMU_40], [cpuemu_40], [cpuemu-40],
-            [generic 680x0 with JIT direct memory access])
-OPT_FEATURE([CPUEMU_50], [cpuemu_50], [cpuemu-50],
-            [generic 680x0 with indirect memory access])
-REQ_FEATURE([WITH_CPUBOARD], [cpuboard], [cpuboard],
-            [cpu board emulation])
-OPT_FEATURE([DEBUGGER], [debugger], [debugger],
-            [debugger support (cannot be disabled right now)])
-OPT_FEATURE([A_DMS], [dms], [dms],
-            [DMS support])
-OPT_FEATURE([DRIVESOUND], [drivesound], [drivesound],
-            [drive sound emulation])
-OPT_FEATURE([FDI2RAW], [fdi2raw], [fdi2raw],
-            [FDI 1.0 and 2.x image support])
-REQ_FEATURE([FILESYS], [filesys], [filesys],
-            [directory hard drives])
-REQ_FEATURE([FPUEMU], [fpuemu], [fpuemu],
-            [FPU emulation])
-DIS_FEATURE([FS_EMU_DRIVERS], [drivers], [drivers],
-            [multiple driver backends (experimental)])
-OPT_FEATURE([GFXBOARD], [gfxboard], [gfxboard],
-            [GFX hardware boards])
+OPT_FEATURE([A2065], [a2065], [a2065], [A2065 ethernet card])
+REQ_FEATURE([A2091], [a2091], [a2091], [A590/A2091 SCSI])
+OPT_FEATURE([ACTION_REPLAY], [action_replay], [action-replay], [Action Replay 1/2/3 support])
+OPT_FEATURE([AGA], [aga], [aga], [AGA chipset emulation])
+DIS_FEATURE([AHI], [ahi], [ahi], [builtin AHI device (unsupported)])
+OPT_FEATURE([ARCADIA], [arcadia], [arcadia], [Arcadia arcade system])
+REQ_FEATURE([AUTOCONFIG], [autoconfig], [autoconfig], [autoconfig support, fast ram, harddrives etc...])
+OPT_FEATURE([BSDSOCKET], [bsdsocket], [bsdsocket], [built-in bsdsocket.library])
+DIS_FEATURE([WITH_BUILTIN_SLIRP], [builtin_slirp], [builtin-slirp], [built-in SLIRP implementation (unsupported)])
+OPT_FEATURE([CAPS], [caps], [caps], [IPF support via libcapsimage])
+dnl OPT_FEATURE([CD32], [cd32], [cd32], [CD32 emulation])
+OPT_FEATURE([CDTV], [cdtv], [cdtv], [CDTV emulation])
+OPT_FEATURE([CODEGEN], [codegen], [codegen], [Code generation (disable for cross-compilation)])
+OPT_FEATURE([CPUEMU_0], [cpuemu_0], [cpuemu-0], [generic 680x0 emulation])
+OPT_FEATURE([CPUEMU_11], [cpuemu_11], [cpuemu-11], [68000/68010 prefetch emulation])
+REQ_FEATURE([CPUEMU_13], [cpuemu_13], [cpuemu-13], [68000/68010 cycle-exact cpu&blitter])
+OPT_FEATURE([CPUEMU_20], [cpuemu_20], [cpuemu-20], [68020 prefetch])
+OPT_FEATURE([CPUEMU_21], [cpuemu_21], [cpuemu-21], [68020 "cycle-exact" + blitter])
+OPT_FEATURE([CPUEMU_22], [cpuemu_22], [cpuemu-22], [68030 prefetch])
+OPT_FEATURE([CPUEMU_23], [cpuemu_23], [cpuemu-23], [68030 "cycle-exact" + blitter])
+OPT_FEATURE([CPUEMU_24], [cpuemu_24], [cpuemu-24], [68060 "cycle-exact" + blitter])
+OPT_FEATURE([CPUEMU_25], [cpuemu_25], [cpuemu-25], [68040 "cycle-exact" + blitter (needs cpuemu-24)])
+OPT_FEATURE([CPUEMU_31], [cpuemu_31], [cpuemu-31], [Aranym 68040 MMU])
+OPT_FEATURE([CPUEMU_32], [cpuemu_32], [cpuemu-32], [Previous 68030 MMU])
+OPT_FEATURE([CPUEMU_33], [cpuemu_33], [cpuemu-33], [68060 MMU])
+OPT_FEATURE([CPUEMU_40], [cpuemu_40], [cpuemu-40], [generic 680x0 with JIT direct memory access])
+OPT_FEATURE([CPUEMU_50], [cpuemu_50], [cpuemu-50], [generic 680x0 with indirect memory access])
+REQ_FEATURE([WITH_CPUBOARD], [cpuboard], [cpuboard], [cpu board emulation])
+OPT_FEATURE([DEBUGGER], [debugger], [debugger], [debugger support (cannot be disabled right now)])
+OPT_FEATURE([A_DMS], [dms], [dms], [DMS support])
+OPT_FEATURE([DRIVESOUND], [drivesound], [drivesound], [drive sound emulation])
+OPT_FEATURE([FDI2RAW], [fdi2raw], [fdi2raw], [FDI 1.0 and 2.x image support])
+REQ_FEATURE([FILESYS], [filesys], [filesys], [directory hard drives])
+REQ_FEATURE([FPUEMU], [fpuemu], [fpuemu], [FPU emulation])
+DIS_FEATURE([FS_EMU_DRIVERS], [drivers], [drivers], [multiple driver backends (experimental)])
+dnl OPT_FEATURE([GFXBOARD], [gfxboard], [gfxboard], [GFX hardware boards])
 AC_ARG_ENABLE([jit], [AS_HELP_STRING([--disable-jit], [JIT compiler])])
 AS_IF([test "x$enable_jit" != xno], [
     AC_TRY_COMPILE([
@@ -671,83 +615,68 @@ AS_IF([test "x$enable_jit" != xno], [
         #endif
     ], [
         AC_DEFINE([JIT], [1], [Define to 1 to enable JIT compilation])
+	AC_SUBST(USE_JIT, 1)
     ], [
         if test "x$enable_jit" != xyes; then
             AC_MSG_FAILURE(
                 [--enable-jit was given, but arch is not supported])
         fi
+	AC_SUBST(USE_JIT, 0)
     ])
-])
-OPT_FEATURE([USE_JIT_FPU], [jit_fpu], [jit-fpu],
-            [JIT compilation of FPU instructions])
-DIS_FEATURE([WITH_LUA], [lua], [lua],
-            [LUA scripting (unfinished)])
-OPT_FEATURE([WITH_NETPLAY], [netplay], [netplay],
-            [netplay support])
-OPT_FEATURE([NCR], [ncr], [ncr],
-            [A4000T/A4091, 53C710/53C770 SCSI])
-OPT_FEATURE([NCR9X], [ncr9x], [ncr9x],
-            [53C9X SCSI])
-OPT_FEATURE([PARALLEL_PORT], [parallel_port], [parallel-port],
-            [parallell port (printer) emulation])
-DIS_FEATURE([WITH_PEARPC_CPU], [pearpc_cpu], [pearpc-cpu],
-            [use PearPC for PPC emulation (deprecated)])
-REQ_FEATURE([PICASSO96], [picasso96], [picasso96],
-            [Picasso 96 (uaegfx.card)])
-OPT_FEATURE([WITH_PPC], [ppc], [ppc],
-            [PPC (requires cpu board)])
-OPT_FEATURE([PROWIZARD], [prowizard], [prowizard],
-            [prowizard])
-OPT_FEATURE([SAVESTATE], [savestate], [savestate],
-            [save state support])
-OPT_FEATURE([SCP], [scp], [scp],
-            [SuperCardPro floppy image support])
-OPT_FEATURE([WITH_SEGTRACKER], [segtracker], [segtracker],
-            [segtracker support in debugger])
-OPT_FEATURE([SERIAL_PORT], [serial_port], [serial-port],
-            [serial port emulation])
-OPT_FEATURE([WITH_SLIRP], [slirp], [slirp],
-            [SLIRP (user mode NAT)])
-OPT_FEATURE([WITH_SOFTFLOAT], [softfloat], [softfloat],
-            [use softfloat library])
-OPT_FEATURE([WITH_QEMU_CPU], [qemu_cpu], [qemu-cpu],
-            [use QEMU plugin for PPC emulation])
-OPT_FEATURE([WITH_QEMU_SLIRP], [qemu_slirp], [qemu-slirp],
-            [use QEMU plugin for SLIRP implementation])
-REQ_FEATURE([WITH_TOCCATA], [toccata], [toccata],
-            [Toccata sound card emulation])
-OPT_FEATURE([WITH_UAENATIVE], [uaenative], [uaenative],
-            [uaenative.library])
-OPT_FEATURE([SANA2], [uaenet], [uaenet],
-            [uaenet.device])
-OPT_FEATURE([SCSIEMU], [uaescsi], [uaescsi],
-            [uaescsi.device])
-OPT_FEATURE([UAESERIAL], [uaeserial], [uaeserial],
-            [uaeserial.device])
-OPT_FEATURE([WITH_UDIS86], [udis86], [udis86],
-            [UDIS86 x86/x86-64 disassembler])
-OPT_FEATURE([WITH_VPAR], [vpar], [vpar],
-            [vpar virtual parallel port])
-OPT_FEATURE([WITH_XML_SHADER], [xml_shader], [xml-shader],
-            [XML shader support])
-OPT_FEATURE([A_ZIP], [zip], [zip],
-            [ZIP archive support])
+], [AC_SUBST(USE_JIT, 0)])
+AC_ARG_ENABLE([neon], [AS_HELP_STRING([--disable-neon], [ARM neon])])
+AS_IF([test "x$enable_neon" != xno], [
+    AC_TRY_COMPILE([
+    ], [
+        #if !defined(__arm__)
+        #error NEON only supported on ARM
+        #endif
+        #if __ARM_ARCH < 7 || __ARM_ARCH_PROFILE == 'M'
+	#error Architecture too old for NEON.
+	#endif
+    ], [
+	AC_SUBST(USE_NEON, 1)
+    ], [
+	AC_SUBST(USE_NEON, 0)
+    ])
+], [AC_SUBST(USE_NEON, 0)])
+OPT_FEATURE([USE_JIT_FPU], [jit_fpu], [jit-fpu], [JIT compilation of FPU instructions])
+DIS_FEATURE([WITH_LUA], [lua], [lua], [LUA scripting (unfinished)])
+OPT_FEATURE([WITH_NETPLAY], [netplay], [netplay], [netplay support])
+OPT_FEATURE([NCR], [ncr], [ncr], [A4000T/A4091, 53C710/53C770 SCSI])
+OPT_FEATURE([NCR9X], [ncr9x], [ncr9x], [53C9X SCSI])
+OPT_FEATURE([PARALLEL_PORT], [parallel_port], [parallel-port], [parallell port (printer) emulation])
+DIS_FEATURE([WITH_PEARPC_CPU], [pearpc_cpu], [pearpc-cpu], [use PearPC for PPC emulation (deprecated)])
+REQ_FEATURE([PICASSO96], [picasso96], [picasso96],[Picasso 96 (uaegfx.card)])
+DIS_FEATURE([WITH_PPC], [ppc], [ppc], [PPC (requires cpu board)])
+DIS_FEATURE([PROWIZARD], [prowizard], [prowizard], [prowizard])
+OPT_FEATURE([SAVESTATE], [savestate], [savestate], [save state support])
+OPT_FEATURE([SCP], [scp], [scp], [SuperCardPro floppy image support])
+OPT_FEATURE([WITH_SEGTRACKER], [segtracker], [segtracker], [segtracker support in debugger])
+OPT_FEATURE([SERIAL_PORT], [serial_port], [serial-port], [serial port emulation])
+dnl OPT_FEATURE([WITH_SLIRP], [slirp], [slirp], [SLIRP (user mode NAT)])
+OPT_FEATURE([WITH_SOFTFLOAT], [softfloat], [softfloat], [use softfloat library])
+dnl OPT_FEATURE([WITH_QEMU_CPU], [qemu_cpu], [qemu-cpu], [use QEMU plugin for PPC emulation])
+dnl OPT_FEATURE([WITH_QEMU_SLIRP], [qemu_slirp], [qemu-slirp], [use QEMU plugin for SLIRP implementation])
+REQ_FEATURE([WITH_TOCCATA], [toccata], [toccata], [Toccata sound card emulation])
+OPT_FEATURE([WITH_UAENATIVE], [uaenative], [uaenative], [uaenative.library])
+OPT_FEATURE([SANA2], [uaenet], [uaenet], [uaenet.device])
+OPT_FEATURE([SCSIEMU], [uaescsi], [uaescsi],  [uaescsi.device])
+OPT_FEATURE([UAESERIAL], [uaeserial], [uaeserial], [uaeserial.device])
+DIS_FEATURE([WITH_UDIS86], [udis86], [udis86], [UDIS86 x86/x86-64 disassembler])
+OPT_FEATURE([WITH_VPAR], [vpar], [vpar], [vpar virtual parallel port])
+OPT_FEATURE([WITH_XML_SHADER], [xml_shader], [xml-shader], [XML shader support])
+OPT_FEATURE([A_ZIP], [zip], [zip], [ZIP archive support])
 
 AC_DEFINE([FPU_UAE], [1], [Define to 1])
 
-AC_CONFIG_SUBDIRS([libmpeg2])
+dnl AC_CONFIG_SUBDIRS([libmpeg2])
 
 # Write Makefile
 
 AC_CONFIG_FILES([
-    dist/linux/Makefile
-    dist/macosx/Info.plist
-    dist/macosx/Makefile
-    dist/steamos/Makefile
-    dist/windows/fs-uae.iss
-    dist/windows/Makefile
-    src/fs-uae/fs-uae.rc
     Makefile
+    sources/Makefile
 ])
 AC_OUTPUT
 

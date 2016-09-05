@@ -1,6 +1,8 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
+#include "options.h"
+#include "newcpu.h"
 #include "autoconf.h"
 #include "clipboard.h"
 #include "debug.h"
@@ -8,7 +10,6 @@
 #include "filesys.h"
 #include "fsdb.h"
 #include "gui.h"
-#include "newcpu.h"
 #include "options.h"
 #include "rommgr.h"
 #include "sampler.h"
@@ -16,6 +17,7 @@
 #include "scsidev.h"
 #include "uae.h"
 #include "xwin.h"
+#include "uae_log.h"
 
 void graphics_reset(bool force)
 {
@@ -37,6 +39,7 @@ void gui_unlock (void)
 
 }
 
+#if 0 /*ZZ*/
 void gui_display (int shortcut)
 {
     STUB("shortcut=%d", shortcut);
@@ -52,6 +55,7 @@ void gui_exit()
 {
     LOG_STUB("");
 }
+#endif /*ZZ*/
 
 int get_guid_target (uae_u8 *out) {
     return 0;
@@ -83,9 +87,11 @@ void debugger_change (int mode) {
     STUB("mode=%d", mode);
 }
 
+#if 0 /*ZZ*/
 void screenshot (int mode, int doprepare) {
     STUB("mode=%d doprepare=%d", mode, doprepare);
 }
+#endif /*ZZ*/
 
 void write_dlog (const TCHAR *format, ...) {
     STUB("format=\"%s\"", format);
@@ -95,7 +101,7 @@ void target_addtorecent (const TCHAR *name, int t) {
     STUB("name=\"%s\" t=%d", name, t);
 }
 
-uae_u8 sampler_getsample (int) {
+uae_u8 sampler_getsample (int dummy) {
     return 0;
 }
 
@@ -119,6 +125,7 @@ int target_cfgfile_load (struct uae_prefs *p, const TCHAR *filename, int type, i
     return 1;
 }
 
+#if 0 /*ZZ*/
 void target_save_options (struct zfile *f, struct uae_prefs *p) {
     LOG_STUB("zfile=%p p=%p", f, p);
 }
@@ -127,6 +134,7 @@ int target_parse_option (struct uae_prefs *p, const TCHAR *option, const TCHAR *
     STUB("p=%p\n, option=\"%s\"", p, option);
     return 0;
 }
+#endif /*ZZ*/
 
 uae_u8 *target_load_keyfile (struct uae_prefs *p, const TCHAR *path, int *sizep, TCHAR *name) {
     STUB("");
@@ -193,9 +201,11 @@ void target_fixup_options (struct uae_prefs *p) {
     LOG_STUB("");
 }
 
+#if 0 /*ZZ*/
 int debuggable (void) {
     return 0;
 }
+#endif /*ZZ*/
 
 void logging_init(void) {
     LOG_STUB("");

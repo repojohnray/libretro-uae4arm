@@ -67,6 +67,7 @@ static void gui_flicker_led2 (int led, int unitnum, int status)
             gui_led (led, *p, -1);
 }
 
+#if 0 /*ZZ*/
 void gui_flicker_led (int led, int unitnum, int status) {
     if (led < 0) {
         gui_flicker_led2 (LED_HD, 0, 0);
@@ -77,7 +78,9 @@ void gui_flicker_led (int led, int unitnum, int status) {
         gui_flicker_led2 (led, unitnum, status);
     }
 }
+#endif /*ZZ*/
 
+#if 0 /*ZZ*/ /*gui_led*/
 void gui_led (int led, int state, int brightness)
 {
     //STUB("led %d state %d", led, state);
@@ -117,8 +120,11 @@ void gui_led (int led, int state, int brightness)
         g_amiga_led_function(out_led, out_state);
     }
 }
+#endif /*ZZ*/
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 void amiga_on_update_leds(amiga_callback_function *function) {
     uae_on_update_leds = function;
@@ -128,4 +134,6 @@ void amiga_set_led_function(amiga_led_function function) {
     g_amiga_led_function = function;
 }
 
+#ifdef __cplusplus
 } // extern "C"
+#endif

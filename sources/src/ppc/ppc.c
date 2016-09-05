@@ -8,6 +8,7 @@
 #include "threaddep/thread.h"
 #include "machdep/rpt.h"
 #include "memory.h"
+#include "newcpu.h"
 #include "cpuboard.h"
 #include "debug.h"
 #include "custom.h"
@@ -603,10 +604,10 @@ void uae_ppc_emulate(void)
 	}
 }
 
-bool uae_ppc_direct_physical_memory_handle(uint32_t addr, uint8_t *&ptr)
+bool uae_ppc_direct_physical_memory_handle(uint32_t addr, uint8_t **ptr)
 {
-	ptr = get_real_address(addr);
-	if (!ptr)
+	*ptr = get_real_address(addr);
+	if (!*ptr)
 		gui_message(_T("Executing PPC code at IO address %08x!"), addr);
 	return true;
 }

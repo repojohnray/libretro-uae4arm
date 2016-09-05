@@ -1,10 +1,11 @@
 #ifndef UAE_PCI_HW_H
 #define UAE_PCI_HW_H
 
-#include "uae_types.h"
-#ifdef FSUAE
+struct pci_board_state;
+
+//#ifdef FSUAE
 #include "uae_memory.h"
-#endif
+//#endif
 
 #define MAX_PCI_BOARDS 6
 #define MAX_PCI_BARS 7

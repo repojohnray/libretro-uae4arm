@@ -9,10 +9,9 @@
 #ifndef UAE_SAVESTATE_H
 #define UAE_SAVESTATE_H
 
-#include "uae_types.h"
 #ifdef FSUAE
-#include "uae_limits.h"
-#include "uae_inline.h"
+#include "uae/limits.h"
+#include "uae/inline.h"
 #include <stddef.h>
 #endif
 

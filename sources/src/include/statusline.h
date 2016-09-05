@@ -1,7 +1,6 @@
 #ifndef UAE_STATUSLINE_H
 #define UAE_STATUSLINE_H
 
-#include "uae_types.h"
 
 #define TD_PADX 4
 #define TD_PADY 2

@@ -10,11 +10,6 @@
 #ifndef UAE_DEBUG_H
 #define UAE_DEBUG_H
 
-#include "uae_types.h"
-#ifdef FSUAE
-#include "uae_inline.h"
-#endif
-
 #ifdef DEBUGGER
 
 #define	MAX_HIST 500

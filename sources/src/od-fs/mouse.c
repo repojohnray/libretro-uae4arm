@@ -1,8 +1,10 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
+#include "options.h"
 #include "inputdevice.h"
 #include "xwin.h"
+#include "uae_log.h"
 
 static int init_mouse (void)
 {
@@ -73,6 +75,7 @@ static int get_mouse_flags (int num)
 	return 0;
 }
 
+#if 0 /*ZZ*/
 struct inputdevice_functions inputdevicefunc_mouse = {
 	init_mouse,
 	close_mouse,
@@ -87,17 +90,22 @@ struct inputdevice_functions inputdevicefunc_mouse = {
 	get_mouse_widget_first,
 	get_mouse_flags
 };
+#endif /*ZZ*/
 
+#if 0 /*ZZ*/
 int input_get_default_mouse (struct uae_input_device *uid, int num, int port, int af, bool gp, bool wheel, bool joymouseswap)
 {
 	UAE_LOG_STUB ("num=%d return 0", num);
 	return 0;
 }
+#endif
 
+#if 0 /*ZZ*/
 void toggle_mousegrab (void)
 {
 	UAE_LOG_STUB ("");
 }
+#endif
 
 void setmouseactivexy (int x, int y, int dir)
 {

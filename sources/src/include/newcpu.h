@@ -9,13 +9,14 @@
 #ifndef UAE_NEWCPU_H
 #define UAE_NEWCPU_H
 
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #endif
+
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #include "uae_inline.h"
 #include "uae_memory.h"
 #include "uae_asm.h"
@@ -23,9 +24,10 @@
 #include "readcpu.h"
 #include "machdep/m68k.h"
 #include "events.h"
+#endif /*0*/
+
 #ifdef WITH_SOFTFLOAT
 #include <softfloat.h>
-#endif
 
 #ifndef SET_CFLG
 

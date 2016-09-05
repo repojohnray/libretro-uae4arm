@@ -28,9 +28,9 @@
 #define UAE_CPUMMU_H
 
 #include "uae_types.h"
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #include "uae_inline.h"
-#include "newcpu.h"
+//#include "newcpu.h"
 #endif
 
 #include "mmu_common.h"

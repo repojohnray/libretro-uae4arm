@@ -140,8 +140,8 @@ uint8_t *scsiesp_req_get_buf(SCSIRequest *req);
 SCSIDevice *scsiesp_device_find(SCSIBus *bus, int channel, int target, int lun);
 void scsiesp_req_cancel(SCSIRequest *req);
 
-uint64_t esp_reg_read(void *s, uint32_t saddr);
-void esp_reg_write(void *s, uint32_t saddr, uint64_t val);
+//uint64_t esp_reg_read(void *s, uint32_t saddr);
+//void esp_reg_write(void *s, uint32_t saddr, uint64_t val);
 
 void esp_dma_enable2(void *opaque, int level);
 void esp_fake_dma_done(void *opaque);

@@ -6,6 +6,7 @@
 #include "gensound.h"
 #include "audio.h"
 #include "uae_fs.h"
+#include "uae_log.h"
 
 int have_sound = 0;
 

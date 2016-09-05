@@ -10,6 +10,8 @@
 #ifndef UAE_OPTIONS_H
 #define UAE_OPTIONS_H
 
+struct zfile;
+
 #include "uae_types.h"
 #ifdef FSUAE
 #include "uae_limits.h"

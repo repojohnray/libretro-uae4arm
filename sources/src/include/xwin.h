@@ -9,12 +9,7 @@
 #ifndef UAE_XWIN_H
 #define UAE_XWIN_H
 
-#include "uae_types.h"
-#ifdef FSUAE
-#include "uae_asm.h"
-#include <string.h>
-#endif
-#include "machdep/rpt.h"
+#include "uae_time.h"
 
 typedef uae_u32 xcolnr;
 
@@ -53,6 +48,7 @@ extern int isvsync_chipset (void);
 extern int isvsync_rtg (void);
 extern int isvsync (void);
 
+struct vidbuffer;
 extern void flush_line (struct vidbuffer*, int);
 extern void flush_block (struct vidbuffer*, int, int);
 extern void flush_screen (struct vidbuffer*, int, int);
@@ -103,6 +99,7 @@ extern double getvsyncrate (double hz, int *mult);
      *   - set linemem to point at your buffer
      *   - implement flush_line to copy a single line to the screen
      */
+struct vidbuf_description;
 struct vidbuffer
 {
     /* Function implemented by graphics driver */

@@ -8,7 +8,7 @@
 #include "uae_types.h"
 #include "uae/uae.h"
 
-#include <fs/lazyness.h>
+//#include <fs/lazyness.h>
 
 void romlist_init (void);
 void romlist_patch_rom(uae_u8 *buf, size_t size);
@@ -27,8 +27,9 @@ char *uae_expand_path(const char *path);
 
 struct tm *uae_get_amiga_time();
 
-#include "../../od-fs/callbacks.h"
+#include "od-fs/callbacks.h"
 
+#if 1
 typedef struct _libamiga_callbacks {
     display_function display;
     event_function event;
@@ -40,6 +41,7 @@ typedef struct _libamiga_callbacks {
 extern log_function g_amiga_gui_message_function;
 
 extern libamiga_callbacks g_libamiga_callbacks;
+#endif
 extern char *g_libamiga_save_image_path;
 extern int g_amiga_paused;
 

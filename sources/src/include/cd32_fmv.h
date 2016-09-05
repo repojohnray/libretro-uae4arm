@@ -1,7 +1,8 @@
 #ifndef UAE_CD32_FMV_H
 #define UAE_CD32_FMV_H
 
-#include "uae_types.h"
+struct vidbuffer;
+
 #ifdef FSUAE
 #include "uae_memory.h"
 #endif

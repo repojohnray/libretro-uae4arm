@@ -1,7 +1,6 @@
 #ifndef UAE_SNDBOARD_H
 #define UAE_SNDBOARD_H
 
-#include "uae_types.h"
 #ifdef FSUAE
 #include "uae_memory.h"
 #endif

@@ -3513,6 +3513,9 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+#if 0
 void write_log (const TCHAR *format,...)
 {
 }
+#endif
+ 

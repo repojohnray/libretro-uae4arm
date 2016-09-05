@@ -1,6 +1,8 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
+#include "options.h"
+#include "newcpu.h"
 #include "autoconf.h"
 #include "clipboard.h"
 #include "fsdb.h"
@@ -10,7 +12,8 @@
 #include "uae.h"
 #include "xwin.h"
 #include "uae_fs.h"
-#include "../od-win32/debug_win32.h"
+#include "uae_log.h"
+//#include "../od-win32/debug_win32.h"
 
 #ifndef PICASSO96
 // just to make ncr_scsi compile. it will not work, of course,
@@ -254,6 +257,7 @@ static RETSIGTYPE sigbrkhandler (int foo)
 }
 #endif
 
+#if 0
 void setup_brkhandler (void)
 {
     /*
@@ -271,3 +275,4 @@ void setup_brkhandler (void)
 #endif
     */
 }
+#endif

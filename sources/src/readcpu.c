@@ -9,6 +9,9 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 #include <ctype.h>
+#include <stdlib.h>
+#include "uae_string.h"
+#include "uae_types.h"
 
 #include "readcpu.h"
 

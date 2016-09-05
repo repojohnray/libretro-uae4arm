@@ -1,11 +1,13 @@
 #ifndef UAE_CPU_PREFETCH_H
 #define UAE_CPU_PREFETCH_H
 
-#include "uae_types.h"
+#if 0
+#include "uae/types.h"
 #ifdef FSUAE
-#include "uae_inline.h"
+#include "uae/inline.h"
 #include "newcpu.h"
 #endif
+#endif /*0*/
 
 extern uae_u32 get_word_020_prefetch (int);
 extern void continue_020_prefetch(void);
@@ -286,7 +288,7 @@ STATIC_INLINE void m68k_do_rts_ce030 (void)
 
 #endif
 
-STATIC_INLINE uae_u32 get_word_prefetch_uaecptr (int o)
+STATIC_INLINE uae_u32 get_word_prefetch_int (int o)
 {
 	uae_u32 v = regs.irc;
 	regs.irc = regs.db = get_wordi (m68k_getpci () + o);

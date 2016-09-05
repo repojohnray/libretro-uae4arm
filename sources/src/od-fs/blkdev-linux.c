@@ -17,6 +17,7 @@
 #include "blkdev.h"
 #include "scsidev.h"
 #include "uae_memory.h"
+#include "uae_log.h"
 #include "gui.h"
 
 #include <linux/cdrom.h>

@@ -1,13 +1,11 @@
 #ifndef UAE_SCSI_H
 #define UAE_SCSI_H
 
-#include "uae_types.h"
-#include "uae_memory.h"
-#ifdef FSUAE
-#include "uae_limits.h"
-#endif
-
 #define SCSI_DEFAULT_DATA_BUFFER_SIZE (256 * 512)
+
+struct device_info;
+struct hardfiledata;
+struct hd_hardfiledata;
 
 struct scsi_data_tape
 {

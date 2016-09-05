@@ -12,6 +12,7 @@
 
 #include "options.h"
 #include "memory.h"
+#include "newcpu.h"
 #include "cd32_fmv.h"
 #include "xwin.h"
 

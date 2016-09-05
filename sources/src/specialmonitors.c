@@ -9,6 +9,7 @@
 #include "custom.h"
 #include "drawing.h"
 #include "memory.h"
+#include "newcpu.h"
 #include "specialmonitors.h"
 #include "debug.h"
 #include "zfile.h"

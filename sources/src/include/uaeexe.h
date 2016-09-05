@@ -7,8 +7,6 @@
 #ifndef UAE_UAEEXE_H
 #define UAE_UAEEXE_H
 
-#include "uae_types.h"
-
 struct uae_xcmd {
     struct uae_xcmd *prev, *next;
     TCHAR *cmd;

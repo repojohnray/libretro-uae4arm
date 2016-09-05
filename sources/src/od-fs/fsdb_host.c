@@ -37,6 +37,7 @@
 #include <limits.h>
 
 #include "fsdb_host.h"
+#include "od-fs/target.h"
 
 enum uaem_write_flags_t {
     WF_NEVER = (1 << 0),
@@ -554,7 +555,7 @@ static int fsdb_get_file_info(const char *nname, fsdb_file_info *info)
                 }
             }
 
-            mytimeval mtv;
+            struct mytimeval mtv;
             mtv.tv_sec = buf.mtime + fs_get_local_time_offset(buf.mtime);
             mtv.tv_usec = buf.mtime_nsec / 1000;
             timeval_to_amiga(&mtv, &info->days, &info->mins, &info->ticks, 50);

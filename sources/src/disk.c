@@ -11,6 +11,8 @@
 *
 */
 
+#include <ctype.h>
+
 #include "sysconfig.h"
 #include "sysdeps.h"
 

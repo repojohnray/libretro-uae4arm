@@ -32,7 +32,9 @@
 #ifndef COMPEMU_H
 #define COMPEMU_H
 
+#ifndef UAE_NEWCPU_H
 #include "newcpu.h"
+#endif /*UAE_NEWCPU_H*/
 
 #ifdef UAE
 #ifdef CPU_64_BIT
@@ -71,7 +73,7 @@ struct cpu_history {
 
 union cacheline {
 	cpuop_func* handler;
-	blockinfo_t * bi;
+	struct blockinfo_t * bi;
 };
 
 /* Use new spill/reload strategy when calling external functions */
@@ -445,7 +447,7 @@ void do_nothing(void);
 
 #else
 
-static inline void flush_icache1(int) { }
+static inline void flush_icache(int) { }
 static inline void build_comp() { }
 
 #endif /* !USE_JIT */
@@ -465,7 +467,7 @@ typedef struct {
 /* FIXME: check that no ARAnyM code assumes different floating point type */
 typedef fptype fpu_register;
 
-extern void compile_block(cpu_history* pc_hist, int blocklen, int totcyles);
+extern void compile_block(struct cpu_history* pc_hist, int blocklen, int totcyles);
 
 #define MAXCYCLES (1000 * CYCLE_UNIT)
 #define scaled_cycles(x) (currprefs.m68k_speed<0?(((x)/SCALE)?(((x)/SCALE<MAXCYCLES?((x)/SCALE):MAXCYCLES)):1):(x))

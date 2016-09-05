@@ -43,7 +43,7 @@
 #include "picasso96.h"
 #include "threaddep/thread.h"
 #include "serial.h"
-#include "parser.h"
+#include "../od-win32/parser.h"
 #include "ioport.h"
 #include "parallel.h"
 #include "cia.h"
@@ -52,6 +52,7 @@
 #include "xwin.h"
 #include "drawing.h"
 #include "vpar.h"
+#include "uae_log.h"
 
 #ifdef POSIX_SERIAL
 #include <termios.h>
@@ -271,33 +272,41 @@ struct uaeserialdata
 	void *user;
 };
 
+#if 0
 int uaeser_getdatalength (void)
 {
 	return sizeof (struct uaeserialdata);
 }
+#endif
 
 static void uaeser_initdata (void *vsd, void *user)
 {
 	STUB("");
 }
 
+#if 0
 int uaeser_query (void *vsd, uae_u16 *status, uae_u32 *pending)
 {
 	STUB("");
 	return 0;
 }
+#endif
 
+#if 0
 int uaeser_break (void *vsd, int brklen)
 {
 	STUB("");
 	return 0;
 }
+#endif
 
+#if 0
 int uaeser_setparams (void *vsd, int baud, int rbuffer, int bits, int sbits, int rtscts, int parity, uae_u32 xonxoff)
 {
 	STUB("");
 	return 0;
 }
+#endif
 
 static void *uaeser_trap_thread (void *arg)
 {
@@ -305,11 +314,14 @@ static void *uaeser_trap_thread (void *arg)
 	return NULL;
 }
 
+#if 0
 void uaeser_trigger (void *vsd)
 {
 	STUB("");
 }
+#endif
 
+#if 0
 int uaeser_write (void *vsd, uae_u8 *data, uae_u32 len)
 {
 	STUB("");
@@ -321,12 +333,16 @@ int uaeser_read (void *vsd, uae_u8 *data, uae_u32 len)
 	STUB("");
 	return 0;
 }
+#endif
 
+#if 0
 void uaeser_clearbuffers (void *vsd)
 {
 	STUB("");
 }
+#endif
 
+#if 0
 int uaeser_open (void *vsd, void *user, int unit)
 {
 	STUB("");
@@ -337,6 +353,7 @@ void uaeser_close (void *vsd)
 {
 	STUB("");
 }
+#endif
 
 #if 1 //def FSUAE
 /* No MIDI support. */

@@ -3,11 +3,12 @@
 
 #include "uae_types.h"
 #include "uae_likely.h"
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #include "uae_inline.h"
 #include "uae_memory.h"
-#include "newcpu.h"
+//#include "newcpu.h"
 #endif
+
 
 #define MMUDEBUG 0
 #define MMUINSDEBUG 0

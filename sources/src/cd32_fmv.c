@@ -23,8 +23,8 @@
 #include "audio.h"
 #include "threaddep/thread.h"
 
-#include "cda_play.h"
-#include "archivers/mp2/kjmp2.h"
+//#include "cda_play.h"
+//#include "archivers/mp2/kjmp2.h"
 #ifdef WITH_LIBMPEG2
 #ifdef FSUAE
 // FIXME: use libmpeg2 from ffmpeg:
@@ -33,8 +33,11 @@
 extern "C" {
 #endif
 #endif
+#undef WITH_LIBMPEG2
+#ifdef WITH_LIBMPEG2
 #include "mpeg2.h"
 #include "mpeg2convert.h"
+#endif
 #ifdef FSUAE
 #ifdef __cplusplus
 }

@@ -540,7 +540,7 @@ static void sigsegv_handler(int signum, siginfo_t *info, void *context)
 // #define TEST_EXCEPTION_HANDLER
 
 #ifdef TEST_EXCEPTION_HANDLER
-#include "test_exception_handler.cpp"
+#include "test_exception_handler.c"
 #endif
 
 static void install_exception_handler(void)

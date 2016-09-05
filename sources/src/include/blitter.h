@@ -9,8 +9,6 @@
 #ifndef UAE_BLITTER_H
 #define UAE_BLITTER_H
 
-#include "uae_types.h"
-
 struct bltinfo {
     int blitzero;
     int blitashift, blitbshift, blitdownashift, blitdownbshift;

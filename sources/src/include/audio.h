@@ -9,11 +9,6 @@
 #ifndef UAE_AUDIO_H
 #define UAE_AUDIO_H
 
-#include "uae_types.h"
-#ifdef FSUAE
-#include "uae_inline.h"
-#endif
-
 #ifdef FSUAE
 // FIXME: changed PERIOD_MAX from ULONG_MAX
 #define PERIOD_MAX UINT_MAX

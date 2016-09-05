@@ -1724,7 +1724,7 @@ void mapped_free (addrbank *ab)
 
 #else
 
-#include <uae/mman.h>
+#include "uae_mman.h"
 
 shmpiece *shm_start;
 
@@ -2853,12 +2853,12 @@ static addrbank *get_bank_cpu_thread(addrbank *bank)
 			return &thread_banks[i]->ab;
 		}
 	}
-	struct addrbank_thread *at = thread_banks[thread_banks_used];
+	addrbank_thread *at = thread_banks[thread_banks_used];
 	if (!at)
 		at = xcalloc(addrbank_thread, 1);
 	thread_banks[thread_banks_used++] = at;
 	at->orig = bank;
-	memcpy(&at->ab, bank, sizeof addrbank);
+	memcpy(&at->ab, bank, sizeof(addrbank));
 	addrbank *tb = &at->ab;
 	tb->lget = threadcpu_lget;
 	tb->wget = threadcpu_wget;

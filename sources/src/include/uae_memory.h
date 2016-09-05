@@ -9,7 +9,8 @@
 #ifndef UAE_MEMORY_H
 #define UAE_MEMORY_H
 
-#if 1 //def FSUAE // NL
+struct uae_prefs;
+#if 1 /*def FSUAE*/ // NL
 #include "config.h"
 #include "uae_types.h"
 #include <stddef.h>

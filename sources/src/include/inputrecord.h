@@ -9,8 +9,6 @@
 #ifndef UAE_INPUTRECORD_H
 #define UAE_INPUTRECORD_H
 
-#include "uae_types.h"
-
 extern int inputrecord_debug;
 
 //#define INPREC_JOYPORT 1

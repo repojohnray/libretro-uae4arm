@@ -52,7 +52,9 @@
 #include "uaeexe.h"
 #include "uaenative.h"
 #include "tabletlibrary.h"
+#ifdef WITH_LUA
 #include "luascript.h"
+#endif
 #include "driveclick.h"
 #include "pci.h"
 #include "pci_hw.h"
@@ -238,7 +240,9 @@ void devices_update_sound(double clk, double syncadjust)
 
 void devices_update_sync(double svpos, double syncadjust)
 {
+#ifdef CD32
 	cd32_fmv_set_sync(svpos, syncadjust);
+#endif
 }
 
 void reset_all_systems (void)
@@ -441,5 +445,7 @@ void devices_restore_start(void)
 
 void devices_syncchange(void)
 {
+#ifndef RETRO
 	x86_bridge_sync_change();
+#endif /*RETRO*/	
 }

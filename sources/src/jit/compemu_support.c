@@ -108,7 +108,7 @@
 #define vm_protect(address, size, protect) uae_vm_protect(address, size, protect)
 #define vm_release(address, size) uae_vm_free(address, size)
 
-static inline void *vm_acquire(size_t size, int options = VM_MAP_DEFAULT)
+static inline void *vm_acquire(size_t size, int options) // options = VM_MAP_DEFAULT
 {
 	assert(options == (VM_MAP_DEFAULT | VM_MAP_32BIT));
 	return uae_vm_alloc(size, UAE_VM_32BIT, UAE_VM_READ_WRITE);
@@ -116,7 +116,6 @@ static inline void *vm_acquire(size_t size, int options = VM_MAP_DEFAULT)
 
 #define UNUSED(x)
 #include "uae.h"
-#include "uae_log.h"
 #define jit_log(format, ...) \
 	uae_log("JIT: " format "\n", ##__VA_ARGS__);
 #define jit_log2(format, ...)
@@ -132,7 +131,7 @@ static inline void *vm_acquire(size_t size, int options = VM_MAP_DEFAULT)
 // %%% BRIAN KING WAS HERE %%%
 extern bool canbang;
 
-#include "compemu_prefs.cpp"
+#include "compemu_prefs.c"
 
 #define uint32 uae_u32
 #define uint8 uae_u8
@@ -186,10 +185,10 @@ static inline int distrust_addr(void)
 #endif
 #endif
 
-# include <csignal>
-# include <cstdlib>
-# include <cerrno>
-# include <cassert>
+//# include <csignal>
+//# include <cstdlib.h>
+//# include <cerrno>
+//# include <cassert>
 
 #if defined(CPU_x86_64) && 0
 #define RECORD_REGISTER_USAGE		1
@@ -381,8 +380,7 @@ static void* popall_check_checksum=NULL;
  * UPDATE: We now use those entries to store the start of the linked
  * lists that we maintain for each hash result.
  */
-static
-cacheline cache_tags[TAGSIZE];
+static union cacheline cache_tags[TAGSIZE];
 int letit=0;
 static
 blockinfo* hold_bi[MAX_HOLD_BI];
@@ -686,7 +684,7 @@ static inline void mark_callers_recompile(blockinfo * bi)
   }
 }
 
-static inline blockinfo* get_blockinfo_addr_new(void* addr, int /* setstate */)
+static inline blockinfo* get_blockinfo_addr_new(void* addr, int setstate)
 {
 	blockinfo*  bi=get_blockinfo_addr(addr);
 	int i;
@@ -727,6 +725,7 @@ static void prepare_block(blockinfo* bi);
    soft) request occurs.
 */
 
+#if 0
 template< class T >
 class LazyBlockAllocator
 {
@@ -811,6 +810,11 @@ public:
 	}
 };
 
+#define BlockInfoAllocator_acquire BlockInfoAllocator.acquire
+#define BlockInfoAllocator_release BlockInfoAllocator.release
+#define ChecksumInfoAllocator_acquire ChecksumInfoAllocator.acquire
+#define ChecksumInfoAllocator_release ChecksumInfoAllocator.release
+
 #if USE_SEPARATE_BIA
 static LazyBlockAllocator<blockinfo> BlockInfoAllocator;
 static LazyBlockAllocator<checksum_info> ChecksumInfoAllocator;
@@ -818,10 +822,16 @@ static LazyBlockAllocator<checksum_info> ChecksumInfoAllocator;
 static HardBlockAllocator<blockinfo> BlockInfoAllocator;
 static HardBlockAllocator<checksum_info> ChecksumInfoAllocator;
 #endif
+#else /*0*/
+#define BlockInfoAllocator_acquire() malloc(sizeof(blockinfo))
+#define BlockInfoAllocator_release(x) free((x))
+#define ChecksumInfoAllocator_acquire() malloc(sizeof(checksum_info))
+#define ChecksumInfoAllocator_release(x) free((x))
+#endif /*0*/
 
 static inline checksum_info *alloc_checksum_info(void)
 {
-	checksum_info *csi = ChecksumInfoAllocator.acquire();
+	checksum_info *csi = ChecksumInfoAllocator_acquire();
 	csi->next = NULL;
 	return csi;
 }
@@ -829,7 +839,7 @@ static inline checksum_info *alloc_checksum_info(void)
 static inline void free_checksum_info(checksum_info *csi)
 {
 	csi->next = NULL;
-	ChecksumInfoAllocator.release(csi);
+	ChecksumInfoAllocator_release(csi);
 }
 
 static inline void free_checksum_info_chain(checksum_info *csi)
@@ -843,7 +853,7 @@ static inline void free_checksum_info_chain(checksum_info *csi)
 
 static inline blockinfo *alloc_blockinfo(void)
 {
-	blockinfo *bi = BlockInfoAllocator.acquire();
+	blockinfo *bi = BlockInfoAllocator_acquire();
 #if USE_CHECKSUM_INFO
 	bi->csi = NULL;
 #endif
@@ -856,7 +866,7 @@ static inline void free_blockinfo(blockinfo *bi)
 	free_checksum_info_chain(bi->csi);
 	bi->csi = NULL;
 #endif
-	BlockInfoAllocator.release(bi);
+	BlockInfoAllocator_release(bi);
 }
 
 static inline void alloc_blockinfos(void)
@@ -1360,7 +1370,7 @@ static uae_s8 nstate[N_REGS];
 #define L_NEEDED -2
 #define L_UNNEEDED -3
 
-static inline void big_to_small_state(bigstate * /* b */, smallstate * s)
+static inline void big_to_small_state(bigstate *dummy_b, smallstate * s)
 {
   int i;
 	
@@ -1370,7 +1380,7 @@ static inline void big_to_small_state(bigstate * /* b */, smallstate * s)
 	s->nat[i] = nstate[i];
 }
 
-static inline int callers_need_recompile(bigstate * /* b */, smallstate * s)
+static inline int callers_need_recompile(bigstate *dummy_b, smallstate * s)
 {
   int i;
   int reverse = 0;
@@ -2555,7 +2565,7 @@ struct scratch_t {
 	fpu_register	fregs[VFREGS];
 };
 
-static scratch_t scratch;
+static struct scratch_t scratch;
 
 /********************************************************************
  * Support functions exposed to newcpu                              *
@@ -4112,7 +4122,7 @@ void build_comp(void)
 }
 
 
-static void flush_icache_none(int)
+static void flush_icache_none(int dummy)
 {
 	/* Nothing to do.  */
 }
@@ -4266,7 +4276,7 @@ int failure;
 #ifdef UAE
 static
 #endif
-void disasm_block(int /* target */, uint8 * /* start */, size_t /* length */)
+void disasm_block(int dummy_target, uint8 dummy_start, size_t dummy_length)
 {
 	if (!JITDebug)
 		return;

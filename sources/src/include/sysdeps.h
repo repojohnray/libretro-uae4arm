@@ -14,6 +14,10 @@
 #ifndef UAE_SYSDEPS_H
 #define UAE_SYSDEPS_H
 
+#ifndef HAVE_CONFIG_H
+#define HAVE_CONFIG_H
+#endif
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -29,7 +33,12 @@ using namespace std;
 #else
 #include <string.h>
 #include <ctype.h>
+
+# ifndef _MSC_VER
+#define min(x,y) ((x) < (y) ? (x) : (y))
+#define max(x,y) ((x) > (y) ? (x) : (y))
 #endif
+#endif /*__cplusplus*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -68,12 +77,14 @@ using namespace std;
  * if all functions used max two arguments. */
 #elif !defined(JIT)
 #define JITCALL
+#elif !defined(HAVE_FUNC_ATTRIBUTE_REGPARM) /*ARM*/
+#define JITCALL
 #endif
 #define REGPARAM
 #define REGPARAM2 JITCALL
 #define REGPARAM3 JITCALL
 
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #include "uae_types.h"
 #else
 #include <tchar.h>
@@ -177,7 +188,7 @@ typedef char uae_char;
 
 typedef struct { uae_u8 RGB[3]; } RGB;
 
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #define VAL64(a) (a ## LL)
 #define UVAL64(a) (a ## uLL)
 
@@ -283,7 +294,7 @@ extern void to_upper (TCHAR *s, int len);
 #define DONT_HAVE_POSIX
 #endif
 
-#if !defined(FSUAE) && defined _WIN32
+#if !(defined(FSUAE)||1) && defined _WIN32
 
 //#ifdef FSUAE
 //#error _WIN32 should not be defined here
@@ -493,7 +504,7 @@ extern void log_close (FILE *f);
 #define O_BINARY 0
 #endif
 
-#ifdef FSUAE
+#if 1 /*def FSUAE*/
 #include "uae_inline.h"
 #else
 #ifndef STATIC_INLINE

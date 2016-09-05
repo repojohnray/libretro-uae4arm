@@ -5134,7 +5134,7 @@ struct mmunode {
 	struct mmunode *next;
 };
 static struct mmunode **mmunl;
-extern regstruct mmu_backup_regs;
+extern struct regstruct mmu_backup_regs;
 
 #define MMU_READ_U (1 << 0)
 #define MMU_WRITE_U (1 << 1)

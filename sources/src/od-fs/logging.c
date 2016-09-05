@@ -3,7 +3,7 @@
 
 #include "uae.h"
 #include "gui.h"
-#include "compemu.h"
+#include "options.h"
 #include "uae_fs.h"
 #include "uae_glib.h"
 
@@ -12,6 +12,7 @@
 int log_scsi = 0;
 int log_net = 0;
 
+#if 0
 void write_log (const TCHAR *format, ...)
 {
     va_list args;
@@ -27,7 +28,9 @@ void write_log (const TCHAR *format, ...)
     }
     free(buffer);
 }
+#endif
 
+#if 0 /*ZZ*/
 void gui_message (const char *format,...)
 {
     va_list args;
@@ -42,6 +45,7 @@ void gui_message (const char *format,...)
     }
     g_free(buffer);
 }
+#endif /*0*/
 
 static const char *get_message(int msg)
 {

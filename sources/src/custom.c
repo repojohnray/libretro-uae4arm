@@ -42,7 +42,9 @@
 #include "enforcer.h"
 #endif
 #include "threaddep/thread.h"
+#ifdef WITH_LUA
 #include "luascript.h"
+#endif /*WITH_LUA*/
 #include "devices.h"
 #include "rommgr.h"
 #include "specialmonitors.h"
@@ -66,8 +68,10 @@ int g_frame_debug_logging = 0;
 
 STATIC_INLINE bool nocustom (void)
 {
+#ifdef PICASSO96
 	if (picasso_on && currprefs.picasso96_nocustom)
 		return true;
+#endif
 	return false;
 }
 

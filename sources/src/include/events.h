@@ -12,13 +12,17 @@
 #ifndef UAE_EVENTS_H
 #define UAE_EVENTS_H
 
-#include "uae_types.h"
+#include "machdep/rpt.h"
+
+#if 0
+#include "uae/types.h"
 #ifdef FSUAE
-#include "uae_inline.h"
+#include "uae/inline.h"
 #include "options.h"
 // FIXME: move CYCLE_UNIT define here instead
-#include "uae_cycleunit.h"
+#include "uae/cycleunit.h"
 #endif
+#endif /*0*/
 
 #undef EVENT_DEBUG
 

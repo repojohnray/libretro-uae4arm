@@ -585,19 +585,19 @@ LOWFUNC(WRITE,NONE,2,raw_shra_b_ri,(RW1 r, IMM i))
 }
 LENDFUNC(WRITE,NONE,2,raw_shra_b_ri,(RW1 r, IMM i))
 
-LOWFUNC(WRITE,NONE,1,raw_sahf,(R2))
+LOWFUNC(WRITE,NONE,1,raw_sahf,(R2 dummy_zz))
 {
 	SAHF();
 }
 LENDFUNC(WRITE,NONE,1,raw_sahf,(R2 dummy_ah))
 
-LOWFUNC(NONE,NONE,1,raw_cpuid,(R4))
+LOWFUNC(NONE,NONE,1,raw_cpuid,(R4 dummy_zz))
 {
 	CPUID();
 }
 LENDFUNC(NONE,NONE,1,raw_cpuid,(R4 dummy_eax))
 
-LOWFUNC(READ,NONE,1,raw_lahf,(W2))
+LOWFUNC(READ,NONE,1,raw_lahf,(W2 dummy_zz))
 {
 	LAHF();
 }
@@ -688,7 +688,7 @@ LOWFUNC(NONE,NONE,2,raw_mul_64_32,(RW4 d, RW4 s))
 }
 LENDFUNC(NONE,NONE,2,raw_mul_64_32,(RW4 d, RW4 s))
 
-LOWFUNC(NONE,NONE,2,raw_mul_32_32,(RW4, R4))
+LOWFUNC(NONE,NONE,2,raw_mul_32_32,(RW4 dummy_yy, R4 dummy_zz))
 {
 	abort(); /* %^$&%^$%#^ x86! */
 }
@@ -3574,7 +3574,7 @@ static inline void raw_pop_preserved_regs(void) {
  *************************************************************************/
 
 #ifdef UAE
-#include "exception_handler.cpp"
+#include "exception_handler.c"
 #endif
 
 static

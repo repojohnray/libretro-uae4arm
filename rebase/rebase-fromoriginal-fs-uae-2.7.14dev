@@ -1,0 +1,41 @@
+#! /bin/bash
+# s_prg="fs-uae-2.7.14dev"; ./rebase-fromoriginal-fs-uae-2.7.14dev tar "${s_prg}.tar.xz" "${s_prg}"
+#                           ./rebase-fromoriginal-fs-uae-2.7.14dev git fs-uae-dir fs-uae-dirbase
+#--------------------------------------------------------
+#s_mv="git mv";s_out=".";s_maindir=".";
+#--------------------------------------------------------
+s_mode="$1"
+s_fsdevar="$2";
+s_maindir="$3"
+s_out="/tmp/tmp/fsdev";
+s_pwd="$(pwd)"
+s_mv="mv"
+
+if [ "${s_mode}" = "tar" ]; then
+  if [ \! -f "${s_fsdevar}" ]; then echo "${s_fsdevar} tar missing... failed"; exit -1;fi
+  rm -Rf /tmp/tmp; mkdir -p "${s_out}";
+  tar xf "${s_fsdevar}" -C "${s_out}";
+  if [ \! -d "${s_out}/${s_maindir}" ]; then echo "${s_out}/${s_maindir} directory missing... failed"; exit -1;fi
+elif [ "${s_mode}" = "git" ]; then
+  if [ \! -d "${s_fsdevar}" ]; then echo "${s_fsdevar} git directory missing... failed"; exit -1;fi
+  rm -Rf /tmp/tmp; mkdir -p "${s_out}"; cp -dpR "${s_fsdevar}" "${s_out}";
+  if [ \! -d "${s_out}/${s_maindir}" ]; then echo "${s_out}/${s_maindir} directory missing... failed"; exit -1;fi
+else
+  echo mode failed...; exit -1;
+fi
+  
+# c++ back to c (no true object programmation here)
+for f in $(find "${s_out}/" -name "*.cpp");do ${s_mv} "$f" $(dirname "$f")/$(basename "$f" .cpp).c;done
+for f in $(find "${s_out}/" -name "*.cc");do ${s_mv} "$f" $(dirname "$f")/$(basename "$f" .cc).c;done
+find "${s_out}/" -type f | xargs sed -r -i "s/\r//"
+
+#-
+find "${s_out}/" -type f \( -name "*.c" -o -name "*.h" \) |\
+    xargs sed -r -i "s,\"uae/(string|limits|enum|jitconfig|types|io|fs|inline|memory|asm|debuginfo|segtracker|assert|attributes|vm|log|api|likely|ppc|dlopen|qemu|mman|seh|time|glib|segtracker|\
+patch|caps|endian|ahi|slirp|socket|cdrom|cycleunit)[.]h\",\"uae_\1.h\","
+
+#-
+for f in ${s_out}/${s_maindir}/src/include/uae/*; do ${s_mv} "$f" $(dirname "$f")/../uae_$(basename "$f");done
+rmdir ${s_out}/${s_maindir}/src/include/uae
+
+if [ -d "${s_out}/${s_maindir}" ]; then (cd "${s_out}/${s_maindir}"; bash ${s_pwd}/dorebase.sh);fi

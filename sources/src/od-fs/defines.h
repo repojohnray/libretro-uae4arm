@@ -15,7 +15,7 @@
 
 #define init_audio uae_init_audio
 
-#include "uae_log.h"
+//#include "uae/log.h"
 
 // we are using our own main function, not the one from UAE...
 
@@ -158,12 +158,13 @@ extern int uae_start_thread_fast (void *(*f)(void *), void *arg,
 
 // needed to compile gencpu.cpp as C code (which is needed because
 // of int to enum conversions (illegal in C++)
-#ifndef __cplusplus
+#if 1 /*ndef __cplusplus*/
 // FIXME:
 //typedef int bool
-#define bool int
-#define true 1
-#define false 0
+//#define bool int
+//#define true 1
+//#define false 0
+#include <stdbool.h>
 #endif
 
 

@@ -16,6 +16,9 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
+#include "sysconfig.h"
+#include "sysdeps.h"
+
 #include "options.h"
 #include "events.h"
 #include "uae.h"
@@ -1421,7 +1424,7 @@ static void build_cpufunctbl (void)
 	opcnt = 0;
 	for (opcode = 0; opcode < 65536; opcode++) {
 		cpuop_func *f;
-		instr *table = &table68k[opcode];
+		struct instr *table = &table68k[opcode];
 
 		if (table->mnemo == i_ILLG)
 			continue;		
@@ -4252,6 +4255,8 @@ static bool m68k_cs_initialized;
 static DWORD m68k_cs_owner;
 #else
 #include <glib.h>
+static int m68k_cs_owner;
+static bool m68k_cs_initialized;
 static GMutex mutex;
 #endif
 
@@ -4485,7 +4490,7 @@ void execute_normal (void)
 {
 	struct regstruct *r = &regs;
 	int blocklen;
-	cpu_history pc_hist[MAXRUN];
+	struct cpu_history pc_hist[MAXRUN];
 	int total_cycles;
 
 	if (check_for_cache_miss ())
@@ -4690,7 +4695,7 @@ static void m68k_run_mmu060 (void)
 /* Aranym MMU 68040  */
 static void m68k_run_mmu040 (void)
 {
-	flag_struct f;
+	struct flag_struct f;
 	int halt = 0;
 
 	while (!halt) {
@@ -6244,7 +6249,7 @@ void m68k_dumpstate (uaecptr pc, uaecptr *nextpc)
 }
 void m68k_dumpstate1 (uaecptr *nextpc)
 {
-	m68k_dumpstate1 (m68k_getpc (), nextpc);
+	m68k_dumpstate (m68k_getpc (), nextpc);
 }
 void m68k_dumpcache (void)
 {

@@ -11,7 +11,9 @@
 static const char *g_driveclick_path = "";
 //static char *g_driveclick_name = NULL;
 
+#ifdef __cplusplus
 extern "C" {
+#endif
 
 void amiga_set_builtin_driveclick_path(const char *path)
 {
@@ -25,7 +27,9 @@ void amiga_set_drive_sound_name(const char *name)
 }
 #endif
 
+#ifdef __cplusplus
 } // extern C
+#endif
 
 #ifdef DRIVESOUND
 

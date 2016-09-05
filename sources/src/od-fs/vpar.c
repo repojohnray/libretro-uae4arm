@@ -304,7 +304,7 @@ void vpar_update(void)
     }
 }
 
-static void *vpar_thread(void *)
+static void *vpar_thread(void *dummy)
 {
     if (vpar_debug) {
         printf("th: enter\n");
