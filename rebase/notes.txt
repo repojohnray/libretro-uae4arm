@@ -1,26 +1,6 @@
-for f in /dosy/src/fs-uae-2.7.14dev/gen/cpuemu_*.cpp; do echo $f ./sources/src/$(basename "$f" .cpp).c;done
-sed -r -i "s,\"uae/(string|limits|enum|jitconfig|types|io|fs|inline|memory|asm|debuginfo|segtracker|assert|attributes|vm|log|api|likely|ppc|dlopen|qemu|mman|seh|time|glib|segtracker|\
-patch|caps|endian|ahi|slirp|socket)[.]h\",\"uae_\1.h\","
-
-#
-for f in $(find . -name "*.o" -size 1b); do echo "echo > $f;";done
-#
-
-
-
-
- 
-  
-
-
-
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 aclocal -I m4 -I /usr/share/aclocal -I /usr/gnome/share/aclocal -I /usr/X11R6/share/aclocal -I /usr/local/share/aclocal --force;autoheader -f;libtoolize --copy --force;automake --add-missing --copy --foreign;autoconf --force;
-
-    
 diff -r -x "*.o" -x ".git*" -b -B -w -x blkdev_cdimage.c /tmp/tmp/fsdev/fs-uae-2.7.14dev/ sources/ | less

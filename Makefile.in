@@ -21,7 +21,7 @@ endif
 endif
 
 TARGET_ARCH := $(shell uname -m)
-TARGET_NAME := puae
+TARGET_NAME := fsuae
 
 CORE_DIR  := .
 ROOT_DIR  := .
