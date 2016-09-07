@@ -104,6 +104,7 @@ static void update_variables(void)
    var.key = "resolution";
    var.value = NULL;
 
+#if 0
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
    {
       char *pch;
@@ -117,7 +118,8 @@ static void update_variables(void)
       if (pch)
          defaulth = strtoul(pch, NULL, 0);
    }
-
+#endif
+   
    var.key = "analog";
    var.value = NULL;
 
@@ -276,6 +278,7 @@ static void retro_wrap_emulator(void)
    }
    
    amiga_set_audio_frequency(44100);
+   fs_emu_toggle_zoom(0);
    
 #ifdef AHI
    //enforcer_enable(1);
