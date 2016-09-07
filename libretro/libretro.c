@@ -41,6 +41,9 @@ extern short signed int SNDBUF[1024*2];
 extern char RPATH[512];
 int ledtype;
 
+char *g_fs_uae_config_dir_path = NULL; /*sources/src/fs-uae/main.c*/
+char *g_fs_uae_config_file_path = NULL; /*sources/src/fs-uae/main.c*/
+
 extern void update_input(void);
 
 static retro_video_refresh_t video_cb;
@@ -187,7 +190,17 @@ static void retro_wrap_emulator(void)
    //amiga_set_video_format(AMIGA_VIDEO_FORMAT_BGRA);
    //amiga_set_video_format(AMIGA_VIDEO_FORMAT_R5G6B5);
    //amiga_set_video_format(AMIGA_VIDEO_FORMAT_R5G5B5A1);
-  
+
+   amiga_add_rtg_resolution(672, 540);
+   amiga_add_rtg_resolution(960, 540);
+   amiga_add_rtg_resolution(retrow, retroh);
+
+   fs_uae_configure_floppies();
+   //fs_uae_configure_hard_drives();
+   //fs_uae_configure_cdrom();
+   //fs_uae_configure_input();
+   
+   
 #ifdef AHI
    //enforcer_enable(1);
 #endif

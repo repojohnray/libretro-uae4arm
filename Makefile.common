@@ -99,7 +99,9 @@ SOURCES_C +=  $(EMU)/main.c \
 				  $(EMU)/support/socket.c \
 				  $(EMU)/fs-uae/config-model.c \
 				  $(EMU)/fs-uae/config.c \
-				  $(EMU)/fs-uae/config-common.c
+				  $(EMU)/fs-uae/config-common.c \
+				  $(EMU)/fs-uae/config-drives.c \
+				  $(EMU)/fs-uae/paths.c 
 
 
 #				  $(EMU)/cd32_fmv.c \

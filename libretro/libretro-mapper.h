@@ -2,8 +2,8 @@
 #define _RETRO_HMAPPER_H_
 #include "../retrodep/retroglue.h"
 
-#define EMULATOR_DEF_WIDTH 640
-#define EMULATOR_DEF_HEIGHT 400
+#define EMULATOR_DEF_WIDTH 720
+#define EMULATOR_DEF_HEIGHT 540
 #define EMULATOR_MAX_WIDTH 1024
 #define EMULATOR_MAX_HEIGHT 1024
 
