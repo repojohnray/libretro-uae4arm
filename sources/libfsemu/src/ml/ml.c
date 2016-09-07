@@ -112,6 +112,9 @@ fs_ml_input_device *fs_ml_get_input_devices(int* count) {
 
 int fs_ml_input_device_get(int index, fs_ml_input_device *device)
 {
+#ifdef RETRO
+  return 0;
+#else
     if (index < 0) {
         return 0;
     }
@@ -127,6 +130,7 @@ int fs_ml_input_device_get(int index, fs_ml_input_device *device)
     }
     *device = g_fs_ml_input_devices[index];
     return 1;
+#endif /*RETRO*/
 }
 
 int fs_ml_get_vblank_sync() {

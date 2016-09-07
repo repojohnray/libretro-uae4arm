@@ -856,7 +856,11 @@ static int64_t g_cursor_visible_to = 0;
 
 bool fs_emu_mouse_integration(void)
 {
+#ifndef RETRO
     return fs_ml_mouse_integration();
+#else /*RETRO*/
+    return 1;
+#endif /*RETRO*/
 }
 
 bool fs_emu_cursor_allowed(void)

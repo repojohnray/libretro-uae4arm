@@ -15,6 +15,7 @@
 #include "fs-uae/config-common.h"
 #include "fs-uae/options.h"
 #include "fs-uae/fs-uae.h"
+#include "fs-uae/config-drives.h"
 
 cothread_t mainThread;
 cothread_t emuThread;
@@ -69,8 +70,9 @@ static struct retro_input_descriptor input_descriptors[] = {
 
 // FS_EMU_HACKS_H /* These variables should ideally be hidden, and a proper API designed instead. */
 #ifdef FS_EMU_HACKS_H
-int fs_emu_mouse_absolute_x = 0;
-int fs_emu_mouse_absolute_y = 0;
+//int fs_emu_mouse_absolute_x = 0;
+//int fs_emu_mouse_absolute_y = 0;
+int g_fs_log_input = 0;
 
 double fs_emu_video_scale_x  = 1.0;
 double fs_emu_video_scale_y  = 1.0;
@@ -224,10 +226,14 @@ void fs_uae_load_rom_files(const char *path)
 
 static void retro_wrap_emulator(void)
 {
+#ifdef LIBRETRO_FSUAE
+  static char *argv[] = { "fs-uae" };
+#else
   static char *argv[] = { "puae" };
+#endif
 
+  //uae_restart(1, RPATH);
    keyboard_settrans();
-
 
    {
      fprintf(stderr, "loading config from %s\n", RPATH); 
@@ -266,10 +272,11 @@ static void retro_wrap_emulator(void)
 
    fs_uae_configure_amiga_hardware();
    fs_uae_configure_floppies();
-   //fs_uae_configure_hard_drives();
-   //fs_uae_configure_cdrom();
-   //fs_uae_configure_input();
-
+   fs_uae_configure_hard_drives();
+   fs_uae_configure_cdrom();
+   fs_uae_configure_input();
+   fs_uae_configure_directories();
+   
    if (/*fs_emu_netplay_enabled()*/ 0) {
      fs_log("netplay is enabled\n");
      // make sure UAE does not sleep between frames, we must be able
