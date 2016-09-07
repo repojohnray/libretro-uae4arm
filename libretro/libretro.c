@@ -267,7 +267,15 @@ static void retro_wrap_emulator(void)
    //fs_uae_configure_hard_drives();
    //fs_uae_configure_cdrom();
    //fs_uae_configure_input();
+
+   if (/*fs_emu_netplay_enabled()*/ 0) {
+     fs_log("netplay is enabled\n");
+     // make sure UAE does not sleep between frames, we must be able
+     // to control sleep times for net play
+     amiga_set_option("gfx_vsync", "true");
+   }
    
+   amiga_set_audio_frequency(44100);
    
 #ifdef AHI
    //enforcer_enable(1);
