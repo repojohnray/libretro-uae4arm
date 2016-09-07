@@ -26,6 +26,12 @@ TARGET_NAME := fsuae
 CORE_DIR  := .
 ROOT_DIR  := .
 
+ifeq ($(TARGET_ARCH), x86_64)
+CFLAGS += -DSIZEOF_VOID_P=8 -DCPU_64_BIT
+else
+CFLAGS += -DSIZEOF_VOID_P=4
+endif
+
 ifeq ($(platform), unix) ## (linux ARM: --enable-neon available)
    CFLAGS+=-DLINUX
    CC = gcc

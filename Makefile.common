@@ -248,11 +248,12 @@ CFLAGS += -DUAE -DLIBRETRO_FSUAE -DUSE_GLIB -DUSE_PSEM
 ifeq ($(USE_JIT), 1)
 CFLAGS += -DJIT
 INCFLAGS += -I$(JIT)
-SOURCES_C +=                     $(JIT)/gencomp.c \
+SOURCES_C += \
+				 $(JIT)/gencomp.c \
 				 $(JIT)/compemu_fpp.c
 				 
 endif
-SOURCES_C +=                     $(JIT)/compemu_support.c
+SOURCES_C += $(JIT)/compemu_support.c
 
 ifeq ($(USE_NEON), 1)
   CFLAGS += -DUSE_ARMNEON
