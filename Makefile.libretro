@@ -1,7 +1,7 @@
 
 PLATFLAGS :=
-USE_JIT = @USE_JIT@
-USE_NEON = @USE_NEON@
+USE_JIT    = 0
+USE_NEON   = 0
 # DEBUG=1
 # PROFILE=1
 
@@ -26,8 +26,8 @@ TARGET_NAME := fsuae
 CORE_DIR  := .
 ROOT_DIR  := .
 
-CFLAGS += @GLIB_CFLAGS@
-LDFLAGS += @GLIB_LIBS@
+#CFLAGS += @GLIB_CFLAGS@
+#LDFLAGS += @GLIB_LIBS@
 
 ifeq ($(platform), unix) ## (linux ARM: --enable-neon available)
    CFLAGS+=-DLINUX
