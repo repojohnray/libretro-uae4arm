@@ -124,6 +124,7 @@ void fs_emu_notification(uint32_t type, const char *format, ...)
 }
 
 void fs_emu_hud_add_console_line(const char *text, int flags) {
+#ifndef RETRO
     console_line *line = malloc(sizeof(console_line));
     line->type = 0;
     line->text = g_strdup(text);
@@ -134,6 +135,7 @@ void fs_emu_hud_add_console_line(const char *text, int flags) {
     fs_mutex_lock(g_console_mutex);
     g_queue_push_head(g_console_lines, line);
     fs_mutex_unlock(g_console_mutex);
+#endif /*RETRO*/
 }
 
 void fs_emu_hud_add_chat_message(const char *text, const char *player) {
@@ -232,6 +234,7 @@ int fs_emu_hud_handle_chat_input(fs_emu_event *event) {
 
 #define MAX_VISIBLE_LINES 12
 
+#ifndef RETRO
 void fs_emu_hud_render_chat() {
     GList *link;
     int k;
@@ -369,3 +372,4 @@ void fs_emu_hud_render_chat() {
     }
     fs_mutex_unlock(g_console_mutex);
 }
+#endif /*RETRO*/
