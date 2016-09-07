@@ -5,12 +5,12 @@
 Based on FS-UAE 2.7.14dev (https://fs-uae.net/)
 
 First 'Testable' release:
-* No audio.
 * The configuration file is read but not processed.
 * The input layer is the same as libretro-uae (README-libretro-puae):
   * Gamepad compatible.
   * RET: virtual keyboard.
   * F11: GUI screen (need to be fixed).
+* Audio OK now.
 
 Misc Issues:
 * Slower than libretro-uae.
