@@ -152,6 +152,73 @@ static void update_variables(void)
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+void fs_uae_load_rom_files(const char *path)
+{
+    fs_log("fs_uae_load_rom_files %s\n", path);
+    GDir *dir = g_dir_open(path, 0, NULL);
+    if (dir == NULL) {
+        fs_log("error opening dir\n");
+        return;
+    }
+
+    // we include the rom key when generating the cache name for the
+    // kickstart cache file, so the cache will be regenerated if rom.key
+    // is replaced or removed/added.
+    char *key_path = g_build_filename(path, "rom.key", NULL);
+    GChecksum *rom_checksum = g_checksum_new(G_CHECKSUM_MD5);
+    FILE *f = g_fopen(key_path, "rb");
+    if (f != NULL) {
+        int64_t key_size = fs_path_get_size(key_path);
+        if (key_size > 0 && key_size < 1024 * 1024) {
+            guchar *key_data = malloc(key_size);
+            if (fread(key_data, key_size, 1, f) != 1) {
+                free(key_data);
+            }
+            else {
+                fs_log("read rom key file, size = %d\n", key_size);
+                g_checksum_update(rom_checksum, key_data, key_size);
+            }
+        }
+        fclose(f);
+    }
+    g_free(key_path);
+
+    amiga_add_key_dir(path);
+    const char *name = g_dir_read_name(dir);
+    while (name) {
+        char *lname = g_utf8_strdown(name, -1);
+        if (g_str_has_suffix(lname, ".rom")
+                || g_str_has_suffix(lname, ".bin")) {
+            fs_log("found file \"%s\"\n", name);
+            char *full_path = g_build_filename(path, name, NULL);
+            //GChecksum *checksum = g_checksum_new(G_CHECKSUM_MD5);
+            GChecksum *checksum = g_checksum_copy(rom_checksum);
+            g_checksum_update(
+                checksum, (guchar *) full_path, strlen(full_path));
+            const gchar *cache_name = g_checksum_get_string(checksum);
+            char* cache_path = g_build_filename(
+                fs_uae_kickstarts_cache_dir(), cache_name, NULL);
+            amiga_add_rom_file(full_path, cache_path);
+            // check if amiga_add_rom_file needs to own full_path
+            //free(full_path);
+            if (cache_path != NULL) {
+                free(cache_path);
+            }
+            g_checksum_free(checksum);
+        }
+        free(lname);
+        name = g_dir_read_name(dir);
+    }
+    g_dir_close(dir);
+
+    if (rom_checksum != NULL) {
+        g_checksum_free(rom_checksum);
+    }
+    //exit(1);
+}
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 static void retro_wrap_emulator(void)
 {
@@ -195,6 +262,7 @@ static void retro_wrap_emulator(void)
    amiga_add_rtg_resolution(960, 540);
    amiga_add_rtg_resolution(retrow, retroh);
 
+   fs_uae_configure_amiga_hardware();
    fs_uae_configure_floppies();
    //fs_uae_configure_hard_drives();
    //fs_uae_configure_cdrom();

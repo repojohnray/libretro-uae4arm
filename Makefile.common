@@ -101,8 +101,12 @@ SOURCES_C +=  $(EMU)/main.c \
 				  $(EMU)/fs-uae/config.c \
 				  $(EMU)/fs-uae/config-common.c \
 				  $(EMU)/fs-uae/config-drives.c \
-				  $(EMU)/fs-uae/paths.c 
-
+				  $(EMU)/fs-uae/paths.c \
+				  $(EMU)/fs-uae/config-accelerator.c \
+				  $(EMU)/fs-uae/config-hardware.c \
+				  $(EMU)/fs-uae/config-graphics.c \
+				  $(EMU)/fs-uae/config-sound.c
+				  
 
 #				  $(EMU)/cd32_fmv.c \
 #  $(EMU)/serial.c \
@@ -185,7 +189,8 @@ SOURCES_C +=			 $(ODFS)/hardfile_host.c \
 				 $(ODFS)/mouse.c \
 				 $(ODFS)/charset.c \
 				 $(ODFS)/inputrecord.c \
-				 $(ODFS)/threading.c
+				 $(ODFS)/threading.c \
+				 $(ODFS)/roms.c
 				 
 
 SOURCES_C +=			 $(LIBFSEMU)/thread.c $(LIBFSEMU)/filesys.c $(LIBFSEMU)/base.c $(LIBFSEMU)/data.c $(LIBFSEMU)/conf.c $(LIBFSEMU)/log.c $(LIBFSEMU)/inifile.c $(LIBFSEMU)/emu/video.c \

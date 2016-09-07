@@ -13,7 +13,7 @@ sed -r -i "s/(do_scsi)([ \t]*[(][^,]*[,][^,]*[,][^,]*[,][^,]*[,][^,]*[)])/\15\2/
 sed -r -i "s/([,(][ \t]*)(cd_standard_unit [a-zA-Z0-9]+)/\1enum \2/" src/blkdev.c
 
 sed -r -i "s/(zfile_fopen)([ \t]*[(][^,]*[,][^,]*[,][^,]*[)])/\13\2/" src/driveclick.c src/hardfile.c src/main.c src/filesys.c src/od-fs/hardfile_host.c src/cfgfile.c \
-  src/cdtvcr.c src/cpuboard.c src/cdtv.c src/akiko.c src/arcadia.c src/zfile.c src/audio.c src/include/zfile.h src/disk.c src/savestate.c src/zfile_archive.c src/rommgr.c
+  src/cdtvcr.c src/cpuboard.c src/cdtv.c src/akiko.c src/arcadia.c src/zfile.c src/audio.c src/include/zfile.h src/disk.c src/savestate.c src/zfile_archive.c src/rommgr.c src/od-fs/roms.c
 sed -r -i "s/(zfile_fopen)([ \t]*[(][^,]*[,][^,]*[)])/\12\2/" src/cfgfile.c src/cpuboard.c src/rommgr.c src/zfile.c src/disk.c src/include/zfile.h
 sed -r -i "s/(zfile_gunzip)([ \t]*[(][^,]*[,][^,]*[)])/\12\2/" src/zfile.c
 sed -r -i "s/(zfile_fopen_empty)([ \t]*[(][^,]*[,][^,]*[)])/\12\2/" src/cfgfile.c src/include/zfile.h src/rommgr.c src/savestate.c src/zfile.c
@@ -28,7 +28,7 @@ sed -r -i "s/(m68k_dumpstate)([ \t]*[(][^,]*[)])/\11\2/" src/include/newcpu.h sr
 sed -r -i "s/(zfile_opendir_archive)([ \t]*[(][^,]*[)])/\11\2/" src/filesys.c src/zfile.c
 sed -r -i "s/(my_opendir)([ \t]*[(][^,]*[)])/\11\2/" src/filesys.c src/fsdb.c src/od-fs/filesys_host.c src/zfile.c src/include/fsdb.h
 sed -r -i "s/(fixaddr)([ \t]*[(][^,]*[)])/\11\2/" src/gfxboard.c
-sed -r -i "s/(getromdatabycrc)([ \t]*[(][^,]*[)])/\11\2/" src/memory.c src/rommgr.c src/debug.c src/include/rommgr.h
+sed -r -i "s/(getromdatabycrc)([ \t]*[(][^,]*[)])/\11\2/" src/memory.c src/rommgr.c src/debug.c src/include/rommgr.h src/od-fs/roms.c
 sed -r -i "s/(loaddat)([ \t]*[(][^,]*[)])/\11\2/" src/audio.c
 sed -r -i "s/(getsem)([ \t]*[(][^,]*[)])/\11\2/" src/blkdev.c
 sed -r -i "s/(es1370_reset)([ \t]*[(][^,]*[)])/\11\2/" src/qemuvga/es1370.c
@@ -217,7 +217,7 @@ sed -r -i "s/^(#if)(def FSUAE)/\1 1 \/\/\2/" src/od-win32/mman.c src/od-win32/pi
   src/inputevents.def src/include/custom.h src/include/uae_memory.h src/custom.c src/include/autoconf.h src/sndboard.c src/disk.c \
   src/include/bsdsocket.h src/include/zfile.h src/jit/compemu_support.c src/filesys.c src/include/fsdb.h src/fsdb.c src/main.c \
   src/cpuboard.c src/jit/compemu_prefs.c src/memory.c src/writelog.c src/specialmonitors.c src/zfile.c src/qemuvga/qemuuaeglue.h src/od-win32/serial_win32.c \
-  src/gfxutil.c src/include/commpipe.h src/od-win32/dxwrap.h
+  src/gfxutil.c src/include/commpipe.h src/od-win32/dxwrap.h src/include/rommgr.h
 
 #-- patch
 (

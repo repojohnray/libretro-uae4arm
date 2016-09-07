@@ -161,14 +161,16 @@ static struct romdata *scan_single_rom (const TCHAR *path, uae_u32 *crc32)
 	rd = getromdatabypath (path);
 	if (rd && rd->crc32 == 0xffffffff)
 		return rd;
-	z = zfile_fopen (path, _T ("rb"), ZFD_NORMAL);
+	z = zfile_fopen3 (path, _T ("rb"), ZFD_NORMAL);
 	if (!z)
 		return 0;
 	return scan_single_rom_2 (z, crc32);
 }
 
+#ifdef __cplusplus
 extern "C" {
-
+#endif
+  
 void amiga_add_key_dir (const char *path)
 {
 	char *p = g_build_filename (path, "rom.key", NULL);
@@ -202,7 +204,7 @@ int amiga_add_rom_file (const char *path, const char *cache_path)
 					write_log ("- found cached crc32\n");
 					uae_u32 crc32 = buf[0] << 24 | buf[1] << 16 |
 							buf[2] << 8 | buf[3];
-					rd = getromdatabycrc (crc32);
+					rd = getromdatabycrc1 (crc32);
 					if (rd) {
 						write_log ("- rom added via cached entry\n");
 						romlist_add (path, rd);
@@ -260,4 +262,6 @@ int amiga_add_rom_file (const char *path, const char *cache_path)
 	return 0;
 }
 
+#ifdef __cplusplus
 } // extern C
+#endif
