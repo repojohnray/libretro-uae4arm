@@ -25,3 +25,5 @@ config.sub
 install-sh
 config.h.in
 kick.*
+fsuae_libretro.so
+Makefile
