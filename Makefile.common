@@ -105,7 +105,12 @@ SOURCES_C +=  $(EMU)/main.c \
 				  $(EMU)/fs-uae/config-accelerator.c \
 				  $(EMU)/fs-uae/config-hardware.c \
 				  $(EMU)/fs-uae/config-graphics.c \
-				  $(EMU)/fs-uae/config-sound.c
+				  $(EMU)/fs-uae/config-sound.c \
+				  $(EMU)/fs-uae/joystick.c \
+				  $(EMU)/fs-uae/mouse.c \
+				  $(EMU)/fs-uae/input.c \
+				  $(EMU)/fs-uae/config-paths.c
+				  
 				  
 
 #				  $(EMU)/cd32_fmv.c \
@@ -194,7 +199,8 @@ SOURCES_C +=			 $(ODFS)/hardfile_host.c \
 				 
 
 SOURCES_C +=			 $(LIBFSEMU)/thread.c $(LIBFSEMU)/filesys.c $(LIBFSEMU)/base.c $(LIBFSEMU)/data.c $(LIBFSEMU)/conf.c $(LIBFSEMU)/log.c $(LIBFSEMU)/inifile.c $(LIBFSEMU)/emu/video.c \
-	  			 $(LIBFSEMU)/emu/audio_common.c $(LIBFSEMU)/emu/audio_openal.c $(LIBFSEMU)/emu/emu.c $(LIBFSEMU)/emu/hud.c
+	  			 $(LIBFSEMU)/emu/audio_common.c $(LIBFSEMU)/emu/audio_openal.c $(LIBFSEMU)/emu/emu.c $(LIBFSEMU)/emu/hud.c $(LIBFSEMU)/emu/input.c $(LIBFSEMU)/emu/keynames.c \
+				 $(LIBFSEMU)/ml/ml.c
 
 SOURCES_C += $(ODWIN32)/serial_win32.c $(ODWIN32)/picasso96_win.c
 SOURCES_C += $(QEMUVGA)/es1370.c $(QEMUVGA)/ne2000.c
@@ -234,7 +240,7 @@ SOURCES_C += $(LIBRETRO)/libretro.c \
 				 $(LIBRETRO)/fontmsx.c 
 
 
-CFLAGS += -DHAVE_CONFIG_H -DUAE -DLIBRETRO_FSUAE -DUSE_GLIB -DUSE_PSEM
+CFLAGS += -DUAE -DLIBRETRO_FSUAE -DUSE_GLIB -DUSE_PSEM
 
 #USE_JIT=1 -DCPU_i386
 #USE_JIT=1 -DCPU_x86_64
@@ -242,11 +248,12 @@ CFLAGS += -DHAVE_CONFIG_H -DUAE -DLIBRETRO_FSUAE -DUSE_GLIB -DUSE_PSEM
 ifeq ($(USE_JIT), 1)
 CFLAGS += -DJIT
 INCFLAGS += -I$(JIT)
-SOURCES_C +=                     $(JIT)/gencomp.c \
+SOURCES_C += \
+				 $(JIT)/gencomp.c \
 				 $(JIT)/compemu_fpp.c
 				 
 endif
-SOURCES_C +=                     $(JIT)/compemu_support.c
+SOURCES_C += $(JIT)/compemu_support.c
 
 ifeq ($(USE_NEON), 1)
   CFLAGS += -DUSE_ARMNEON

@@ -61,10 +61,10 @@
 //#include "tabletlibrary.h"
 #include "statusline.h"
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 
 #include "uae_fs.h"
-#include "uae/glib.h"
+#include "uae_glib.h"
 // FIXME
 #include <fs/emu.h>
 
@@ -644,7 +644,7 @@ static const TCHAR *kbtypes[] = { _T("amiga"), _T("pc"), NULL };
 
 void write_inputdevice_config (struct uae_prefs *p, struct zfile *f)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     return;
 #endif
 	int i, id;
@@ -1275,7 +1275,7 @@ static bool mousehack_enabled;
 
 static void mousehack_reset (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	write_log(_T("mousehack_reset\n"));
 #endif
 	dimensioninfo_width = dimensioninfo_height = 0;
@@ -2513,7 +2513,7 @@ static int inputdelay;
 
 static void inputdevice_read (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	handle_msgpump ();
 #if 0
 	static int lastframe = 0;
@@ -2719,7 +2719,7 @@ static int handle_custom_event (const TCHAR *custom)
 
 void inputdevice_hsync (void)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 #else
 	static int cnt;
 #endif
@@ -2764,7 +2764,7 @@ void inputdevice_hsync (void)
 			handle_msgpump ();
 	}
 	if (!input_record && !input_play) {
-#ifdef FSUAE
+#if 1 //def FSUAE
 	//if (vpos == 0) {
 		// we do this so inputdevice_read is called predictably, this is
 		// important when using the recording feature, where input must be
@@ -2947,7 +2947,7 @@ static bool inputdevice_handle_inputcode_immediate(int code, int state)
 
 void inputdevice_add_inputcode (int code, int state)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     if (inputdevice_logging) {
         write_log("        inputcode %d state %d\n", code, state);
     }
@@ -3264,7 +3264,7 @@ static bool inputdevice_handle_inputcode2 (int code, int state)
 		swapperslot++;
 		if (swapperslot >= MAX_SPARE_DRIVES || currprefs.dfxlist[swapperslot][0] == 0)
 			swapperslot = 0;
-#ifdef FSUAE
+#if 1 //def FSUAE
 		diskswapper_notification(swapperslot, -1);
 #endif
 		break;
@@ -3277,7 +3277,7 @@ static bool inputdevice_handle_inputcode2 (int code, int state)
 				break;
 			swapperslot--;
 		}
-#ifdef FSUAE
+#if 1 //def FSUAE
 		diskswapper_notification(swapperslot, -1);
 #endif
 		break;
@@ -3287,7 +3287,7 @@ static bool inputdevice_handle_inputcode2 (int code, int state)
 	case AKS_DISKSWAPPER_INSERT3:
 		_tcscpy (changed_prefs.floppyslots[code - AKS_DISKSWAPPER_INSERT0].df, currprefs.dfxlist[swapperslot]);
 		set_config_changed ();
-#ifdef FSUAE
+#if 1 //def FSUAE
 		diskswapper_notification(swapperslot, code - AKS_DISKSWAPPER_INSERT0);
 #endif
 		break;
@@ -3365,7 +3365,7 @@ static uae_u64 isqual (int evt)
 
 static int handle_input_event (int nr, int state, int max, int autofire, bool canstopplayback, bool playbackevent)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
     if (inputdevice_logging) {
         write_log("        nr %d state %d max %d autofire %d "
                 "canstopplayback %d playbackevent %d\n",
@@ -6025,7 +6025,7 @@ void inputdevice_devicechange (struct uae_prefs *prefs)
 // set default prefs to all input configuration settings
 void inputdevice_default_prefs (struct uae_prefs *p)
 {
-#ifdef FSUAE
+#if 1 //def FSUAE
 
 #else
 	inputdevice_init ();
@@ -6043,7 +6043,7 @@ void inputdevice_default_prefs (struct uae_prefs *p)
 	p->input_keyboard_type = 0;
 	p->input_autoswitch = true;
 	keyboard_default = keyboard_default_table[p->input_keyboard_type];
-#ifdef FSUAE
+#if 1 //def FSUAE
 
 #else
 	inputdevice_default_kb_all (p);
@@ -7869,7 +7869,7 @@ void clear_inputstate (void)
 	}
 }
 
-#ifdef FSUAE // NL
+#if 1 //def FSUAE // NL
 
 void uae_mousehack_helper(int x, int y)
 {
@@ -7954,8 +7954,10 @@ static void amiga_set_joystick_port_mode_2 (int port, int mode)
 #endif
 }
 
+#ifdef __cplusplus
 extern "C" {
-
+#endif
+  
 void amiga_enable_auto_mouse_mode(bool enable)
 {
     g_amiga_allow_auto_mouse_mode = enable;
@@ -7968,7 +7970,9 @@ void amiga_set_joystick_port_mode(int port, int mode)
     return amiga_set_joystick_port_mode_2 (port, mode);
 }
 
+#ifdef __cplusplus
 }
+#endif
 
 int amiga_handle_input_event (int nr, int state, int max,
         int autofire, bool canstopplayback, bool playbackevent)

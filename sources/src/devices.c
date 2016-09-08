@@ -445,7 +445,7 @@ void devices_restore_start(void)
 
 void devices_syncchange(void)
 {
-#ifndef RETRO
+#ifndef __LIBRETRO__
 	x86_bridge_sync_change();
-#endif /*RETRO*/	
+#endif /* __LIBRETRO__ */	
 }

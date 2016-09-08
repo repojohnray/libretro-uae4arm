@@ -856,7 +856,11 @@ static int64_t g_cursor_visible_to = 0;
 
 bool fs_emu_mouse_integration(void)
 {
+#ifdef __LIBRETRO__
+    return 1;
+#else
     return fs_ml_mouse_integration();
+#endif
 }
 
 bool fs_emu_cursor_allowed(void)

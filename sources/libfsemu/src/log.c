@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef RETRO
+#ifndef __LIBRETRO__
 static struct {
     int use_stdout;
     FILE *file;
@@ -120,7 +120,7 @@ void fs_log(const char *format, ...)
     fs_log_string(buffer);
     g_free(buffer);
 }
-#else /*RETRO*/
+#else /* __LIBRETRO__ */
 void fs_log(const char *format, ...)
 {
     va_list ap;
@@ -130,4 +130,4 @@ void fs_log(const char *format, ...)
     fprintf(stderr, buffer);
     g_free(buffer);
 }
-#endif /*RETRO*/
+#endif /* __LIBRETRO__ */

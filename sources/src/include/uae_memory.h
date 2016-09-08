@@ -11,7 +11,11 @@
 
 struct uae_prefs;
 #if 1 /*def FSUAE*/ // NL
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
 #include "uae_types.h"
 #include <stddef.h>
 #endif
