@@ -5,7 +5,7 @@ function cfix_addtypedef () {
   sed -r -i "/^(struct|enum)[ \t]+${s_typedef}[ \t]*[{]?$/,/^};$/ {s/^((struct|enum)[ \t]+${s_typedef}[ \t]*[{]?)$/typedef \1/; s/^};$/} ${s_typedef};/;};" "$@";
 }
 
-if [ \! -f src/cfgfile.c -o \! -f src/ncr9x_scsi.c ]; then echo "Wrong dir... failed..."; exit -1;fi
+if [ \! -f src/cfgfile.c ]; then echo "Wrong dir... failed..."; exit -1;fi; #-o \! -f src/ncr9x_scsi.c
 
 #sed -r -i "s/[ \t]*_P[(](.*)[)];/\1;/" src/include/misc.h
 
