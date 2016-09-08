@@ -32,6 +32,10 @@ else
 CFLAGS += -DSIZEOF_VOID_P=4
 endif
 
+ifeq ($(USE_JIT),1)
+CFLAGS += -DJIT=1
+endif
+
 ifeq ($(platform), unix) ## (linux ARM: --enable-neon available)
    CFLAGS+=-DLINUX
    CC = gcc
