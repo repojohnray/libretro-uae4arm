@@ -36,9 +36,9 @@ extern void master_sound_volume (int);
 
 //static uae_u16 *paula_sndbufpt_prev, *paula_sndbufpt_start;
 
-#ifdef RETRO
+#ifdef __LIBRETRO__
 #include "../../../../retrodep/sound.h"
-#else /*RETRO*/
+#else
 STATIC_INLINE void set_sound_buffers (void)
 {
 #if SOUNDSTUFF > 1
@@ -118,7 +118,7 @@ STATIC_INLINE void clear_sound_buffers (void)
 #define DEFAULT_SOUND_BITS 16
 #define DEFAULT_SOUND_FREQ 44100
 #define HAVE_STEREO_SUPPORT
-#endif /*RETRO*/
+#endif /* __LIBRETRO__ */
 
 #define FILTER_SOUND_OFF 0
 #define FILTER_SOUND_EMUL 1

@@ -1047,7 +1047,7 @@ void do_start_program (void)
 
 void start_program (void)
 {
-#ifdef RETRO
+#ifdef __LIBRETRO__
 # ifdef DEBUG
   fprintf(stderr, "%s %d %s -------------------- (do_start_program)\n", __FILE__, __LINE__, __FUNCTION__);
 # endif
