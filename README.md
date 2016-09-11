@@ -19,9 +19,10 @@ Misc Issues:
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-*Test - On the local directory where 'fsuae_libretro.so' is located:
-ln -snf fdd_path.adf df0.adf
-ln -snf kick_path.rom kick.rom
+*Test
+ -The kickstart must be located here: ~/FS-UAE/Kickstarts
+ -On the local directory where 'fsuae_libretro.so' is located: ln -snf fdd_path.adf df0.adf
+ -The last command:
 retroarch -L ./fsuae_libretro.so /dev/null
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
