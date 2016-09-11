@@ -294,8 +294,9 @@ void fs_emu_init(void)
 
     g_gui_mutex = fs_mutex_create();
     fs_emu_hud_init();
+#ifndef __LIBRETRO__
     fs_emu_dialog_init();
-
+#endif /*__LIBRETRO__*/
 }
 
 void fs_emu_init_2(int options) {

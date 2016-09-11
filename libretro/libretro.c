@@ -16,6 +16,9 @@
 #include "fs-uae/options.h"
 #include "fs-uae/fs-uae.h"
 #include "fs-uae/config-drives.h"
+#include "fs/data.h"
+#include "fs/emu/path.h"
+#include "fs-uae/paths.h"
 
 cothread_t mainThread;
 cothread_t emuThread;
@@ -223,6 +226,133 @@ void fs_uae_load_rom_files(const char *path)
 
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 /*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+static const char *overlay_names[] = {
+  "df0_led",     // 0
+  "df1_led",     // 1
+  "df2_led",     // 2
+  "df3_led",     // 3
+  "df0_disk",    // 4
+  "df1_disk",    // 5
+  "df2_disk",    // 6
+  "df3_disk",    // 7
+  "power_led",   // 8
+  "hd_led",      // 9
+  "cd_led",      // 10
+  "md_led",      // 11
+
+  "df0_d1",      // 12
+  "df0_d0",
+  "df1_d1",
+  "df1_d0",
+  "df2_d1",
+  "df2_d0",
+  "df3_d1",
+  "df3_d0",
+  NULL,
+};
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+static void on_init() //  src/fs-uae/main.c: static void on_init()
+{
+    fs_log("-- uae configuration --\n");
+
+    //amiga_set_gui_message_function(on_gui_message);
+
+    //fs_uae_configure_amiga_model();
+    fs_uae_configure_amiga_hardware();
+    fs_uae_configure_floppies();
+    fs_uae_configure_hard_drives();
+    fs_uae_configure_cdrom();
+#ifndef __LIBRETRO__
+    fs_uae_configure_input();
+#endif /*__LIBRETRO__*/
+    fs_uae_configure_directories();
+
+    if (fs_config_get_int("save_state_compression") == 0) {
+        amiga_set_save_state_compression(0);
+    }
+    else {
+        amiga_set_save_state_compression(1);
+    }
+
+    if (fs_config_get_int("min_first_line_pal") != FS_CONFIG_NONE) {
+        amiga_set_min_first_line(fs_config_get_int("min_first_line_pal"), 0);
+    }
+    if (fs_config_get_int("min_first_line_ntsc") != FS_CONFIG_NONE) {
+        amiga_set_min_first_line(fs_config_get_int("min_first_line_ntsc"), 1);
+    }
+
+    /*
+    if (fs_emu_get_video_sync()) {
+        fs_log("fs_emu_get_video_sync returned true\n");
+        amiga_set_option("gfx_vsync", "true");
+    }
+    else {
+        fs_log("fs_emu_get_video_sync returned false\n");
+    }
+    if (fs_emu_netplay_enabled()) {
+        fs_log("netplay is enabled\n");
+        // make sure UAE does not sleep between frames, we must be able
+        // to control sleep times for net play
+        amiga_set_option("gfx_vsync", "true");
+    }
+    */
+
+    /* With sound_auto set to true, UAE stops audio output if the amiga does
+     * not produce sound.  */
+    // amiga_set_option("sound_auto", "false");
+
+#ifdef __LIBRETRO__
+    amiga_set_audio_frequency(44100);
+#endif /*__LIBRETRO__*/
+
+    // set the input frequency to the output frequency, since we configured
+    // libamiga to output at the same frequency
+
+    // FIXME: check the actual frequency libuae/libamiga outputs, seems
+    // to output at 44100 Hz even though currprefs.freq says 48000.
+    // fs_emu_set_audio_buffer_frequency(0, fs_emu_get_audio_frequency());
+
+    //amiga_set_option("gfx_gamma", "40");
+
+    fs_uae_set_uae_paths();
+    //fs_uae_read_custom_uae_options(fs_uae_argc, fs_uae_argv);
+
+    char *uae_file;
+
+    uae_file = g_build_filename(fs_uae_logs_dir(), "LastConfig.uae", NULL);
+    if (fs_path_exists(uae_file)) {
+        g_unlink(uae_file);
+    }
+    g_free(uae_file);
+
+    uae_file = g_build_filename(fs_uae_logs_dir(), "DebugConfig.uae", NULL);
+    if (fs_path_exists(uae_file)) {
+        g_unlink(uae_file);
+    }
+    g_free(uae_file);
+
+    uae_file = g_build_filename(fs_uae_logs_dir(), "Debug.uae", NULL);
+    if (fs_path_exists(uae_file)) {
+        g_unlink(uae_file);
+    }
+    g_free(uae_file);
+
+    uae_file = g_build_filename(fs_uae_logs_dir(), "debug.uae", NULL);
+    amiga_write_uae_config(uae_file);
+    g_free(uae_file);
+
+    fs_log("\n");
+    fs_log("-- end of uae configuration --\n");
+    fs_log("\n");
+}
+
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+char *g_fs_uae_disk_file_path = NULL;
+static int g_warn_about_missing_config_file;
+
 
 static void retro_wrap_emulator(void)
 {
@@ -235,11 +365,49 @@ static void retro_wrap_emulator(void)
   //uae_restart(1, RPATH);
    keyboard_settrans();
 
+   fs_init();  // sources/src/fs-uae/main.c: main()
+   int error = fs_data_init("fs-uae", "fs-uae.dat");
+   if (error) {
+     fprintf(stderr, "WARNING: error (%d) loading fs-uae.dat\n", error);
+   }
+
+   fs_set_prgname("libretro-fsuae");
+   fs_set_application_name("Amiga Emulator");
+
+   //fprintf(stderr, COPYRIGHT_NOTICE, PACKAGE_VERSION, OS_NAME_2, ARCH_NAME_2);
+
+   amiga_init();
+
+
+   fs_emu_path_set_expand_function(fs_uae_expand_path);
+   fs_emu_init_overlays(overlay_names);
+   fs_emu_init();
+
+   // load_config_file();
    {
      fprintf(stderr, "loading config from %s\n", RPATH); 
      fs_config_read_file(RPATH, 0); // ../fs-uae-2.7.14dev/src/fs-uae/main.c
    }
+   fs_set_data_dir(fs_uae_data_dir());
+   
+   if (g_fs_uae_disk_file_path) {
+     fs_config_set_string(OPTION_FLOPPY_DRIVE_0, g_fs_uae_disk_file_path);
+     g_warn_about_missing_config_file = 0;
+   }
 
+   if (g_warn_about_missing_config_file) {
+     fs_emu_warning(("No configuration file was found"));
+   }
+
+   fs_emu_set_state_check_function(amiga_get_state_checksum);
+   fs_emu_set_rand_check_function(amiga_get_rand_checksum);
+   
+   fs_uae_kickstarts_dir();
+   fs_uae_configurations_dir();
+   fs_uae_init_path_resolver();
+
+   //fs_uae_plugins_init();
+   
    // must be called early, before fs_emu_init -affects video output
    fs_uae_configure_amiga_model();
 
@@ -252,10 +420,10 @@ static void retro_wrap_emulator(void)
    amiga_on_update_leds(on_update_leds);
 
    amiga_set_media_function(media_function);
-   amiga_set_init_function(on_init);
 #endif
-
-   if (0) {
+   amiga_set_init_function(on_init);
+ 
+   if (1) {
      amiga_init_jit_compiler();
    }
 
@@ -269,13 +437,6 @@ static void retro_wrap_emulator(void)
    amiga_add_rtg_resolution(672, 540);
    amiga_add_rtg_resolution(960, 540);
    amiga_add_rtg_resolution(retrow, retroh);
-
-   fs_uae_configure_amiga_hardware();
-   fs_uae_configure_floppies();
-   fs_uae_configure_hard_drives();
-   fs_uae_configure_cdrom();
-   fs_uae_configure_input();
-   fs_uae_configure_directories();
    
    if (/*fs_emu_netplay_enabled()*/ 0) {
      fs_log("netplay is enabled\n");
@@ -284,7 +445,6 @@ static void retro_wrap_emulator(void)
      amiga_set_option("gfx_vsync", "true");
    }
    
-   amiga_set_audio_frequency(44100);
    fs_emu_toggle_zoom(0);
    
 #ifdef AHI

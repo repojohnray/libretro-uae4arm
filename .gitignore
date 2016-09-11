@@ -27,3 +27,4 @@ config.h.in
 kick.*
 fsuae_libretro.so
 Makefile
+configuration.backup
