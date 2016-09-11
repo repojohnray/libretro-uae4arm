@@ -422,8 +422,8 @@ static void retro_wrap_emulator(void)
    amiga_set_media_function(media_function);
 #endif
    amiga_set_init_function(on_init);
- 
-   if (1) {
+
+   if (fs_config_get_boolean(OPTION_JIT_COMPILER) == 1) {
      amiga_init_jit_compiler();
    }
 

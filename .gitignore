@@ -2,9 +2,10 @@ sources/Makefile
 sources/Makefile.in
 sources/gen/*
 sources/gen/
+*.o
 *.zip
 *.adf
-*.o
+*.fs-uae
 *~
 .dirstamp
 .deps
