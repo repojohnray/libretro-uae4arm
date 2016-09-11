@@ -14,6 +14,7 @@ const char DlgVideo_fileid[] = "Hatari dlgVideo.c : " __DATE__ " " __TIME__;
 
 #include "dialog.h"
 #include "sdlgui.h"
+#include "guiretro.h"
 
 #define DLGVIDEO_CHIPOCS	3
 #define DLGVIDEO_CHIPECSAGNUS 	4

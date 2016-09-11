@@ -16,8 +16,10 @@ const char SDLGui_fileid[] = "Hatari sdlgui.c : " __DATE__ " " __TIME__;
 #include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "utype.h"
+#include "graph.h"
 
 typedef struct{
      int16_t x, y;
@@ -71,7 +73,6 @@ void draw_cross(int x,int y) {
 
 	int i,j,idx;
 	int dx=32,dy=20;
-	unsigned  short color;
 
 	for(j=y;j<y+dy;j++){
 		idx=0;
@@ -183,7 +184,6 @@ static void SDLGui_DrawText(const SGOBJ *tdlg, int objnum)
 static void SDLGui_DrawEditField(const SGOBJ *edlg, int objnum)
 {
 	int x, y;
-	SDL_Rect rect;
 
 	x = (edlg[0].x+edlg[objnum].x)*sdlgui_fontwidth;
 	y = (edlg[0].y+edlg[objnum].y)*sdlgui_fontheight;
@@ -327,7 +327,6 @@ static void SDLGui_DrawCheckBox(const SGOBJ *cdlg, int objnum)
  */
 static void SDLGui_DrawScrollbar(const SGOBJ *bdlg, int objnum)
 {
-	SDL_Rect rect;
 	int x, y, w, h;
         int offset = 0;
 
@@ -589,6 +588,7 @@ static int SDLGui_FindObj(const SGOBJ *dlg, int fx, int fy)
 
 
 /*-----------------------------------------------------------------------*/
+#if 0
 /**
  * Search a button with a special flag (e.g. SG_DEFAULT or SG_CANCEL).
  */
@@ -605,7 +605,7 @@ static int SDLGui_SearchFlaggedButton(const SGOBJ *dlg, int flag)
 
 	return 0;
 }
-
+#endif
 
 extern int touch;
 int gmx,gmy;
@@ -623,8 +623,6 @@ int SDLGui_DoDialog(SGOBJ *dlg, int/*SDL_Event */*pEventOut)
 	int oldbutton=0;
 	int retbutton=0;
 	int i, j, b;
-	int /*SDL_Event*/ sdlEvent;//SDL_Event sdlEvent;
-	SDL_Rect rct;
 	uint32_t grey;
 	
 	SDL_Rect dlgrect, bgrect;

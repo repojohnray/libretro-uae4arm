@@ -63,8 +63,8 @@ unsigned long  Ktime=0 , LastFPSTime=0;
 int BOXDEC= 32+2;
 int STAT_BASEY;
 
-extern char key_state[512];
-extern char key_state2[512];
+extern char key_state[RETROK_LAST];
+extern char key_state2[RETROK_LAST];
 
 extern bool opt_analog;
 
@@ -120,19 +120,17 @@ long GetTicks(void)
 
 } 
 
-void gui_poll_events(void)
-{
-   //NO SURE FIND BETTER WAY TO COME BACK IN MAIN THREAD IN HATARI GUI
+void gui_poll_events(void) { //NO SURE FIND BETTER WAY TO COME BACK IN MAIN THREAD IN HATARI GUI
+  Ktime = GetTicks();
 
-   Ktime = GetTicks();
-
-   if(Ktime - LastFPSTime >= 1000/50)
-   {
+  if(Ktime - LastFPSTime >= 1000/50)
+    {
       frame++; 
       LastFPSTime = Ktime;		
-      co_switch(mainThread);
       //retro_run();
-   }
+    }
+
+  co_switch(mainThread);
 }
 
 void Print_Statut(void)
@@ -173,7 +171,7 @@ void Screen_SetFullUpdate(void)
 void Process_key(void)
 {
    int i;
-   for(i=0;i<320;i++)
+   for(i=0;i<RETROK_LAST;i++)
    {
       key_state[i]=input_state_cb(0, RETRO_DEVICE_KEYBOARD, 0,i)?0x80:0;
 
@@ -235,9 +233,8 @@ void update_input(void)
    input_poll_cb();
    Process_key();
 
-   if (key_state[RETROK_F11] || input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y))
-   {
-      pauseg=1;
+   if ((key_state[RETROK_F11] && key_state[RETROK_LALT]) || input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_Y)) {
+      pauseg = 1;
       //enter_gui(); //old
    }
 

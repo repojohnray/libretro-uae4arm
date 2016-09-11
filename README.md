@@ -8,8 +8,9 @@ First 'Testable' release:
 * The configuration file is read but not processed.
 * The input layer is the same as libretro-uae (README-libretro-puae):
   * Gamepad compatible.
+  * AltL+F11: GUI screen (need to be fixed).
+  * F11:      Grab mouse (default retroarch key)
   * RET: virtual keyboard.
-  * F11: GUI screen (need to be fixed).
 * Audio OK now.
 
 Misc Issues:
