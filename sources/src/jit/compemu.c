@@ -20,9 +20,9 @@
 #define PART_8 1
 #endif
 
-extern void comp_fpp_opp();
-extern void comp_fscc_opp();
-extern void comp_fbcc_opp();
+//extern void comp_fpp_opp();
+//extern void comp_fscc_opp();
+//extern void comp_fbcc_opp();
 
 #ifdef PART_1
 uae_u32 REGPARAM2 op_0_0_comp_ff(uae_u32 opcode) /* OR */
@@ -30460,9 +30460,9 @@ return 0;
 #define PART_8 1
 #endif
 
-extern void comp_fpp_opp();
-extern void comp_fscc_opp();
-extern void comp_fbcc_opp();
+//extern void comp_fpp_opp();
+//extern void comp_fscc_opp();
+//extern void comp_fbcc_opp();
 
 #ifdef PART_1
 uae_u32 REGPARAM2 op_0_0_comp_nf(uae_u32 opcode) /* OR */

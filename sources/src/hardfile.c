@@ -10,7 +10,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "options.h"
 #include "memory.h"
 #include "newcpu.h"
@@ -787,7 +787,7 @@ static int start_thread (TrapContext *context, int unit)
   if (hfpd->thread_running)
     return 1;
   memset (hfpd, 0, sizeof (struct hardfileprivdata));
-  hfpd->base = m68k_areg(regs, 6);
+  hfpd->base = m68k_areg(&regs, 6);
   init_comm_pipe (&hfpd->requests, 100, 1);
   uae_sem_init (&hfpd->sync_sem, 0, 0);
   uae_start_thread (_T("hardfile"), hardfile_thread, hfpd, &(hfpd->thread_id));
@@ -808,8 +808,8 @@ static int mangleunit (int unit)
 
 static uae_u32 REGPARAM2 hardfile_open (TrapContext *context)
 {
-  uaecptr ioreq = m68k_areg(regs, 1); /* IOReq */
-  int unit = mangleunit(m68k_dreg (regs, 0));
+  uaecptr ioreq = m68k_areg(&regs, 1); /* IOReq */
+  int unit = mangleunit(m68k_dreg (&regs, 0));
   struct hardfileprivdata *hfpd = &hardfpd[unit];
   int err = IOERR_OPENFAIL;
   int size = get_word (ioreq + 0x12);
@@ -824,7 +824,7 @@ static uae_u32 REGPARAM2 hardfile_open (TrapContext *context)
   	    put_long (ioreq + 24, unit); /* io_Unit */
   	    put_byte (ioreq + 31, 0); /* io_Error */
   	    put_byte (ioreq + 8, 7); /* ln_type = NT_REPLYMSG */
-        hf_log (_T("hardfile_open, unit %d (%d), OK\n"), unit, m68k_dreg (regs, 0));
+        hf_log (_T("hardfile_open, unit %d (%d), OK\n"), unit, m68k_dreg (&regs, 0));
       	return 0;
       }
     }
@@ -833,7 +833,7 @@ static uae_u32 REGPARAM2 hardfile_open (TrapContext *context)
   } else {
   	err = IOERR_BADLENGTH;
   }
-  hf_log (_T("hardfile_open, unit %d (%d), ERR=%d\n"), unit, m68k_dreg (regs, 0), err);
+  hf_log (_T("hardfile_open, unit %d (%d), ERR=%d\n"), unit, m68k_dreg (&regs, 0), err);
   put_long (ioreq + 20, (uae_u32)err);
   put_byte (ioreq + 31, (uae_u8)err);
   return (uae_u32)err;
@@ -841,7 +841,7 @@ static uae_u32 REGPARAM2 hardfile_open (TrapContext *context)
 
 static uae_u32 REGPARAM2 hardfile_close (TrapContext *context)
 {
-  uaecptr request = m68k_areg(regs, 1); /* IOReq */
+  uaecptr request = m68k_areg(&regs, 1); /* IOReq */
   int unit = mangleunit (get_long (request + 24));
   struct hardfileprivdata *hfpd = &hardfpd[unit];
 
@@ -1085,7 +1085,7 @@ no_disk:
 
 static uae_u32 REGPARAM2 hardfile_abortio (TrapContext *context)
 {
-  uae_u32 request = m68k_areg(regs, 1);
+  uae_u32 request = m68k_areg(&regs, 1);
   int unit = mangleunit (get_long (request + 24));
 struct hardfiledata *hfd = get_hardfile_data (unit);
     struct hardfileprivdata *hfpd = &hardfpd[unit];
@@ -1132,7 +1132,7 @@ static int hardfile_canquick (struct hardfiledata *hfd, uaecptr request)
 
 static uae_u32 REGPARAM2 hardfile_beginio (TrapContext *context)
 {
-  uae_u32 request = m68k_areg(regs, 1);
+  uae_u32 request = m68k_areg(&regs, 1);
   uae_u8 flags = get_byte (request + 30);
   int cmd = get_word (request + 28);
   int unit = mangleunit (get_long (request + 24));

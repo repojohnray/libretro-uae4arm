@@ -23,15 +23,19 @@ extern void setup_brkhandler (void);
 extern bool vsync_switchmode (int);
 STATIC_INLINE int isvsync_chipset (void)
 {
+#ifdef PICASSO96
 	if (picasso_on)
 		return 0;
+#endif
 	return 1;
 }
 
 STATIC_INLINE int isvsync_rtg (void)
 {
+#ifdef PICASSO96
 	if (!picasso_on)
 		return 0;
+#endif
 	return 1;
 }
 

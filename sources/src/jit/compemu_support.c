@@ -44,7 +44,7 @@
 #include "custom.h"
 #include "comptbl.h"
 #include "compemu.h"
-#include <SDL.h>
+//#include <SDL.h>
 
 #define DEBUG 0
 #include "debug.h"
@@ -170,7 +170,7 @@ static blockinfo* hold_bi[MAX_HOLD_BI];
 static blockinfo* active;
 static blockinfo* dormant;
 
-#ifdef PANDORA
+#if defined(PANDORA) || defined(__LIBRETRO__)
 
 void cache_free (void *cache, int size)
 {
@@ -524,6 +524,7 @@ static void prepare_block(blockinfo* bi);
    soft) request occurs.
 */
 
+#if 0
 template< class T >
 class LazyBlockAllocator
 {
@@ -605,10 +606,17 @@ static LazyBlockAllocator<checksum_info> ChecksumInfoAllocator;
 static HardBlockAllocator<blockinfo> BlockInfoAllocator;
 static HardBlockAllocator<checksum_info> ChecksumInfoAllocator;
 #endif
+#else /*0*/
+#define BlockInfoAllocator_acquire() malloc(sizeof(blockinfo))
+#define BlockInfoAllocator_release(x) free((x))
+#define ChecksumInfoAllocator_acquire() malloc(sizeof(checksum_info))
+#define ChecksumInfoAllocator_release(x) free((x))
+#endif /*0*/
+
 
 STATIC_INLINE checksum_info *alloc_checksum_info(void)
 {
-	checksum_info *csi = ChecksumInfoAllocator.acquire();
+	checksum_info *csi = ChecksumInfoAllocator_acquire();
 	csi->next = NULL;
 	return csi;
 }
@@ -616,7 +624,7 @@ STATIC_INLINE checksum_info *alloc_checksum_info(void)
 STATIC_INLINE void free_checksum_info(checksum_info *csi)
 {
 	csi->next = NULL;
-	ChecksumInfoAllocator.release(csi);
+	ChecksumInfoAllocator_release(csi);
 }
 
 STATIC_INLINE void free_checksum_info_chain(checksum_info *csi)
@@ -630,7 +638,7 @@ STATIC_INLINE void free_checksum_info_chain(checksum_info *csi)
 
 STATIC_INLINE blockinfo *alloc_blockinfo(void)
 {
-	blockinfo *bi = BlockInfoAllocator.acquire();
+	blockinfo *bi = BlockInfoAllocator_acquire();
 #if USE_CHECKSUM_INFO
 	bi->csi = NULL;
 #endif
@@ -643,7 +651,7 @@ STATIC_INLINE void free_blockinfo(blockinfo *bi)
 	free_checksum_info_chain(bi->csi);
 	bi->csi = NULL;
 #endif
-	BlockInfoAllocator.release(bi);
+	BlockInfoAllocator_release(bi);
 }
 
 STATIC_INLINE void alloc_blockinfos(void)
@@ -811,9 +819,9 @@ STATIC_INLINE void reset_data_buffer(void)
 STATIC_INLINE void clobber_flags(void);
 
 #if defined(CPU_arm) 
-#include "codegen_arm.cpp"
+#include "codegen_arm.c"
 #else
-#include "compemu_raw_x86.cpp"
+#include "compemu_raw_x86.c"
 #endif
 
 
@@ -1683,8 +1691,8 @@ static void fflags_into_flags_internal(uae_u32 tmp)
 
 
 #if defined(CPU_arm)
-#include "compemu_midfunc_arm.cpp"
-#include "compemu_midfunc_arm2.cpp"
+#include "compemu_midfunc_arm.c"
+#include "compemu_midfunc_arm2.c"
 #else
 #include "compemu_midfunc_x86.c"
 #endif
@@ -1715,12 +1723,12 @@ void sync_m68k_pc(void)
  * Scratch registers management                                     *
  ********************************************************************/
 
-struct scratch_t {
+typedef struct scratch_t {
   uae_u32 regs[VREGS];
 #ifdef USE_JIT_FPU
   fptype fscratch[VFREGS];
 #endif
-};
+} scratch_t;
 
 static scratch_t scratch;
 
@@ -3009,7 +3017,7 @@ void compiler_dumpstate(void)
 }
 #endif
 
-void compile_block(cpu_history* pc_hist, int blocklen, int totcycles)
+void compile_block(struct cpu_history* pc_hist, int blocklen, int totcycles)
 {
   if (letit && compiled_code && currprefs.cpu_model >= 68020) {
 #ifdef PROFILE_COMPILE_TIME

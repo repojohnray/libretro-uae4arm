@@ -4,6 +4,8 @@
  * Copyright 1996-1998 Bernd Schmidt
  */
 
+struct draw_info;
+
 #define MAX_PLANES 8
 
 /* According to the HRM, pixel data spends a couple of cycles somewhere in the chips
@@ -134,7 +136,7 @@ struct color_change {
 
 /* 440 rather than 880, since sprites are always lores.  */
 #define MAX_PIXELS_PER_LINE 880
-#define MAX_VIDHEIGHT 270
+#define MAX_VIDHEIGHT (576/2 /*old:270*/)
 
 /* No divisors for MAX_PIXELS_PER_LINE; we support AGA and may one day
    want to use SHRES sprites.  */
@@ -163,7 +165,6 @@ extern struct color_entry curr_color_tables[(MAXVPOS + 2) * 2];
 
 extern struct sprite_entry *curr_sprite_entries;
 extern struct color_change *curr_color_changes;
-extern struct draw_info curr_drawinfo[2 * (MAXVPOS + 2) + 1];
 
 /* struct decision contains things we save across drawing frames for
  * comparison (smart update stuff). */
@@ -190,6 +191,7 @@ struct draw_info {
   int nr_color_changes, nr_sprites;
 };
 
+extern struct draw_info curr_drawinfo[2 * (MAXVPOS + 2) + 1];
 extern struct decision line_decisions[2 * (MAXVPOS + 2) + 1];
 
 extern uae_u8 line_data[(MAXVPOS + 2) * 2][MAX_PLANES * MAX_WORDS_PER_LINE * 2];

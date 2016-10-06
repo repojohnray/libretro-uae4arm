@@ -45,13 +45,13 @@ extern uae_u32 start_pc;
 
 struct blockinfo_t;
 
-typedef struct {
+typedef struct cpu_history {
   uae_u16* location;
   uae_u8  cycles;
   uae_u8  specmem;
 } cpu_history;
 
-typedef union {
+typedef union cacheline {
     cpuop_func* handler;
     struct blockinfo_t* bi;
 } cacheline;

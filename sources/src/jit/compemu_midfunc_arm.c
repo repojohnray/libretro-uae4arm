@@ -469,7 +469,11 @@ STATIC_INLINE void flush_cpu_icache(void *start, void *stop)
 	register void *_end __asm ("a2") = stop;
 	register void *_flg __asm ("a3") = 0;
 	#ifdef __ARM_EABI__
+#        ifdef __thumb__
+	   register unsigned long _scno __asm ("r6") = 0xf0002;
+#        else
 	   register unsigned long _scno __asm ("r7") = 0xf0002;
+#        endif
 	   __asm __volatile ("swi 0x0		@ sys_cacheflush"
                             : "=r" (_beg)
                             : "0" (_beg), "r" (_end), "r" (_flg), "r" (_scno));

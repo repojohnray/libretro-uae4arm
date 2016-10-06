@@ -57,7 +57,7 @@ struct romlist {
 };
 
 extern struct romdata *getromdatabypath (const TCHAR *path);
-extern struct romdata *getromdatabycrc (uae_u32 crc32);
+extern struct romdata *getromdatabycrc1 (uae_u32 crc32);
 extern struct romdata *getromdatabydata (uae_u8 *rom, int size);
 extern struct romdata *getromdatabyid (int id);
 extern struct romdata *getromdatabyidgroup (int id, int group, int subitem);

@@ -224,7 +224,7 @@ extern void inputdevice_close (void);
 extern void inputdevice_default_prefs (struct uae_prefs *p);
 
 extern void inputdevice_acquire (int allmode);
-extern void inputdevice_unacquire (void);
+extern void inputdevice_unacquire0 (void);
 
 extern void inputdevice_add_inputcode (int code, int state);
 extern void inputdevice_handle_inputcode (void);
@@ -266,4 +266,4 @@ extern int jsem_isjoy (int port, const struct uae_prefs *p);
 extern int jsem_ismouse (int port, const struct uae_prefs *p);
 extern int jsem_iskbdjoy (int port, const struct uae_prefs *p);
 
-extern int inputdevice_uaelib (const TCHAR *, const TCHAR *);
+extern int inputdevice_uaelib2 (const TCHAR *, const TCHAR *);

@@ -517,7 +517,7 @@ end:
 	return z;
 }
 
-static struct zfile *zfile_gunzip (struct zfile *z, int *retcode)
+static struct zfile *zfile_gunzip2 (struct zfile *z, int *retcode)
 {
   uae_u8 header[2 + 1 + 1 + 4 + 1 + 1];
   z_stream zs;
@@ -606,7 +606,7 @@ static struct zfile *zfile_gunzip (struct zfile *z, int *retcode)
 }
 struct zfile *zfile_gunzip (struct zfile *z)
 {
-	return zfile_gunzip (z, NULL);
+	return zfile_gunzip2 (z, NULL);
 }
 
 static void truncate880k (struct zfile *z)
@@ -737,7 +737,7 @@ end:
 }
 
 #ifdef CAPS
-#include "caps/caps_win32.h"
+#include "od-win32/caps/caps_win32.h"
 static struct zfile *ipf (struct zfile *z, int index, int *retcode)
 {
 	int i, j, r;
@@ -1015,7 +1015,7 @@ static struct zfile *dms (struct zfile *z, int index, int *retcode)
 					struct zfile *z2;
 					fn2[_tcslen (fn2) - 5]++;
 					recursive++;
-					z2 = zfile_fopen (fn2, _T("rb"), z->zfdmask);
+					z2 = zfile_fopen3 (fn2, _T("rb"), z->zfdmask);
 					recursive--;
 					if (z2) {
 						ret = DMS_Process_File (z2, zo, CMD_UNPACK, OPT_VERBOSE, 0, 0, 1, NULL);
@@ -1106,7 +1106,7 @@ static const int plugins_7z_m[] = {
 	ZFD_ADF, ZFD_ADF, ZFD_ADF, ZFD_ARCHIVE
 };
 
-int iszip (struct zfile *z, int mask)
+int iszip2 (struct zfile *z, int mask)
 {
   TCHAR *name = z->name;
   TCHAR *ext = _tcsrchr (name, '.');
@@ -1186,7 +1186,7 @@ int iszip (struct zfile *z, int mask)
 }
 int iszip (struct zfile *z)
 {
-	return iszip (z, ZFD_NORMAL);
+	return iszip2 (z, ZFD_NORMAL);
 }
 
 struct zfile *zuncompress (struct znode *parent, struct zfile *z, int dodefault, int mask, int *retcode, int index)
@@ -1224,13 +1224,13 @@ struct zfile *zuncompress (struct znode *parent, struct zfile *z, int dodefault,
 	  if (mask & ZFD_UNPACK) {
 		  if (index == 0) {
 				if (strcasecmp (ext, _T("gz")) == 0)
-	        return zfile_gunzip (z, retcode);
+	        return zfile_gunzip2 (z, retcode);
 				if (strcasecmp (ext, _T("adz")) == 0)
-	        return zfile_gunzip (z, retcode);
+	        return zfile_gunzip2 (z, retcode);
 				if (strcasecmp (ext, _T("roz")) == 0)
-	        return zfile_gunzip (z, retcode);
+	        return zfile_gunzip2 (z, retcode);
 				if (strcasecmp (ext, _T("hdz")) == 0)
-	        return zfile_gunzip (z, retcode);
+	        return zfile_gunzip2 (z, retcode);
 #ifdef A_WRP
 				if (strcasecmp (ext, _T("wrp")) == 0)
 	        return wrp (z, retcode);
@@ -1270,7 +1270,7 @@ struct zfile *zuncompress (struct znode *parent, struct zfile *z, int dodefault,
   if (mask & ZFD_UNPACK) {
 	  if (index == 0) {
   	  if (header[0] == 0x1f && header[1] == 0x8b)
-	      return zfile_gunzip (z, retcode);
+	      return zfile_gunzip2 (z, retcode);
 #ifdef A_LZX
   	  if (header[0] == 'P' && header[1] == 'K' && header[2] == 'D')
 	      return dsq (z, 0, retcode);
@@ -1697,11 +1697,11 @@ static struct zfile *zfile_fopenx (const TCHAR *name, const TCHAR *mode, int mas
 	return zf;
 }
 
-struct zfile *zfile_fopen (const TCHAR *name, const TCHAR *mode, int mask)
+struct zfile *zfile_fopen3 (const TCHAR *name, const TCHAR *mode, int mask)
 {
 	return zfile_fopenx (name, mode, mask, 0);
 }
-struct zfile *zfile_fopen (const TCHAR *name, const TCHAR *mode)
+struct zfile *zfile_fopen2 (const TCHAR *name, const TCHAR *mode)
 {
 	return zfile_fopenx (name, mode, 0, 0);
 }
@@ -1756,7 +1756,7 @@ int zfile_exists (const TCHAR *name)
 
   if (my_existsfile (name))
   	return 1;
-  z = zfile_fopen (name, _T("rb"), ZFD_NORMAL | ZFD_CHECKONLY);
+  z = zfile_fopen3 (name, _T("rb"), ZFD_NORMAL | ZFD_CHECKONLY);
   if (!z)
   	return 0;
   zfile_fclose (z);
@@ -1790,7 +1790,7 @@ struct zfile *zfile_fopen_empty (struct zfile *prev, const TCHAR *name, uae_u64 
   return l;
 }
 
-struct zfile *zfile_fopen_empty (struct zfile *prev, const TCHAR *name)
+struct zfile *zfile_fopen_empty2 (struct zfile *prev, const TCHAR *name)
 {
 	return zfile_fopen_empty (prev, name, 0);
 }
@@ -2777,7 +2777,7 @@ struct zvolume *zfile_fopen_directory (const TCHAR *dirname)
 	struct my_opendir_s *dir;
 	TCHAR fname[MAX_DPATH];
 
-	dir = my_opendir (dirname);
+	dir = my_opendir1 (dirname);
 	if (!dir)
 		return NULL;
 	zv = zvolume_alloc_nofile (dirname, ArchiveFormatDIR, NULL, NULL);
@@ -2848,7 +2848,7 @@ struct zvolume *zfile_fopen_archive (const TCHAR *filename, int flags)
   	zfile_fclose(zf);
   return zv;
 }
-struct zvolume *zfile_fopen_archive (const TCHAR *filename)
+struct zvolume *zfile_fopen_archive1 (const TCHAR *filename)
 {
 	return zfile_fopen_archive (filename, ZFD_ALL);
 }
@@ -2891,7 +2891,7 @@ struct zvolume *zfile_fopen_archive_root (const TCHAR *filename, int flags)
 			last = 1;
 		*p1 = 0;
 		if (!zv) {
-			zv = zfile_fopen_archive (p2);
+			zv = zfile_fopen_archive1 (p2);
 			if (!zv)
 				return NULL;
 		} else {
@@ -2988,7 +2988,7 @@ struct zdirectory *zfile_opendir_archive (const TCHAR *path, int flags)
   zd->first = zd->n;
   return zd;
 }
-struct zdirectory *zfile_opendir_archive (const TCHAR *path)
+struct zdirectory *zfile_opendir_archive1 (const TCHAR *path)
 {
 	return zfile_opendir_archive (path, ZFD_ALL | ZFD_NORECURSE);
 }
@@ -3001,7 +3001,7 @@ void zfile_closedir_archive(struct zdirectory *zd)
 	xfree (zd->filenames);
     xfree(zd);
 }
-int zfile_readdir_archive (struct zdirectory *zd, TCHAR *out, bool fullpath)
+int zfile_readdir_archive3 (struct zdirectory *zd, TCHAR *out, bool fullpath)
 {
 	if (out)
 		out[0] = 0;
@@ -3045,7 +3045,7 @@ int zfile_readdir_archive (struct zdirectory *zd, TCHAR *out, bool fullpath)
 }
 int zfile_readdir_archive (struct zdirectory *zd, TCHAR *out)
 {
-	return zfile_readdir_archive (zd, out, false);
+	return zfile_readdir_archive3 (zd, out, false);
 }
 void zfile_resetdir_archive (struct zdirectory *zd)
 {
@@ -3159,7 +3159,7 @@ int zfile_convertimage (const TCHAR *src, const TCHAR *dst)
   struct zfile *s, *d;
   int ret = 0;
 
-	s = zfile_fopen (src, _T("rb"), ZFD_NORMAL);
+	s = zfile_fopen3 (src, _T("rb"), ZFD_NORMAL);
   if (s) {
   	uae_u8 *b;
   	int size;
@@ -3169,7 +3169,7 @@ int zfile_convertimage (const TCHAR *src, const TCHAR *dst)
   	b = xcalloc (uae_u8, size);
   	if (b) {
 	    if (zfile_fread (b, size, 1, s) == 1) {
-				d = zfile_fopen (dst, _T("wb"), 0);
+				d = zfile_fopen3 (dst, _T("wb"), 0);
     		if (d) {
   		    if (zfile_fwrite (b, size, 1, d) == 1)
       			ret = 1;

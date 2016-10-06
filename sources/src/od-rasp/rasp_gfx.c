@@ -20,7 +20,7 @@
 #ifdef ANDROIDSDL
 #include <android/log.h>
 #endif
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "bcm_host.h"
 
 

@@ -7,6 +7,8 @@
   * Copyright 1995-2001 Bernd Schmidt
   */
 
+struct zfile;
+
 #define UAEMAJOR 2
 #define UAEMINOR 5
 #define UAESUBREV 1
@@ -89,7 +91,7 @@ struct wh {
 };
 
 #define MOUNT_CONFIG_SIZE 30
-struct uaedev_config_info {
+typedef struct uaedev_config_info {
   TCHAR devname[MAX_DPATH];
   TCHAR volname[MAX_DPATH];
   TCHAR rootdir[MAX_DPATH];
@@ -108,7 +110,7 @@ struct uaedev_config_info {
   int controller;
 	// zero if default
 	int pcyls, pheads, psecs;
-};
+} uaedev_config_info;
 
 struct uae_prefs {
   struct strlist *all_lines;
@@ -259,7 +261,7 @@ extern int bip_cd32 (struct uae_prefs *p, int rom);
 int parse_cmdline_option (struct uae_prefs *, TCHAR, const TCHAR *);
 
 extern int cfgfile_yesno (const TCHAR *option, const TCHAR *value, const TCHAR *name, bool *location);
-extern int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale);
+// extern int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale);
 extern int cfgfile_strval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, const TCHAR *table[], int more);
 extern int cfgfile_string (const TCHAR *option, const TCHAR *value, const TCHAR *name, TCHAR *location, int maxsz);
 extern TCHAR *cfgfile_subst_path (const TCHAR *path, const TCHAR *subst, const TCHAR *file);

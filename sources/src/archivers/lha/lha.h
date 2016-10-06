@@ -1,5 +1,5 @@
-#include "sysconfig.h"
-#include "sysdeps.h"
+//#include "sysconfig.h"
+//#include "sysdeps.h"
 #include "zfile.h"
 
 #define SYSTIME_HAS_NO_TM

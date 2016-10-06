@@ -45,6 +45,8 @@
 extern "C" {
 #endif
 
+struct zfile;
+  
 #ifndef _ZLIB_H
 #include "zlib.h"
 #endif

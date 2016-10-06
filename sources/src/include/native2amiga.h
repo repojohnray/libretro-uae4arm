@@ -11,8 +11,8 @@
   */
 
 #include "native2amiga_api.h"
-
 #include "traps.h"
+#include "commpipe.h"
 
 /*
  * The following functions are shortcuts for calling

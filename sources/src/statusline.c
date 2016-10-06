@@ -5,7 +5,7 @@
 #include <assert.h>
 
 #include "options.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "uae.h"
 #include "memory.h"
 #include "newcpu.h"
@@ -18,7 +18,7 @@
 #include "savestate.h"
 #include "statusline.h"
 
-extern SDL_Surface *prSDLScreen;
+//extern SDL_Surface *prSDLScreen;
 extern int idletime_percent;
 
 /*
@@ -61,6 +61,11 @@ void draw_status_line_single (uae_u8 *buf, int y, int totalwidth)
   int x, i, j, led, on;
   int on_rgb, off_rgb, c;
 
+#ifdef __LIBRETRO__
+#warning draw_status_line_single not implemented
+  return;
+#endif
+  
   x = totalwidth - TD_PADX - VISIBLE_LEDS * TD_WIDTH;
 	x += 100 - (TD_WIDTH * (currprefs.nr_floppies - 1)) - TD_WIDTH;
   if(nr_units() < 1)
@@ -69,7 +74,10 @@ void draw_status_line_single (uae_u8 *buf, int y, int totalwidth)
     x += TD_WIDTH;
     
   if(picasso_on)
-    memset (buf + (x - 4) * 2, 0, (prSDLScreen->w - x + 4) * 2);
+    {
+      fprintf(stderr, "(prSDLScreen %s....\n", __FUNCTION__);
+      //memset (buf + (x - 4) * 2, 0, (prSDLScreen->w - x + 4) * 2);
+    }
   else
     memset (buf + (x - 4) * gfxvidinfo.pixbytes, 0, (gfxvidinfo.outwidth - x + 4) * gfxvidinfo.pixbytes);
 

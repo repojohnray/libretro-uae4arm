@@ -9,7 +9,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 #include <ctype.h>
-#include <SDL.h>
+//#include <SDL.h>
 
 #ifndef abort
 #define abort() \

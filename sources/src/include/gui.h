@@ -74,8 +74,9 @@ extern void ReadConfigFileList(void);
 extern void RescanROMs(void);
 extern void ClearAvailableROMList(void);
 
-#include <vector>
-#include <string>
+#if 0
+//#include <vector>
+//#include <string>
 typedef struct {
   char Name[MAX_PATH];
   char Path[MAX_PATH];
@@ -90,6 +91,7 @@ extern void AddFileToDiskList(const char *file, int moveToTop);
 #define MAX_MRU_CDLIST 10
 extern std::vector<std::string> lstMRUCDList;
 extern void AddFileToCDList(const char *file, int moveToTop);
+#endif
 
 #define AMIGAWIDTH_COUNT 6
 #define AMIGAHEIGHT_COUNT 6

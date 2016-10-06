@@ -53,10 +53,10 @@ TCHAR *fsdb_search_dir (const TCHAR *dirname, TCHAR *rel)
 {
   TCHAR *p = 0;
 	int de;
-	my_opendir_s *dir;
+	struct my_opendir_s *dir;
   TCHAR fn[MAX_DPATH];
 
-	dir = my_opendir (dirname);
+	dir = my_opendir1 (dirname);
   /* This really shouldn't happen...  */
   if (! dir)
   	return 0;

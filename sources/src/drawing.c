@@ -32,7 +32,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include "options.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "uae.h"
 #include "memory.h"
 #include "custom.h"
@@ -69,8 +69,6 @@ bool aga_mode; /* mirror of chipset_mask & CSMASK_AGA */
    have a higher resolution (i.e. we're stretching the image), negative if window
    coordinates have a lower resolution (i.e. we're shrinking the image).  */
 static int res_shift;
-
-extern SDL_Surface *prSDLScreen;
 
 /* Lookup tables for dual playfields.  The dblpf_*1 versions are for the case
    that playfield 1 has the priority, dbplpf_*2 are used if playfield 2 has
@@ -1411,6 +1409,8 @@ static __inline__ void decide_draw_sprites(void)
     void NEON_doline_n4(uae_u32 *pixels, int wordcount, int lineno);
     void NEON_doline_n6(uae_u32 *pixels, int wordcount, int lineno);
     void NEON_doline_n8(uae_u32 *pixels, int wordcount, int lineno);
+
+#include "pfield_doline_arm_neon.c"
 #ifdef __cplusplus
   }
 #endif

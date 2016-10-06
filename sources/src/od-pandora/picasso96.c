@@ -46,7 +46,7 @@
 
 #include "config.h"
 #include "options.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "memory.h"
 #include "custom.h"
 #include "newcpu.h"

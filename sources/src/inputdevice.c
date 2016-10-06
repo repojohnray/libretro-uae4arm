@@ -118,7 +118,7 @@ static int isdevice (struct uae_input_device *id)
 	return 0;
 }
 
-int inputdevice_uaelib (const TCHAR *s, const TCHAR *parm)
+int inputdevice_uaelib2 (const TCHAR *s, const TCHAR *parm)
 {
 	int i;
 
@@ -1112,7 +1112,7 @@ int input_mousehack_status (int mode, uaecptr diminfo, uaecptr dispinfo, uaecptr
 	if (mode == 4) {
 		return mousehack_enable () ? 1 : 0;
 	} else if (mode == 5) {
-		mousehack_address = m68k_dreg (regs, 0);
+		mousehack_address = m68k_dreg (&regs, 0);
 		mousehack_enable ();
 	} else if (mode == 0) {
 		if (mousehack_address) {
@@ -4923,7 +4923,7 @@ void inputdevice_acquire (int allmode)
 	input_acquired = 1;
 }
 
-void inputdevice_unacquire (void)
+void inputdevice_unacquire0 (void)
 {
 	int i;
 

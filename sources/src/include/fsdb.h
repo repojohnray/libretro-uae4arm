@@ -1,3 +1,5 @@
+#ifndef UAE_FSDB_H
+#define UAE_FSDB_H
  /*
   * UAE - The Un*x Amiga Emulator
   *
@@ -6,6 +8,9 @@
   *
   * Copyright 1999 Bernd Schmidt
   */
+
+struct mystat;
+struct mytimeval;
 
 #ifndef FSDB_FILE
 #define FSDB_FILE _T("_UAEFSDB.___")
@@ -127,7 +132,7 @@ struct my_opendir_s;
 struct my_openfile_s;
 
 extern struct my_opendir_s *my_opendir (const TCHAR*, const TCHAR*);
-extern struct my_opendir_s *my_opendir (const TCHAR*);
+extern struct my_opendir_s *my_opendir1 (const TCHAR*);
 extern void my_closedir (struct my_opendir_s *);
 extern int my_readdir (struct my_opendir_s *, TCHAR*);
 
@@ -160,3 +165,4 @@ extern bool my_chmod (const TCHAR *name, uae_u32 mode);
 #define MYVOLUMEINFO_CDFS 16
 
 extern int my_getvolumeinfo (const TCHAR *root);
+#endif /*UAE_FSDB_H*/

@@ -5,6 +5,8 @@
   *
   * (c) 1996 Ed Hanway
   */
+struct uaedev_mount_info;
+struct uaedev_config_info;
 
 #define RTAREA_DEFAULT 0xf00000
 #define RTAREA_BACKUP  0xef0000

@@ -31,15 +31,20 @@
   * Copyright 2004-2005 Richard Drummond
   */
 
+struct regstruct;
+extern struct regstruct regs;
+
 #if (defined(CPU_i386) && defined(X86_ASSEMBLY)) || (defined(CPU_x86_64) && defined(X86_64_ASSEMBLY))
 
  /*
   * Machine dependent structure for holding the 68k CCR flags
   */
+#ifndef PASS_REGSDEFINED
 struct flag_struct {
     unsigned int cznv;
     unsigned int x;
 };
+#endif
 
 
 /*
@@ -56,6 +61,7 @@ struct flag_struct {
  * xxxxxxxV  NZxxxxxC xxxxxxxxx xxxxxxxxx
  */
 
+#ifdef PASS_REGSDEFINED
 #define FLAGBIT_N	15
 #define FLAGBIT_Z	14
 #define FLAGBIT_C	8
@@ -68,32 +74,31 @@ struct flag_struct {
 #define FLAGVAL_V	(1 << FLAGBIT_V)
 #define FLAGVAL_X	(1 << FLAGBIT_X)
 
-#define SET_ZFLG(y)	(regs.ccrflags.cznv = (regs.ccrflags.cznv & ~FLAGVAL_Z) | (((y) ? 1 : 0) << FLAGBIT_Z))
-#define SET_CFLG(y)	(regs.ccrflags.cznv = (regs.ccrflags.cznv & ~FLAGVAL_C) | (((y) ? 1 : 0) << FLAGBIT_C))
-#define SET_VFLG(y)	(regs.ccrflags.cznv = (regs.ccrflags.cznv & ~FLAGVAL_V) | (((y) ? 1 : 0) << FLAGBIT_V))
-#define SET_NFLG(y)	(regs.ccrflags.cznv = (regs.ccrflags.cznv & ~FLAGVAL_N) | (((y) ? 1 : 0) << FLAGBIT_N))
-#define SET_XFLG(y)	(regs.ccrflags.x    = ((y) ? 1 : 0) << FLAGBIT_X)
+#define SET_ZFLG(y)	(REGSGEN->ccrflags.cznv = (REGSGEN->ccrflags.cznv & ~FLAGVAL_Z) | (((y) ? 1 : 0) << FLAGBIT_Z))
+#define SET_CFLG(y)	(REGSGEN->ccrflags.cznv = (REGSGEN->ccrflags.cznv & ~FLAGVAL_C) | (((y) ? 1 : 0) << FLAGBIT_C))
+#define SET_VFLG(y)	(REGSGEN->ccrflags.cznv = (REGSGEN->ccrflags.cznv & ~FLAGVAL_V) | (((y) ? 1 : 0) << FLAGBIT_V))
+#define SET_NFLG(y)	(REGSGEN->ccrflags.cznv = (REGSGEN->ccrflags.cznv & ~FLAGVAL_N) | (((y) ? 1 : 0) << FLAGBIT_N))
+#define SET_XFLG(y)	(REGSGEN->ccrflags.x    = ((y) ? 1 : 0) << FLAGBIT_X)
 
-#define GET_ZFLG()	((regs.ccrflags.cznv >> FLAGBIT_Z) & 1)
-#define GET_CFLG()	((regs.ccrflags.cznv >> FLAGBIT_C) & 1)
-#define GET_VFLG()	((regs.ccrflags.cznv >> FLAGBIT_V) & 1)
-#define GET_NFLG()	((regs.ccrflags.cznv >> FLAGBIT_N) & 1)
-#define GET_XFLG()	((regs.ccrflags.x    >> FLAGBIT_X) & 1)
+#define GET_ZFLG()	((REGSGEN->ccrflags.cznv >> FLAGBIT_Z) & 1)
+#define GET_CFLG()	((REGSGEN->ccrflags.cznv >> FLAGBIT_C) & 1)
+#define GET_VFLG()	((REGSGEN->ccrflags.cznv >> FLAGBIT_V) & 1)
+#define GET_NFLG()	((REGSGEN->ccrflags.cznv >> FLAGBIT_N) & 1)
+#define GET_XFLG()	((REGSGEN->ccrflags.x    >> FLAGBIT_X) & 1)
 
-#define CLEAR_CZNV()	(regs.ccrflags.cznv  = 0)
-#define GET_CZNV()	(regs.ccrflags.cznv)
-#define IOR_CZNV(X)	(regs.ccrflags.cznv |= (X))
-#define SET_CZNV(X)	(regs.ccrflags.cznv  = (X))
+#define CLEAR_CZNV()	(REGSGEN->ccrflags.cznv  = 0)
+#define GET_CZNV()	(REGSGEN->ccrflags.cznv)
+#define IOR_CZNV(X)	(REGSGEN->ccrflags.cznv |= (X))
+#define SET_CZNV(X)	(REGSGEN->ccrflags.cznv  = (X))
 
-#define COPY_CARRY() (regs.ccrflags.x = regs.ccrflags.cznv)
-
+#define COPY_CARRY() (REGSGEN->ccrflags.x = REGSGEN->ccrflags.cznv)
 
 /*
  * Test CCR condition
  */
-STATIC_INLINE int cctrue (struct flag_struct &flags, int cc)
+STATIC_INLINE int cctrue (struct flag_struct *flags, int cc)
 {
-    uae_u32 cznv = flags.cznv;
+    uae_u32 cznv = flags->cznv;
 
     switch (cc) {
 	case 0:  return 1;								/*				T  */
@@ -117,43 +122,47 @@ STATIC_INLINE int cctrue (struct flag_struct &flags, int cc)
     }
     return 0;
 }
+#endif /*PASS_REGSDEFINED*/
 
 #elif defined(CPU_arm) && defined(ARMV6_ASSEMBLY)
 
+#ifndef PASS_REGSDEFINED
 struct flag_struct {
 	uae_u32 nzcv;
 	uae_u32 x;
 };
+#endif
 
+#ifdef PASS_REGSDEFINED
 #define FLAGVAL_Q       0x08000000
 #define FLAGVAL_V       0x10000000
 #define FLAGVAL_C       0x20000000
 #define FLAGVAL_Z       0x40000000
 #define FLAGVAL_N       0x80000000
 
-#define SET_NFLG(y)     (regs.ccrflags.nzcv = (regs.ccrflags.nzcv & ~0x80000000) | (((y) ? 1 : 0) << 31))
-#define SET_ZFLG(y)     (regs.ccrflags.nzcv = (regs.ccrflags.nzcv & ~0x40000000) | (((y) ? 1 : 0) << 30))
-#define SET_CFLG(y)     (regs.ccrflags.nzcv = (regs.ccrflags.nzcv & ~0x20000000) | (((y) ? 1 : 0) << 29))
-#define SET_VFLG(y)     (regs.ccrflags.nzcv = (regs.ccrflags.nzcv & ~0x10000000) | (((y) ? 1 : 0) << 28))
+#define SET_NFLG(y)     (REGSGEN->ccrflags.nzcv = (REGSGEN->ccrflags.nzcv & ~0x80000000) | (((y) ? 1 : 0) << 31))
+#define SET_ZFLG(y)     (REGSGEN->ccrflags.nzcv = (REGSGEN->ccrflags.nzcv & ~0x40000000) | (((y) ? 1 : 0) << 30))
+#define SET_CFLG(y)     (REGSGEN->ccrflags.nzcv = (REGSGEN->ccrflags.nzcv & ~0x20000000) | (((y) ? 1 : 0) << 29))
+#define SET_VFLG(y)     (REGSGEN->ccrflags.nzcv = (REGSGEN->ccrflags.nzcv & ~0x10000000) | (((y) ? 1 : 0) << 28))
 
-#define SET_XFLG(y)	(regs.ccrflags.x = ((y) ? 1 : 0))
+#define SET_XFLG(y)	(REGSGEN->ccrflags.x = ((y) ? 1 : 0))
 
-#define GET_NFLG()  ((regs.ccrflags.nzcv >> 31) & 1)
-#define GET_ZFLG()	((regs.ccrflags.nzcv >> 30) & 1)
-#define GET_CFLG()	((regs.ccrflags.nzcv >> 29) & 1)
-#define GET_VFLG()	((regs.ccrflags.nzcv >> 28) & 1)
-#define GET_XFLG()	(regs.ccrflags.x & 1)
+#define GET_NFLG()  ((REGSGEN->ccrflags.nzcv >> 31) & 1)
+#define GET_ZFLG()	((REGSGEN->ccrflags.nzcv >> 30) & 1)
+#define GET_CFLG()	((REGSGEN->ccrflags.nzcv >> 29) & 1)
+#define GET_VFLG()	((REGSGEN->ccrflags.nzcv >> 28) & 1)
+#define GET_XFLG()	(REGSGEN->ccrflags.x & 1)
 
-#define CLEAR_CZNV()    (regs.ccrflags.nzcv = 0)
-#define GET_CZNV()      (regs.ccrflags.nzcv)
-#define IOR_CZNV(X)     (regs.ccrflags.nzcv |= (X))
-#define SET_CZNV(X)     (regs.ccrflags.nzcv = (X))
+#define CLEAR_CZNV()    (REGSGEN->ccrflags.nzcv = 0)
+#define GET_CZNV()      (REGSGEN->ccrflags.nzcv)
+#define IOR_CZNV(X)     (REGSGEN->ccrflags.nzcv |= (X))
+#define SET_CZNV(X)     (REGSGEN->ccrflags.nzcv = (X))
 
-#define COPY_CARRY()      (regs.ccrflags.x = ((regs.ccrflags.nzcv >> 29) & 1))
+#define COPY_CARRY()      (REGSGEN->ccrflags.x = ((REGSGEN->ccrflags.nzcv >> 29) & 1))
 
-STATIC_INLINE int cctrue(struct flag_struct &flags, int cc)
+STATIC_INLINE int cctrue(struct flag_struct *flags, int cc)
 {
-    unsigned int nzcv = flags.nzcv;
+    unsigned int nzcv = flags->nzcv;
     switch(cc){
      case 0: return 1;                       /* T */
      case 1: return 0;                       /* F */
@@ -178,9 +187,10 @@ STATIC_INLINE int cctrue(struct flag_struct &flags, int cc)
     }
     return 0;
 }
-
+#endif /*PASS_REGSDEFINED*/
 #else
 
+#ifndef PASS_REGSDEFINED
 struct flag_struct {
     unsigned int c;
     unsigned int z;
@@ -188,12 +198,14 @@ struct flag_struct {
     unsigned int v; 
     unsigned int x;
 };
+#endif
 
-#define ZFLG (regs.ccrflags.z)
-#define NFLG (regs.ccrflags.n)
-#define CFLG (regs.ccrflags.c)
-#define VFLG (regs.ccrflags.v)
-#define XFLG (regs.ccrflags.x)
+#ifdef PASS_REGSDEFINED
+#define ZFLG (REGSGEN->ccrflags.z)
+#define NFLG (REGSGEN->ccrflags.n)
+#define CFLG (REGSGEN->ccrflags.c)
+#define VFLG (REGSGEN->ccrflags.v)
+#define XFLG (REGSGEN->ccrflags.x)
 
 #define SET_CFLG(x) (CFLG = (x))
 #define SET_NFLG(x) (NFLG = (x))
@@ -214,9 +226,9 @@ struct flag_struct {
  SET_VFLG (0); \
 } while (0)
 
-#define COPY_CARRY() (regs.ccrflags.x = regs.ccrflags.c)
+#define COPY_CARRY() (REGSGEN->ccrflags.x = REGSGEN->ccrflags.c)
 
-STATIC_INLINE int cctrue(struct flag_struct &flags, const int cc)
+STATIC_INLINE int cctrue(struct flag_struct *flags, const int cc)
 {
     switch(cc){
      case 0: return 1;                       /* T */
@@ -238,5 +250,6 @@ STATIC_INLINE int cctrue(struct flag_struct &flags, const int cc)
     }
     return 0;
 }
+#endif /*PASS_REGSDEFINED*/
 
 #endif

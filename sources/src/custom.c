@@ -17,7 +17,7 @@
 #include "uae.h"
 #include "gensound.h"
 #include "audio.h"
-#include "sd-pandora/sound.h"
+#include "sounddep/sound.h"
 #include "memory.h"
 #include "custom.h"
 #include "newcpu.h"
@@ -231,7 +231,7 @@ static int copper_enabled_thisline;
  */
 
 static unsigned long lastframetime = 0;
-static unsigned long frametime = 0, timeframes = 0;
+unsigned long frametime = 0, timeframes = 0;
 unsigned long hsync_counter = 0;
 
 /* Recording of custom chip register changes.  */
@@ -1105,10 +1105,14 @@ STATIC_INLINE void long_fetch_ecs(int plane, int nwords, int weird_number_of_bit
 		}
 		nwords--;
 		if (dma) {
+#ifdef __arm__
 			__asm__ (
 			    "ldrh    %[val], [%[pt]], #2   \n\t"
 			    "rev16   %[val], %[val]        \n\t"
 			    : [val] "=r" (fetchval), [pt] "+r" (real_pt) );
+#else
+#warning __asm__ (only arm...)
+#endif
 		}
 	}
   fetched[plane] = fetchval;
@@ -2048,7 +2052,7 @@ static void calcsprite (void)
   }
 }
 
-static void decide_sprites (int hpos)
+static void decide_sprites1 (int hpos)
 {
 	int nrs[MAX_SPRITES * 2], posns[MAX_SPRITES * 2];
 	int count, i;
@@ -2126,7 +2130,7 @@ STATIC_INLINE void finish_decisions (void)
 		if (thisline_decision.diwfirstword < 0)
 			thisline_decision.diwfirstword = 0;
 	}
-	decide_sprites (hpos + 1);
+	decide_sprites1 (hpos + 1);
 	
 	dip = curr_drawinfo + next_lineno;
 
@@ -2264,7 +2268,7 @@ static void compute_framesync (void)
 }
 
 /* set PAL/NTSC or custom timing variables */
-static void init_hz (bool fullinit)
+static void init_hz1 (bool fullinit)
 {
 	int isntsc;
 	int omaxvpos = maxvpos;
@@ -2374,11 +2378,11 @@ static void init_hz (bool fullinit)
 
 void init_hz (void)
 {
-	init_hz (false);
+	init_hz1 (false);
 }
 void init_hz_full (void)
 {
-	init_hz (true);
+	init_hz1 (true);
 }
 
 static void calcdiw (void)
@@ -2453,14 +2457,14 @@ static uae_u32 REGPARAM2 timehack_helper (TrapContext *context)
 {
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tv;
-  if (m68k_dreg (regs, 0) == 0)
+  if (m68k_dreg (&regs, 0) == 0)
   	return timehack_alive;
 
   timehack_alive = 10;
 
   gettimeofday (&tv, NULL);
-  put_long (m68k_areg (regs, 0), tv.tv_sec - (((365 * 8 + 2) * 24) * 60 * 60));
-  put_long (m68k_areg (regs, 0) + 4, tv.tv_usec);
+  put_long (m68k_areg (&regs, 0), tv.tv_sec - (((365 * 8 + 2) * 24) * 60 * 60));
+  put_long (m68k_areg (&regs, 0) + 4, tv.tv_usec);
   return 0;
 #else
   return 2;
@@ -2883,7 +2887,7 @@ static void BPLCON0_Denise (int hpos, uae_u16 v, bool immediate)
 	bplcon0d = v & ~0x80;
 
 	if (currprefs.chipset_mask & CSMASK_ECS_DENISE) {
-		decide_sprites (hpos);
+		decide_sprites1 (hpos);
 		sprres = expand_sprres (v, bplcon3);
 	}
 	if (thisline_decision.plfleft < 0)
@@ -2944,7 +2948,7 @@ STATIC_INLINE void BPLCON3 (int hpos, uae_u16 v)
 	if (bplcon3 == v)
 		return;
 	decide_line (hpos);
-	decide_sprites (hpos);
+	decide_sprites1 (hpos);
 	bplcon3 = v;
   sprres = expand_sprres (bplcon0, bplcon3);
   record_register_change (hpos, 0x106, v);
@@ -3254,13 +3258,13 @@ STATIC_INLINE void SPRxDATB_1 (uae_u16 v, int num)
   sprdatb[num][2] = v;
   sprdatb[num][3] = v;
 }
-STATIC_INLINE void SPRxDATA (int hpos, uae_u16 v, int num) { decide_sprites (hpos); SPRxDATA_1 (v, num); }
-STATIC_INLINE void SPRxDATB (int hpos, uae_u16 v, int num) { decide_sprites (hpos); SPRxDATB_1 (v, num); }
-STATIC_INLINE void SPRxCTL (int hpos, uae_u16 v, int num) { decide_sprites (hpos); SPRxCTL_1 (v, num); }
-STATIC_INLINE void SPRxPOS (int hpos, uae_u16 v, int num) { decide_sprites (hpos); SPRxPOS_1 (v, num); }
+STATIC_INLINE void SPRxDATA (int hpos, uae_u16 v, int num) { decide_sprites1 (hpos); SPRxDATA_1 (v, num); }
+STATIC_INLINE void SPRxDATB (int hpos, uae_u16 v, int num) { decide_sprites1 (hpos); SPRxDATB_1 (v, num); }
+STATIC_INLINE void SPRxCTL (int hpos, uae_u16 v, int num) { decide_sprites1 (hpos); SPRxCTL_1 (v, num); }
+STATIC_INLINE void SPRxPOS (int hpos, uae_u16 v, int num) { decide_sprites1 (hpos); SPRxPOS_1 (v, num); }
 static void SPRxPTH (int hpos, uae_u16 v, int num)
 {
-  decide_sprites (hpos);
+  decide_sprites1 (hpos);
 	if (hpos - 1 != MAXHPOS) {
     spr[num].pt &= 0xffff;
     spr[num].pt |= (uae_u32)v << 16;
@@ -3268,7 +3272,7 @@ static void SPRxPTH (int hpos, uae_u16 v, int num)
 }
 static void SPRxPTL (int hpos, uae_u16 v, int num)
 {
-  decide_sprites (hpos);
+  decide_sprites1 (hpos);
 	if (hpos - 1 != MAXHPOS) {
     spr[num].pt &= ~0xffff;
 		spr[num].pt |= v & ~1;

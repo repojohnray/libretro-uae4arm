@@ -2086,7 +2086,7 @@ void archive_access_close (void *handle, unsigned int id)
 
 static struct zfile *archive_access_dir (struct znode *zn)
 {
-	return zfile_fopen (zn->fullname, _T("rb"), 0);
+	return zfile_fopen3 (zn->fullname, _T("rb"), 0);
 }
 
 struct zfile *archive_unpackzfile (struct zfile *zf)

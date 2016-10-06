@@ -110,7 +110,7 @@ static uae_u32 REGPARAM2 emulib_ChgCMemSize (uae_u32 memsize)
     	memsize = 0x200000;
     	write_log (_T("Unsupported chipmem size!\n"));
   }
-  m68k_dreg (regs, 0) = 0;
+  m68k_dreg (&regs, 0) = 0;
 
   changed_prefs.chipmem_size = memsize;
 	uae_reset(1, 1);
@@ -129,7 +129,7 @@ static uae_u32 REGPARAM2 emulib_ChgSMemSize (uae_u32 memsize)
 			write_log (_T("Unsupported bogomem size!\n"));
   }
 
-  m68k_dreg (regs, 0) = 0;
+  m68k_dreg (&regs, 0) = 0;
   changed_prefs.bogomem_size = memsize;
 	uae_reset (1, 1);
   return 1;
@@ -146,7 +146,7 @@ static uae_u32 REGPARAM2 emulib_ChgFMemSize (uae_u32 memsize)
     	memsize = 0;
 			write_log (_T("Unsupported fastmem size!\n"));
   }
-  m68k_dreg (regs, 0) = 0;
+  m68k_dreg (&regs, 0) = 0;
   changed_prefs.fastmem_size = memsize;
 	uae_reset (1, 1);
   return 0;
@@ -276,20 +276,20 @@ static uae_u32 emulib_Debug (void)
 static uae_u32 REGPARAM2 emulib_ExecuteNativeCode (void)
 {
 #if 0
-  uaecptr object_AAM = m68k_areg (regs, 0);
-  uae_u32 d1 = m68k_dreg (regs, 1);
-  uae_u32 d2 = m68k_dreg (regs, 2);
-  uae_u32 d3 = m68k_dreg (regs, 3);
-  uae_u32 d4 = m68k_dreg (regs, 4);
-  uae_u32 d5 = m68k_dreg (regs, 5);
-  uae_u32 d6 = m68k_dreg (regs, 6);
-  uae_u32 d7 = m68k_dreg (regs, 7);
-  uae_u32 a1 = m68k_areg (regs, 1);
-  uae_u32 a2 = m68k_areg (regs, 2);
-  uae_u32 a3 = m68k_areg (regs, 3);
-  uae_u32 a4 = m68k_areg (regs, 4);
-  uae_u32 a5 = m68k_areg (regs, 5);
-  uae_u32 a6 = m68k_areg (regs, 6);
+  uaecptr object_AAM = m68k_areg (&regs, 0);
+  uae_u32 d1 = m68k_dreg (&regs, 1);
+  uae_u32 d2 = m68k_dreg (&regs, 2);
+  uae_u32 d3 = m68k_dreg (&regs, 3);
+  uae_u32 d4 = m68k_dreg (&regs, 4);
+  uae_u32 d5 = m68k_dreg (&regs, 5);
+  uae_u32 d6 = m68k_dreg (&regs, 6);
+  uae_u32 d7 = m68k_dreg (&regs, 7);
+  uae_u32 a1 = m68k_areg (&regs, 1);
+  uae_u32 a2 = m68k_areg (&regs, 2);
+  uae_u32 a3 = m68k_areg (&regs, 3);
+  uae_u32 a4 = m68k_areg (&regs, 4);
+  uae_u32 a5 = m68k_areg (&regs, 5);
+  uae_u32 a6 = m68k_areg (&regs, 6);
 
   uae_u8* object_UAM = NULL;
   CREATE_NATIVE_FUNC_PTR;
@@ -338,12 +338,12 @@ extern uae_u32 picasso_demux (uae_u32 arg, TrapContext *context);
 
 static uae_u32 REGPARAM2 uaelib_demux2 (TrapContext *context)
 {
-#define ARG0 (get_long (m68k_areg (regs, 7) + 4))
-#define ARG1 (get_long (m68k_areg (regs, 7) + 8))
-#define ARG2 (get_long (m68k_areg (regs, 7) + 12))
-#define ARG3 (get_long (m68k_areg (regs, 7) + 16))
-#define ARG4 (get_long (m68k_areg (regs, 7) + 20))
-#define ARG5 (get_long (m68k_areg (regs, 7) + 24))
+#define ARG0 (get_long (m68k_areg (&regs, 7) + 4))
+#define ARG1 (get_long (m68k_areg (&regs, 7) + 8))
+#define ARG2 (get_long (m68k_areg (&regs, 7) + 12))
+#define ARG3 (get_long (m68k_areg (&regs, 7) + 16))
+#define ARG4 (get_long (m68k_areg (&regs, 7) + 20))
+#define ARG5 (get_long (m68k_areg (&regs, 7) + 24))
 
 #ifdef PICASSO96
 	if (ARG0 >= 16 && ARG0 <= 39)
@@ -396,7 +396,7 @@ static uae_u32 REGPARAM2 uaelib_demux2 (TrapContext *context)
 	  {
 	    uae_u32 d0, d1;
 	    d0 = emulib_target_getcpurate (ARG1, &d1);
-	    m68k_dreg (regs, 1) = d1;
+	    m68k_dreg (&regs, 1) = d1;
 	    return d0;
 	  }
   }

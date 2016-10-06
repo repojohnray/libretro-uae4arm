@@ -114,6 +114,8 @@ extern struct instr {
     unsigned int unused3:5;
 } *table68k;
 
+typedef struct instr instr;
+
 extern void read_table68k (void);
 extern void do_merges (void);
 extern int get_no_mismatches (void);

@@ -20,14 +20,17 @@
 #include "zfile.h"
 #include "gui.h"
 #include "fsdb.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "scsidev.h"
+#ifdef MP3DECODER
 #include "mp3decoder.h"
 #include "cda_play.h"
+#endif
 #include "memory.h"
 #ifdef RETROPLATFORM
 #include "rp.h"
 #endif
+#include "commpipe.h"
 
 #define FLAC__NO_DLL
 #include "FLAC/stream_decoder.h"
@@ -36,7 +39,7 @@
 
 #define CDDA_BUFFERS 12
 
-enum audenc { AUDENC_NONE, AUDENC_PCM, AUDENC_MP3, AUDENC_FLAC };
+typedef enum audenc { AUDENC_NONE, AUDENC_PCM, AUDENC_MP3, AUDENC_FLAC } audenc;
 
 struct cdtoc
 {
@@ -297,7 +300,7 @@ static void dosub (struct cdunit *cdu, uae_u8 *subbuf)
 	cdu->cdda_subfunc (subbuf2, 1);
 }
 
-static int setstate (struct cdunit *cdu, int state)
+static int setstate_cdda (struct cdunit *cdu, int state)
 {
 	cdu->cdda_play_state = state;
 	if (cdu->cdda_statusfunc)
@@ -307,6 +310,7 @@ static int setstate (struct cdunit *cdu, int state)
 
 static void *cdda_unpack_func (void *v)
 {
+#ifdef MP3DECODER
 	cdimage_unpack_thread = 1;
 	mp3decoder *mp3dec = NULL;
 
@@ -347,10 +351,14 @@ static void *cdda_unpack_func (void *v)
 	delete mp3dec;
 	cdimage_unpack_thread = -1;
 	return 0;
+#else
+	return NULL;
+#endif
 }
 
 static void *cdda_play_func (void *v)
 {
+#ifdef MP3DECODER
 	int cdda_pos;
 	int num_sectors = CDDA_BUFFERS;
 	int quit = 0;
@@ -386,7 +394,7 @@ static void *cdda_play_func (void *v)
 			t = findtoc (cdu, &sector);
 			if (!t) {
 				write_log (_T("IMAGE CDDA: illegal sector number %d\n"), cdu->cdda_start);
-				setstate (cdu, AUDIO_STATUS_PLAY_ERROR);
+				setstate_cdda (cdu, AUDIO_STATUS_PLAY_ERROR);
 			} else {
 				write_log (_T("IMAGE CDDA: playing from %d to %d, track %d ('%s', offset %lld, secoffset %d)\n"),
 					cdu->cdda_start, cdu->cdda_end, t->track, t->fname, t->offset, sector);
@@ -439,7 +447,7 @@ static void *cdda_play_func (void *v)
 			diff -= cdu->cdda_delay;
 			if (idleframes >= 0 && diff < 0 && cdu->cdda_play > 0)
 				Sleep (-diff);
-			setstate (cdu, AUDIO_STATUS_IN_PROGRESS);
+			setstate_cdda (cdu, AUDIO_STATUS_IN_PROGRESS);
 		}
 
 		cda->wait(bufnum);
@@ -448,7 +456,7 @@ static void *cdda_play_func (void *v)
 			goto end;
 
 		if (idleframes <= 0 && cdda_pos >= cdu->cdda_start && !isaudiotrack (&cdu->di.toc, cdda_pos)) {
-			setstate (cdu, AUDIO_STATUS_PLAY_ERROR);
+			setstate_cdda (cdu, AUDIO_STATUS_PLAY_ERROR);
 			write_log (_T("IMAGE CDDA: attempted to play data track %d\n"), cdda_pos);
 			goto end; // data track?
 		}
@@ -516,12 +524,12 @@ static void *cdda_play_func (void *v)
 			bufon[bufnum] = 1;
 			cda->setvolume (currprefs.sound_volume_cd, cdu->cdda_volume[0], cdu->cdda_volume[1]);
 			if (!cda->play (bufnum)) {
-				setstate (cdu, AUDIO_STATUS_PLAY_ERROR);
+				setstate_cdda (cdu, AUDIO_STATUS_PLAY_ERROR);
 				goto end;
 			}
 
 			if (dofinish) {
-				setstate (cdu, AUDIO_STATUS_PLAY_COMPLETE);
+				setstate_cdda (cdu, AUDIO_STATUS_PLAY_COMPLETE);
 				cdu->cdda_play = -1;
 				cdda_pos = cdu->cdda_end + 1;
 			}
@@ -547,6 +555,7 @@ end:
 
 	cdu->cdda_play = 0;
 	write_log (_T("IMAGE CDDA: thread killed\n"));
+#endif
 	return NULL;
 }
 
@@ -585,6 +594,7 @@ static int command_stop (int unitnum)
 
 static int command_play (int unitnum, int startlsn, int endlsn, int scan, play_status_callback statusfunc, play_subchannel_callback subfunc)
 {
+#ifdef MP3DECODER
 	struct cdunit *cdu = unitisopen (unitnum);
 	if (!cdu)
 		return 0;
@@ -594,17 +604,20 @@ static int command_play (int unitnum, int startlsn, int endlsn, int scan, play_s
 	cdu->cdda_subfunc = subfunc;
 	cdu->cdda_statusfunc = statusfunc;
 	cdu->cdda_scan = scan > 0 ? 10 : (scan < 0 ? 10 : 0);
-	cdu->cdda_delay = setstate (cdu, -1);
-	cdu->cdda_delay_frames = setstate (cdu, -2);
-	setstate (cdu, AUDIO_STATUS_NOT_SUPPORTED);
+	cdu->cdda_delay = setstate_cdda (cdu, -1);
+	cdu->cdda_delay_frames = setstate_cdda (cdu, -2);
+	setstate_cdda (cdu, AUDIO_STATUS_NOT_SUPPORTED);
 	if (!isaudiotrack (&cdu->di.toc, startlsn)) {
-		setstate (cdu, AUDIO_STATUS_PLAY_ERROR);
+		setstate_cdda (cdu, AUDIO_STATUS_PLAY_ERROR);
 		return 0;
 	}
 	if (!cdu->cdda_play)
 		uae_start_thread (_T("cdimage_cdda_play"), cdda_play_func, cdu, NULL);
 	cdu->cdda_play++;
 	return 1;
+#else
+	return 0;
+#endif
 }
 
 static int command_qcode (int unitnum, uae_u8 *buf, int sector)
@@ -1007,6 +1020,7 @@ typedef struct {
 
 #pragma pack()
 
+#ifdef MP3DECODER
 static int parsemds (struct cdunit *cdu, struct zfile *zmds, const TCHAR *img)
 {
 	MDS_Header *head;
@@ -1553,6 +1567,7 @@ static int parse_image (struct cdunit *cdu, const TCHAR *img)
 	zfile_fclose (zcue);
 	return 1;
 }
+#endif /*MP3DECODER*/
 
 static int ismedia (int unitnum, int quick)
 {
@@ -1624,7 +1639,9 @@ static int open_device (int unitnum, const TCHAR *ident, int flags)
 
 	if (!cdu->open) {
 		uae_sem_init (&cdu->sub_sem, 0, 1);
+#ifdef MP3DECODER
 		parse_image (cdu, ident);
+#endif
 		cdu->open = true;
 		cdu->enabled = true;
 		cdu->cdda_volume[0] = 0x7fff;

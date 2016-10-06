@@ -21,12 +21,13 @@
 #include "savestate.h"
 #include "blkdev.h"
 #include "zfile.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "akiko.h"
 #include "gui.h"
 #include "crc32.h"
 #include "uae.h"
 #include "custom.h"
+#include "commpipe.h"
 
 #define AKIKO_DEBUG_NVRAM 0
 #define AKIKO_DEBUG_IO 0
@@ -82,9 +83,9 @@ static void nvram_write (int offset, int len)
 
 	if (!currprefs.cs_cd32nvram)
 		return;
-	f = zfile_fopen (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb+"), ZFD_NORMAL);
 	if (!f) {
-		f = zfile_fopen (currprefs.flashfile, _T("wb"), 0);
+		f = zfile_fopen3 (currprefs.flashfile, _T("wb"), 0);
 		if (!f) return;
 		zfile_fwrite (cd32_nvram, NVRAM_SIZE, 1, f);
 	}
@@ -99,7 +100,7 @@ static void nvram_read (void)
 
 	if (!currprefs.cs_cd32nvram)
 		return;
-	f = zfile_fopen (currprefs.flashfile, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3 (currprefs.flashfile, _T("rb"), ZFD_NORMAL);
 	memset (cd32_nvram, 0, NVRAM_SIZE);
 	if (!f) return;
 	zfile_fread (cd32_nvram, NVRAM_SIZE, 1, f);
@@ -595,7 +596,7 @@ static void cdaudioplay_do (void)
 	sys_command_cd_play (unitnum, startlsn, endlsn, scan, statusfunc, subfunc);
 }
 
-static bool isaudiotrack (int startlsn)
+static bool isaudiotrack1 (int startlsn)
 {
 	struct cd_toc *s = NULL;
 	uae_u32 addr;
@@ -1449,7 +1450,7 @@ static void *akiko_thread (void *null)
 				while (offset < SECTOR_BUFFER_SIZE) {
 					int ok = 0;
 					if (sector < cdrom_data_end)
-						ok = sys_command_cd_rawread (unitnum, sector_buffer_2 + offset * 2352, sector, 1, 2352);
+						ok = sys_command_cd_rawread5 (unitnum, sector_buffer_2 + offset * 2352, sector, 1, 2352);
 					sector_buffer_info_2[offset] = ok ? 3 : 0;
 					offset++;
 					sector++;
@@ -2009,7 +2010,7 @@ void restore_akiko_finish (void)
 	write_comm_pipe_u32 (&requests, 0x0102, 1); // pause
 	write_comm_pipe_u32 (&requests, 0x0104, 1); // stop
 	write_comm_pipe_u32 (&requests, 0x0103, 1); // unpause
-	if (cdrom_playing && isaudiotrack (last_play_pos)) {
+	if (cdrom_playing && isaudiotrack1 (last_play_pos)) {
 		write_comm_pipe_u32 (&requests, 0x0103, 1); // unpause
 		write_comm_pipe_u32 (&requests, 0x0110, 0); // play
 		write_comm_pipe_u32 (&requests, last_play_pos, 0);

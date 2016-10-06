@@ -564,7 +564,7 @@ void addkeyfile (const TCHAR *path)
   int keysize;
   uae_u8 *keybuf;
 
-	f = zfile_fopen (path, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3 (path, _T("rb"), ZFD_NORMAL);
   if (!f)
   	return;
   zfile_fseek (f, 0, SEEK_END);
@@ -735,7 +735,7 @@ STATIC_INLINE int notcrc32(uae_u32 crc32)
   return 0;
 }
 
-struct romdata *getromdatabycrc (uae_u32 crc32)
+struct romdata *getromdatabycrc1 (uae_u32 crc32)
 {
   int i = 0;
   while (roms[i].name) {
@@ -1013,7 +1013,7 @@ static void mergecd32 (uae_u8 *dst, uae_u8 *src, int size)
 #if 0
   {
   	struct zfile *f;
-  	f = zfile_fopen ("c:\\d\\1.rom","wb", ZFD_NORMAL);
+  	f = zfile_fopen3 ("c:\\d\\1.rom","wb", ZFD_NORMAL);
   	zfile_fwrite (dst, 1, size, f);
   	zfile_fclose(f);
   }
@@ -1032,7 +1032,7 @@ static int read_rom_file (uae_u8 *buf, const struct romdata *rd)
 
   if (!rl || _tcslen (rl->path) == 0)
   	return 0;
-	zf = zfile_fopen (rl->path, _T("rb"), ZFD_NORMAL);
+	zf = zfile_fopen3 (rl->path, _T("rb"), ZFD_NORMAL);
   if (!zf)
   	return 0;
   addkeydir (rl->path);
@@ -1173,7 +1173,7 @@ struct zfile *rom_fopen (const TCHAR *name, const TCHAR *mode, int mask)
 {
   struct zfile *f;
 	//write_log (_T("attempting to load '%s'\n"), name); 
-  f = zfile_fopen (name, mode, mask);
+  f = zfile_fopen3 (name, mode, mask);
 	//write_log (_T("=%p\n"), f);
   return f;
 }

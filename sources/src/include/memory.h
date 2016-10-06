@@ -24,6 +24,8 @@ extern void cache_free (void*, int);
 extern uae_u8* natmem_offset;
 extern void free_AmigaMem(void);
 extern void alloc_AmigaMem(void);
+#elif defined(LIBRETRO_UAE4ARM)
+extern uae_u8* natmem_offset;
 #endif
 
 #ifdef ADDRESS_SPACE_24BIT

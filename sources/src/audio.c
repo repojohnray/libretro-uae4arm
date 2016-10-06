@@ -22,7 +22,7 @@
 #include "autoconf.h"
 #include "gensound.h"
 #include "audio.h"
-#include "sd-pandora/sound.h"
+#include "sounddep/sound.h"
 #include "events.h"
 #include "savestate.h"
 #include "gui.h"
@@ -49,7 +49,7 @@ STATIC_INLINE bool usehacks1 (void)
  * sufficient for all imaginable purposes. This must be power of two. */
 #define SINC_QUEUE_LENGTH 256
 
-#include "sinctable.cpp"
+#include "sinctable.c"
 
 typedef struct {
 	int time, output;
@@ -842,7 +842,7 @@ static void loaddat (int nr, bool modper)
 		cdp->dat2 = cdp->dat;
 	}
 }
-static void loaddat (int nr)
+static void loaddat1 (int nr)
 {
 	loaddat (nr, false);
 }
@@ -903,7 +903,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 		} else if (cdp->dat_written && !isirq (nr)) {
 			cdp->state = 2;
 			setirq (nr, 0);
-			loaddat (nr);
+			loaddat1 (nr);
 			if (usehacks1 () && cdp->per < 10 * CYCLE_UNIT) {
 				// make sure audio.device AUDxDAT startup returns to idle state before DMA is enabled
 				newsample (nr, (cdp->dat2 >> 0) & 0xff);
@@ -942,7 +942,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 			cdp->ptx_written = 0;
 			cdp->lc = cdp->ptx;
 		}
-		loaddat (nr);
+		loaddat1 (nr);
 		if (napnav)
 			setdr (nr);
 		cdp->state = 2;
@@ -983,7 +983,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 		if (!perfin)
 			return;
 		if (chan_ena) {
-			loaddat (nr);
+			loaddat1 (nr);
 			if (cdp->intreq2 && napnav)
 				setirq (nr, 31);
 			if (napnav)
@@ -993,7 +993,7 @@ static void audio_state_channel2 (int nr, bool perfin)
 				zerostate (nr);
 				return;
 			}
-			loaddat (nr);
+			loaddat1 (nr);
 			if (napnav)
 				setirq (nr, 32);
 		}
@@ -1451,7 +1451,13 @@ void audio_update_adkmasks (void)
 
 int init_audio (void)
 {
+#if 1
   return init_sound ();
+#else
+#warning audio disabled
+  return 0;
+#endif
+
 }
 
 void led_filter_audio (void)

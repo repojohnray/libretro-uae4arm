@@ -17,6 +17,7 @@
  * Data passed to a trap handler
  */
 struct TrapContext;
+typedef struct TrapContext TrapContext;
 
 
 #define TRAPFLAG_NO_REGSAVE  1

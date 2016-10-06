@@ -17,7 +17,7 @@
 #include "memory.h"
 #include "newcpu.h"
 #include "custom.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "autoconf.h"
 #include "traps.h"
 
@@ -162,7 +162,7 @@ void REGPARAM2 m68k_handle_trap (unsigned int trap_num)
 	    retval = (trap->handler) (NULL);
 
 	    if (has_retval)
-    		m68k_dreg (regs, 0) = retval;
+    		m68k_dreg (&regs, 0) = retval;
 
 	    if (implicit_rts) {
     		m68k_do_rts ();
@@ -219,13 +219,13 @@ struct TrapContext
 
 static void copytocpucontext(struct TrapCPUContext *cpu)
 {
-	memcpy (cpu->regs, regs.regs, sizeof (regs.regs));
+	memcpy (cpu->regs, &regs.regs, sizeof (regs.regs));
 	cpu->intmask = regs.intmask;
 	cpu->pc = m68k_getpc ();
 }
 static void copyfromcpucontext(struct TrapCPUContext *cpu, uae_u32 pc)
 {
-	memcpy (regs.regs, cpu->regs, sizeof (regs.regs));
+	memcpy (&regs.regs, cpu->regs, sizeof (regs.regs));
 	regs.intmask = cpu->intmask;
 	m68k_setpc (pc);
 }
@@ -366,7 +366,7 @@ static uae_u32 REGPARAM2 m68k_call_handler (TrapContext *dummy_ctx)
 
   uae_u32 sp;
 
-  sp = m68k_areg (regs, 7);
+  sp = m68k_areg (&regs, 7);
 
   /* Push address of trap context on 68k stack. This is
    * so the return trap can find this context. */
@@ -379,7 +379,7 @@ static uae_u32 REGPARAM2 m68k_call_handler (TrapContext *dummy_ctx)
   sp -= 4;
   put_long (sp, m68k_return_trapaddr);
 
-  m68k_areg (regs, 7) = sp;
+  m68k_areg (&regs, 7) = sp;
 
   /* Set PC to address of 68k function to call. */
   m68k_setpc (context->call68k_func_addr);
@@ -407,13 +407,13 @@ static uae_u32 REGPARAM2 m68k_return_handler (TrapContext *dummy_ctx)
   uae_sem_wait (&trap_mutex);
 
   /* Get trap context from 68k stack. */
-  sp = m68k_areg (regs, 7);
+  sp = m68k_areg (&regs, 7);
   context = (TrapContext *) get_pointer(sp);
   sp += sizeof (void *);
-  m68k_areg (regs, 7) = sp;
+  m68k_areg (&regs, 7) = sp;
 
   /* Get return value from the 68k call. */
-  context->call68k_retval = m68k_dreg (regs, 0);
+  context->call68k_retval = m68k_dreg (&regs, 0);
 
   /* Switch back to trap context. */
   uae_sem_post (&context->switch_to_trap_sem);
@@ -446,7 +446,7 @@ static uae_u32 REGPARAM2 exit_trap_handler (TrapContext *dummy_ctx)
   /* If trap is supposed to return a value, then store
    * return value in D0. */
   if (context->trap_has_retval)
-  	m68k_dreg (regs, 0) = context->trap_retval;
+  	m68k_dreg (&regs, 0) = context->trap_retval;
 
   uae_sem_destroy (&context->switch_to_trap_sem);
   uae_sem_destroy (&context->switch_to_emu_sem);
@@ -468,11 +468,11 @@ static uae_u32 REGPARAM2 exit_trap_handler (TrapContext *dummy_ctx)
 uae_u32 CallLib (TrapContext *context, uaecptr base, uae_s16 offset)
 {
   uae_u32 retval;
-  uaecptr olda6 = m68k_areg (regs, 6);
+  uaecptr olda6 = m68k_areg (&regs, 6);
 
-  m68k_areg (regs, 6) = base;
+  m68k_areg (&regs, 6) = base;
   retval = trap_Call68k (context, base + offset);
-  m68k_areg (regs, 6) = olda6;
+  m68k_areg (&regs, 6) = olda6;
 
   return retval;
 }

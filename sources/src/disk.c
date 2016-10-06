@@ -631,11 +631,11 @@ int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname, int leave_o
 	if (wrprot)
 		*wrprot = 0;
   if (leave_open || !zf) {
-    struct zfile *f = zfile_fopen (fname, _T("r+b"), ZFD_NORMAL | ZFD_DISKHISTORY);
+    struct zfile *f = zfile_fopen3 (fname, _T("r+b"), ZFD_NORMAL | ZFD_DISKHISTORY);
 		if (!f) {
     	if (wrprot)
   	    *wrprot = 1;
-    	f = zfile_fopen (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
+    	f = zfile_fopen3 (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
     }
 	  if (f && crc32)
 	    *crc32 = zfile_crc32 (f);
@@ -649,7 +649,7 @@ int DISK_validate_filename (struct uae_prefs *p, const TCHAR *fname, int leave_o
 	    if (wrprot)
 		    *wrprot = 0;
 	    if (crc32) {
-		    struct zfile *f = zfile_fopen (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
+		    struct zfile *f = zfile_fopen3 (fname, _T("rb"), ZFD_NORMAL | ZFD_DISKHISTORY);
 		    if (f)
 		      *crc32 = zfile_crc32 (f);
 	      zfile_fclose (f);
@@ -1976,7 +1976,7 @@ bool disk_creatediskfile (const TCHAR *name, int type, drive_type adftype, const
 		zfile_fseek (copyfrom, 0, SEEK_SET);
 	}
 
-	f = zfile_fopen (name, _T("wb"), 0);
+	f = zfile_fopen3 (name, _T("wb"), 0);
   chunk = xmalloc (uae_u8, size);
   if (f && chunk) {
 	  int cylsize = sectors * 2 * 512;
@@ -2220,7 +2220,7 @@ static void disk_insert_2 (int num, const TCHAR *name, int forced)
 	}
 }
 
-void disk_insert (int num, const TCHAR *name)
+void disk_insert2 (int num, const TCHAR *name)
 {
   disk_insert_2 (num, name, 0);
 }
@@ -2248,7 +2248,7 @@ void DISK_vsync (void)
 	for (int i = 0; i < MAX_FLOPPY_DRIVES; i++) {
 		drive *drv = floppy + i;
   	if (drv->dskchange_time == 0 && _tcscmp (currprefs.floppyslots[i].df, changed_prefs.floppyslots[i].df))
-	    disk_insert (i, changed_prefs.floppyslots[i].df);
+	    disk_insert2 (i, changed_prefs.floppyslots[i].df);
   	if (drv->dskready_down_time > 0)
 	    drv->dskready_down_time--;
   	/* emulate drive motor turn on time */
@@ -3205,7 +3205,7 @@ end:
 	  drive_eject (drv);
 	  currprefs.floppyslots[num].df[0] = 0;
 	  drv->dskchange_time = wasdelayed;
-	  disk_insert (num, drv->newname);
+	  disk_insert2 (num, drv->newname);
   }
   return ret;
 }

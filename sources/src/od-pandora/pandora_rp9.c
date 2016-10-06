@@ -1,9 +1,10 @@
+#include <stdbool.h>
 #include "sysconfig.h"
 #include "sysdeps.h"
 #include "config.h"
+#include "options.h"
 #include "autoconf.h"
 #include "uae.h"
-#include "options.h"
 #include "gui.h"
 #include "disk.h"
 #include "fsdb.h"
@@ -15,7 +16,6 @@
 #include "archivers/zip/unzip.h"
 #include <libxml/tree.h>
 #include <libxml/parser.h>
-#include <vector>
 
 
 #define RP9_MANIFEST _T("rp9-manifest.xml")

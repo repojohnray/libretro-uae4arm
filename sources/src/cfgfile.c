@@ -31,7 +31,28 @@
 #include "blkdev.h"
 #include "calc.h"
 
-#include "SDL_keysym.h"
+//#include "SDL_keysym.h"
+
+static int cfgfile_yesno5_bool (const TCHAR *option, const TCHAR *value, const TCHAR *name, bool *location, bool numbercheck);
+static int cfgfile_yesno5_int (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, bool numbercheck);
+#define cfgfile_yesno5(a1,a2,a3,a4,a5) _Generic((a4), int *: cfgfile_yesno5_int, default: cfgfile_yesno5_bool)(a1,a2,a3,a4,a5)
+
+int cfgfile_yesno4_int (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location);
+int cfgfile_yesno4_bool (const TCHAR *option, const TCHAR *value, const TCHAR *name, bool *location);
+#define cfgfile_yesno4(a1,a2,a3,a4) _Generic((a4), int *: cfgfile_yesno4_int, default: cfgfile_yesno4_bool)(a1,a2,a3,a4)
+
+static int cfgfile_intval_unsigned (const TCHAR *option, const TCHAR *value, const TCHAR *name, unsigned int *location, int scale);
+int cfgfile_intval_signed (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale);
+#define cfgfile_intval(a1,a2,a3,a4,a5) _Generic((a4), unsigned int *: cfgfile_intval_unsigned, default: cfgfile_intval_signed)(a1,a2,a3,a4,a5)
+
+static int cfgfile_intval6_unsigned (const TCHAR *option, const TCHAR *value, const TCHAR *name, const TCHAR *nameext, unsigned int *location, int scale);
+static int cfgfile_intval6_signed (const TCHAR *option, const TCHAR *value, const TCHAR *name, const TCHAR *nameext, int *location, int scale);
+#define cfgfile_intval6(a1,a2,a3,a4,a5,a6) _Generic((a5), unsigned int *: cfgfile_intval6_unsigned, default: cfgfile_intval6_signed)(a1,a2,a3,a4,a5,a6)
+
+void cfgfile_dwrite_bool_bool (struct zfile *f, const TCHAR *option, bool b);
+void cfgfile_dwrite_bool_int (struct zfile *f, const TCHAR *option, int b);
+#define cfgfile_dwrite_bool(a1,a2,a3) _Generic((a3), int: cfgfile_dwrite_bool_int, default: cfgfile_dwrite_bool_bool)(a1,a2,a3)
+
 
 static int config_newfilesystem;
 static struct strlist *temp_lines;
@@ -176,13 +197,13 @@ void cfgfile_write_bool (struct zfile *f, const TCHAR *option, bool b)
 {
 	cfg_dowrite (f, option, b ? _T("true") : _T("false"), 0, 0);
 }
-void cfgfile_dwrite_bool (struct zfile *f, const TCHAR *option, bool b)
+void cfgfile_dwrite_bool_bool (struct zfile *f, const TCHAR *option, bool b)
 {
 	cfg_dowrite (f, option, b ? _T("true") : _T("false"), 1, 0);
 }
-void cfgfile_dwrite_bool (struct zfile *f, const TCHAR *option, int b)
+void cfgfile_dwrite_bool_int (struct zfile *f, const TCHAR *option, int b)
 {
-	cfgfile_dwrite_bool (f, option, b != 0);
+	cfgfile_dwrite_bool_bool (f, option, b != 0);
 }
 void cfgfile_write_str (struct zfile *f, const TCHAR *option, const TCHAR *value)
 {
@@ -255,7 +276,7 @@ static void cfgfile_write_rom (struct zfile *f, const TCHAR *path, const TCHAR *
 {
 	TCHAR *str = cfgfile_subst_path (path, UNEXPANDED, romfile);
 	cfgfile_write_str (f, name, str);
-	struct zfile *zf = zfile_fopen (str, _T("rb"), ZFD_ALL);
+	struct zfile *zf = zfile_fopen3 (str, _T("rb"), ZFD_ALL);
 	if (zf) {
 		struct romdata *rd = getromdatabyzfile (zf);
 		if (rd) {
@@ -535,7 +556,7 @@ void cfgfile_save_options (struct zfile *f, struct uae_prefs *p, int type)
   write_inputdevice_config (p, f);
 }
 
-int cfgfile_yesno (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location)
+int cfgfile_yesno4_int (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location)
 {
   if (name != NULL && _tcscmp (option, name) != 0)
   	return 0;
@@ -553,10 +574,10 @@ int cfgfile_yesno (const TCHAR *option, const TCHAR *value, const TCHAR *name, i
   return 1;
 }
 
-int cfgfile_yesno (const TCHAR *option, const TCHAR *value, const TCHAR *name, bool *location)
+int cfgfile_yesno4_bool (const TCHAR *option, const TCHAR *value, const TCHAR *name, bool *location)
 {
 	int val;
-	int ret = cfgfile_yesno (option, value, name, &val);
+	int ret = cfgfile_yesno4 (option, value, name, &val);
 	if (ret == 0)
 		return 0;
 	if (ret < 0)
@@ -576,7 +597,7 @@ int cfgfile_doubleval (const TCHAR *option, const TCHAR *value, const TCHAR *nam
 	return 1;
 }
 
-int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, unsigned int *location, int scale)
+int cfgfile_intval_unsigned (const TCHAR *option, const TCHAR *value, const TCHAR *name, unsigned int *location, int scale)
 {
   int base = 10;
   TCHAR *endptr;
@@ -601,7 +622,7 @@ int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, 
   }
   return 1;
 }
-int cfgfile_intval (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale)
+int cfgfile_intval_signed (const TCHAR *option, const TCHAR *value, const TCHAR *name, int *location, int scale)
 {
 	unsigned int v = 0;
 	int r = cfgfile_intval (option, value, name, &v, scale);
@@ -678,7 +699,7 @@ int cfgfile_rom (const TCHAR *option, const TCHAR *value, const TCHAR *name, TCH
 		uae_u32 crc32 = _tcstol (id, &endptr, 16) << 16;
 		id[4] = tmp;
 		crc32 |= _tcstol (id + 4, &endptr, 16);
-		struct romdata *rd = getromdatabycrc (crc32);
+		struct romdata *rd = getromdatabycrc1 (crc32);
 		if (rd) {
 			struct romlist *rl = getromlistbyromdata (rd);
 			if (rl) {
@@ -884,7 +905,7 @@ static int cfgfile_parse_host (struct uae_prefs *p, TCHAR *option, TCHAR *value)
 	  || cfgfile_string (option, value, _T("config_description"), p->description, sizeof p->description / sizeof (TCHAR)))
 	  return 1;
 
-	if (cfgfile_yesno (option, value, _T("bsdsocket_emu"), &p->socket_emu))
+	if (cfgfile_yesno4 (option, value, _T("bsdsocket_emu"), &p->socket_emu))
 	  return 1;
 
   if (cfgfile_strval (option, value, _T("sound_output"), &p->produce_sound, soundmode1, 1)
@@ -906,7 +927,7 @@ static int cfgfile_parse_host (struct uae_prefs *p, TCHAR *option, TCHAR *value)
 
 
 	
-  if(cfgfile_yesno (option, value, _T("show_leds"), &vb)) {
+  if(cfgfile_yesno4 (option, value, _T("show_leds"), &vb)) {
     p->leds_on_screen = vb;
 		return 1;
   }
@@ -1250,7 +1271,7 @@ static int cfgfile_parse_filesys (struct uae_prefs *p, const TCHAR *option, TCHA
 				if (!_tcscmp (s, _T("bootpri"))) {
 					getintval (&value, &uci->bootpri, 0);
 				} else if (!_tcscmp (s, _T("read-only"))) {
-					cfgfile_yesno (NULL, value, NULL, &uci->readonly);
+					cfgfile_yesno4 (NULL, value, NULL, &uci->readonly);
 				} else if (!_tcscmp (s, _T("volumename"))) {
 					_tcscpy (uci->volname, value);
 				} else if (!_tcscmp (s, _T("devicename"))) {
@@ -1337,16 +1358,16 @@ static int cfgfile_parse_hardware (struct uae_prefs *p, const TCHAR *option, TCH
   TCHAR *section = 0;
   TCHAR tmpbuf[CONFIG_BLEN];
 
-  if (cfgfile_yesno (option, value, _T("immediate_blits"), &p->immediate_blits)
-	  || cfgfile_yesno (option, value, _T("fast_copper"), &p->fast_copper)
-		|| cfgfile_yesno (option, value, _T("cd32cd"), &p->cs_cd32cd)
-		|| cfgfile_yesno (option, value, _T("cd32c2p"), &p->cs_cd32c2p)
-		|| cfgfile_yesno (option, value, _T("cd32nvram"), &p->cs_cd32nvram)
-    || cfgfile_yesno (option, value, _T("synchronize_clock"), &p->tod_hack)
+  if (cfgfile_yesno4 (option, value, _T("immediate_blits"), &p->immediate_blits)
+	  || cfgfile_yesno4 (option, value, _T("fast_copper"), &p->fast_copper)
+		|| cfgfile_yesno4 (option, value, _T("cd32cd"), &p->cs_cd32cd)
+		|| cfgfile_yesno4 (option, value, _T("cd32c2p"), &p->cs_cd32c2p)
+		|| cfgfile_yesno4 (option, value, _T("cd32nvram"), &p->cs_cd32nvram)
+    || cfgfile_yesno4 (option, value, _T("synchronize_clock"), &p->tod_hack)
 
-	  || cfgfile_yesno (option, value, _T("ntsc"), &p->ntscmode)
-	  || cfgfile_yesno (option, value, _T("cpu_compatible"), &p->cpu_compatible)
-	  || cfgfile_yesno (option, value, _T("cpu_24bit_addressing"), &p->address_space_24))
+	  || cfgfile_yesno4 (option, value, _T("ntsc"), &p->ntscmode)
+	  || cfgfile_yesno4 (option, value, _T("cpu_compatible"), &p->cpu_compatible)
+	  || cfgfile_yesno4 (option, value, _T("cpu_24bit_addressing"), &p->address_space_24))
 	  return 1;
   if (cfgfile_intval (option, value, _T("cachesize"), &p->cachesize, 1)
 	  || cfgfile_intval (option, value, _T("chipset_refreshrate"), &p->chipset_refreshrate, 1)
@@ -1811,7 +1832,7 @@ static int cfgfile_load_2 (struct uae_prefs *p, const TCHAR *filename, bool real
 	  //reset_inputdevice_config (p);
   }
 
-  fh = zfile_fopen (filename, _T("r"), ZFD_NORMAL);
+  fh = zfile_fopen3 (filename, _T("r"), ZFD_NORMAL);
 #ifndef	SINGLEFILE
   if (! fh)
   	return 0;
@@ -1834,8 +1855,8 @@ static int cfgfile_load_2 (struct uae_prefs *p, const TCHAR *filename, bool real
 	    if (!cfgfile_separate_linea (linea, line1b, line2b))
     		continue;
 	    type1 = type2 = 0;
-	    if (cfgfile_yesno (line1b, line2b, _T("config_hardware"), &type1) ||
-        cfgfile_yesno (line1b, line2b, _T("config_host"), &type2)) {
+	    if (cfgfile_yesno4 (line1b, line2b, _T("config_hardware"), &type1) ||
+        cfgfile_yesno4 (line1b, line2b, _T("config_host"), &type2)) {
   	    	if (type1 && type)
 	    	    *type |= CONFIG_TYPE_HARDWARE;
   	    	if (type2 && type)
@@ -1899,7 +1920,7 @@ int cfgfile_save (struct uae_prefs *p, const TCHAR *filename, int type)
 {
   struct zfile *fh;
 
-  fh = zfile_fopen (filename, _T("w"), ZFD_NORMAL);
+  fh = zfile_fopen3 (filename, _T("w"), ZFD_NORMAL);
   if (! fh)
   	return 0;
 
@@ -2398,7 +2419,7 @@ uae_u32 cfgfile_modify (uae_u32 index, TCHAR *parms, uae_u32 size, TCHAR *out, u
 
 	for (i = 0; i < argv; i++) {
 		if (i + 2 <= argv) {
-			if (!inputdevice_uaelib (argc[i], argc[i + 1])) {
+			if (!inputdevice_uaelib2 (argc[i], argc[i + 1])) {
 				if (!cfgfile_parse_uaelib_option (&changed_prefs, argc[i], argc[i + 1], 0)) {
 					if (!cfgfile_parse_option (&changed_prefs, argc[i], argc[i + 1], 0)) {
 						err = 5;
@@ -2505,7 +2526,7 @@ uae_u32 cfgfile_uaelib (int mode, uae_u32 name, uae_u32 dst, uae_u32 maxlen)
 	return 0;
 }
 
-#include "sd-pandora/sound.h"
+#include "sounddep/sound.h"
 
 void default_prefs (struct uae_prefs *p, int type)
 {
@@ -2639,7 +2660,8 @@ void default_prefs (struct uae_prefs *p, int type)
 
   p->input_tablet = TABLET_OFF;
 
-  p->key_for_menu = SDLK_F12;
+  //p->key_for_menu = SDLK_F12;
+  p->key_for_menu = 'M';
 
   inputdevice_default_prefs (p);
 
@@ -2649,7 +2671,7 @@ void default_prefs (struct uae_prefs *p, int type)
 
 	zfile_fclose (default_file);
 	default_file = NULL;
-	f = zfile_fopen_empty (NULL, _T("configstore"));
+	f = zfile_fopen_empty2 (NULL, _T("configstore"));
 	if (f) {
 		uaeconfig++;
 		cfgfile_save_options (f, p, 0);

@@ -1,3 +1,6 @@
+#ifndef UAE_COMMPIPE_H
+#define UAE_COMMPIPE_H
+
  /*
   * UAE - The Un*x Amiga Emulator
   *
@@ -163,3 +166,4 @@ STATIC_INLINE void write_comm_pipe_pvoid (smp_comm_pipe *p, void *data, int no_b
     foo.pv = data;
     write_comm_pipe_pt (p, foo, no_buffer);
 }
+#endif /*UAE_COMMPIPE_H*/

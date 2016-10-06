@@ -21,7 +21,7 @@
 #include "inputdevice.h"
 #include "xwin.h"
 #include "drawing.h"
-#include "sd-pandora/sound.h"
+#include "sounddep/sound.h"
 #include "audio.h"
 #include "keybuf.h"
 #include "keyboard.h"
@@ -31,7 +31,7 @@
 #include "autoconf.h"
 #include "blkdev.h"
 #include <SDL.h>
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 
 
 int emulating = 0;

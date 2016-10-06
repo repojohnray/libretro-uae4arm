@@ -393,7 +393,7 @@ void restore_state (const TCHAR *filename)
   int z3num;
 
   chunk = 0;
-	f = zfile_fopen (filename, _T("rb"), ZFD_NORMAL);
+	f = zfile_fopen3 (filename, _T("rb"), ZFD_NORMAL);
   if (!f)
   	goto error;
   zfile_fseek (f, 0, SEEK_END);
@@ -794,7 +794,7 @@ int save_state (const TCHAR *filename, const TCHAR *description)
 	new_blitter = false;
   savestate_nodialogs = 0;
   custom_prepare_savestate ();
-	f = zfile_fopen (filename, _T("w+b"), 0);
+	f = zfile_fopen3 (filename, _T("w+b"), 0);
   if (!f)
   	return 0;
 	int v = save_state_internal (f, description, comp, true);

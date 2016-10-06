@@ -20,7 +20,7 @@
 #include "autoconf.h"
 #include "uae.h"
 #include "options.h"
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "gui.h"
 #include "memory.h"
 #include "newcpu.h"

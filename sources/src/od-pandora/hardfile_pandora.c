@@ -1,7 +1,7 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 
-#include "td-sdl/thread.h"
+#include "od-libretro/threaddep/thread.h"
 #include "options.h"
 #include "filesys.h"
 #include "zfile.h"

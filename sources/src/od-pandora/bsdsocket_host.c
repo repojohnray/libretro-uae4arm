@@ -32,7 +32,7 @@
 #include "custom.h"
 #include "autoconf.h"
 #include "traps.h"
-#include "../td-sdl/thread.h"
+#include "../od-libretro/threaddep/thread.h"
 #include "bsdsocket.h"
 #include "native2amiga.h"
 

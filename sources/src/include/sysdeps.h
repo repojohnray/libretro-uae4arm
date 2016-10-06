@@ -15,7 +15,9 @@
   * Copyright 1996, 1997 Bernd Schmidt
   */
 
+#ifdef __cplusplus
 using namespace std;
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -243,7 +245,7 @@ extern TCHAR *utf8u (const char *s);
 #define abort() \
   do { \
     printf ("Internal error; file %s, line %d\n", __FILE__, __LINE__); \
-    SDL_Quit(); \
+    exit(-1);							       \
     (abort) (); \
 } while (0)
 #else
@@ -264,8 +266,59 @@ extern TCHAR *utf8u (const char *s);
 #undef DONT_HAVE_STDIO
 #undef DONT_HAVE_MALLOC
 
-#if defined PANDORA
+#if defined(__x86_64__) || defined(_M_AMD64)
+#define CPU_x86_64 1
+#define CPU_64_BIT 1
+#elif defined(__i386__) || defined(_M_IX86)
+#define CPU_i386 1
+#elif defined(__arm__) || defined(_M_ARM)
+#define CPU_arm 1
+#elif defined(__powerpc__) || defined(__ppc__) || defined(_M_PPC)
+#define CPU_powerpc 1
+#else
+#error unrecognized CPU type
+#endif
 
+#ifdef _WIN32
+/* Parameters are passed in ECX, EDX for both x86 and x86-64 (RCX, RDX).
+ * For x86-64, __fastcall is the default, so it isn't really required. */
+#define JITCALL __fastcall
+#elif defined(CPU_x86_64)
+/* Parameters are passed in RDI, RSI by default (System V AMD64 ABI). */
+#define JITCALL
+#elif defined(HAVE_FUNC_ATTRIBUTE_REGPARM)
+/* Parameters are passed in EAX, EDX on x86 with regparm(2). */
+#define JITCALL __attribute__((regparm(2)))
+/* This was originally regparm(3), but as far as I can see only two register
+ * params are supported by the JIT code. It probably just worked anyway
+ * if all functions used max two arguments. */
+#elif !defined(JIT)
+#define JITCALL
+#elif !defined(HAVE_FUNC_ATTRIBUTE_REGPARM) /*ARM*/
+#define JITCALL
+#endif
+
+
+#if defined(LINUX)
+#include <ctype.h>
+#define FILEFLAG_WRITE S_IWUSR
+#define FILEFLAG_READ S_IRUSR
+#define FILEFLAG_EXECUTE S_IXUSR
+#define FILEFLAG_DIR S_IFDIR
+
+#undef REGPARAM2
+#define REGPARAM
+#define REGPARAM2 JITCALL
+#define REGPARAM3 JITCALL
+typedef uae_u32 uaecptr;
+#ifndef uae_s64
+typedef long long int uae_s64;
+#endif
+#ifndef uae_u64
+typedef unsigned long long int uae_u64;
+#endif
+
+#elif defined(PANDORA)
 #include <ctype.h>
 
 #define FILEFLAG_DIR     0x1
@@ -283,11 +336,10 @@ extern TCHAR *utf8u (const char *s);
 #define abort() \
   do { \
     printf ("Internal error; file %s, line %d\n", __FILE__, __LINE__); \
-    SDL_Quit(); \
+    exit(-1);							       \
     (abort) (); \
 } while (0)
-
-#endif
+#endif /*LINUX*/
 
 #ifdef DONT_HAVE_POSIX
 
@@ -388,13 +440,8 @@ extern void gui_message (const TCHAR *,...);
 #define O_BINARY 0
 #endif
 
-#ifndef STATIC_INLINE
 #if __GNUC__ - 1 > 1 && __GNUC_MINOR__ - 1 >= 0
-#ifdef RASPBERRY
-#define STATIC_INLINE static __inline__
-#else
 #define STATIC_INLINE static __inline__ __attribute__ ((always_inline))
-#endif
 #define NOINLINE __attribute__ ((noinline))
 #define NORETURN __attribute__ ((noreturn))
 #elif _MSC_VER
@@ -406,7 +453,7 @@ extern void gui_message (const TCHAR *,...);
 #define NOINLINE
 #define NORETURN
 #endif
-#endif
+
 
 #include "target.h"
 
