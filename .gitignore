@@ -2,3 +2,7 @@
 conf/*.uae
 conf/*.conf
 kickstarts/*.rom
+sources/gen/*
+sources/gen/
+uae4arm_log.txt
+uae4arm_libretro.so

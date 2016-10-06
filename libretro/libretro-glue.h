@@ -1,8 +1,6 @@
 #ifndef LIBRETRO_HATARI_H
 #define LIBRETRO_HATARI_H
 
-#include "sysconfig.h"
-#include "sysdeps.h"
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
@@ -10,7 +8,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "libco.h"
+#include <libco.h>
 
 extern cothread_t mainThread;
 extern cothread_t emuThread;
@@ -43,6 +41,6 @@ extern int CROP_HEIGHT;
 
 #define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
 
-//#define TCHAR char /* from sysdeps.h */
-//int umain (int argc, TCHAR **argv);
+#define TCHAR char /* from sysdeps.h */
+int umain (int argc, TCHAR **argv);
 #endif

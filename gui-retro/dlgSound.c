@@ -185,7 +185,9 @@ void Dialog_SoundDlg(void)
 			changed_prefs.floppyslots[3].dfxclick = -1; 
 	}
 */
+#ifndef LIBRETRO_UAE4ARM
 	config_changed = 1;
+#endif
 	check_prefs_changed_audio();
 
 }

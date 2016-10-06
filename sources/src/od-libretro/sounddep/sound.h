@@ -126,3 +126,5 @@ STATIC_INLINE void clear_sound_buffers (void)
 
 #define FILTER_SOUND_TYPE_A500 0
 #define FILTER_SOUND_TYPE_A1200 1
+
+#define PUT_SOUND_WORD_STEREO(l,r) do { *((uae_u32 *)paula_sndbufpt) = (r << 16) | (l & 0xffff); sndbufpt = sndbufpt + 2; } while (0)

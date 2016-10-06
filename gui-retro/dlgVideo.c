@@ -14,7 +14,6 @@ const char DlgVideo_fileid[] = "Hatari dlgVideo.c : " __DATE__ " " __TIME__;
 
 #include "dialog.h"
 #include "sdlgui.h"
-#include "guiretro.h"
 
 #define DLGVIDEO_CHIPOCS	3
 #define DLGVIDEO_CHIPECSAGNUS 	4
@@ -125,14 +124,18 @@ void Dialog_VideoDlg(void)
 	else if (currprefs.collision_level==3)
 		videodlg[DLGVIDEO_COLLFULL].state |= SG_SELECTED;
 
+#ifndef LIBRETRO_UAE4ARM
 	if (currprefs.gfx_apmode[0].gfx_vsync==1)videodlg[DLGVIDEO_VSYNC].state |= SG_SELECTED;
 	else videodlg[DLGVIDEO_VSYNC].state &= ~SG_SELECTED;
+#endif /*LIBRETRO_UAE4ARM*/
 
 	if (currprefs.immediate_blits==1)videodlg[DLGVIDEO_BLITS].state |= SG_SELECTED;
 	else videodlg[DLGVIDEO_BLITS].state &= ~SG_SELECTED;
 
+#ifndef LIBRETRO_UAE4ARM
 	if (currprefs.cpu_cycle_exact==1)videodlg[DLGVIDEO_BLITCYCLE].state |= SG_SELECTED;
 	else videodlg[DLGVIDEO_BLITCYCLE].state &= ~SG_SELECTED;
+#endif /*LIBRETRO_UAE4ARM*/
 
         do
 	{
@@ -180,12 +183,14 @@ void Dialog_VideoDlg(void)
 		changed_prefs.collision_level = 3;
 	}
 
+#ifndef LIBRETRO_UAE4ARM
 	if(videodlg[DLGVIDEO_VSYNC].state& SG_SELECTED){
 		changed_prefs.gfx_apmode[0].gfx_vsync = 1;
 	}
 	else {
 		changed_prefs.gfx_apmode[0].gfx_vsync = 0;
 	}
+#endif /*LIBRETRO_UAE4ARM*/
 
 	if(videodlg[DLGVIDEO_BLITS].state& SG_SELECTED){
 		changed_prefs.immediate_blits = 1;
@@ -194,16 +199,18 @@ void Dialog_VideoDlg(void)
 		changed_prefs.immediate_blits = 0;
 	}
 
+#ifndef LIBRETRO_UAE4ARM
 	if(videodlg[DLGVIDEO_BLITCYCLE].state& SG_SELECTED){
 		changed_prefs.cpu_cycle_exact = 1;
 	}
 	else {
 		changed_prefs.cpu_cycle_exact = 0;
 	}
+#endif /*LIBRETRO_UAE4ARM*/
 
-
-
+#ifndef LIBRETRO_UAE4ARM
 	config_changed = 1;
-	check_prefs_changed_custom();
+#endif /*LIBRETRO_UAE4ARM*/
 
+	check_prefs_changed_custom();
 }

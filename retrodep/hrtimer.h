@@ -28,7 +28,9 @@ static INLINE void gettimeofday (struct timeval *tv, void *blah)
 #include <time.h>
 #endif
 
+#ifndef LIBRETRO_UAE4ARM
 #include "machdep/rpt.h"
+#endif
 
 
 STATIC_INLINE frame_time_t osdep_gethrtime (void)

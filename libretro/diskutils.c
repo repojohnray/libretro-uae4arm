@@ -9,9 +9,6 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#include "libretro-mapper.h"
-#include "../retrodep/retroglue.h"
-
 int ndsknum = 0;
 static int entries; 
 

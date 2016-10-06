@@ -300,9 +300,11 @@ while (but != DLGSYS_EXIT && but != SDLGUI_QUIT
 	else
 		ConfigureParams.System.nDSPType = DSP_TYPE_EMU;
 */
-	/*ConfigureParams.System.*/bCompatibleCpu = (systemdlg[DLGSYS_PREFETCH].state & SG_SELECTED);
-
+	/*ConfigureParams.System.*/
+	bCompatibleCpu = (systemdlg[DLGSYS_PREFETCH].state & SG_SELECTED);
 changed_prefs.cpu_compatible =bCompatibleCpu;
+	
+#ifndef LIBRETRO_UAE4ARM
 	if (changed_prefs.cpu_compatible && currprefs.cpu_cycle_exact) {
 				changed_prefs.cpu_cycle_exact = 0;
 	}
@@ -312,7 +314,8 @@ changed_prefs.cpu_compatible =bCompatibleCpu;
 	ConfigureParams.System.bPatchTimerD = (systemdlg[DLGSYS_TIMERD].state & SG_SELECTED);
 	ConfigureParams.System.bAddressSpace24 = (systemdlg[DLGSYS_24BITS].state & SG_SELECTED);
 */
-	/*ConfigureParams.System.*/bCycleExactCpu = (systemdlg[DLGSYS_CYC_EXACT].state & SG_SELECTED);
+	/*ConfigureParams.System.*/
+	bCycleExactCpu = (systemdlg[DLGSYS_CYC_EXACT].state & SG_SELECTED);
 
 	changed_prefs.cpu_cycle_exact = bCycleExactCpu;
 	if (changed_prefs.cpu_cycle_exact && currprefs.cpu_compatible) {
@@ -320,6 +323,8 @@ changed_prefs.cpu_compatible =bCompatibleCpu;
 	}
 
 	config_changed = 1;
+#endif /*LIBRETRO_UAE4ARM*/
+	
 	check_prefs_changed_cpu();
 	/* FPU emulation */
 /*

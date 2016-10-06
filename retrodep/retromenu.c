@@ -13,11 +13,14 @@
 *
 ***************************************************************************/
 
-#include "../libretro/libretro-glue.h"
+#include "sysconfig.h"
+#include "sysdeps.h"
 #include "uae.h"
 #include "options.h"
 #include "disk.h"
-#include "newcpu.h"
+#ifndef LIBRETRO_UAE4ARM
+#include "sleep.h"
+#endif
 #include "autoconf.h"
 
 #include "custom.h"
@@ -26,16 +29,12 @@
 #include "savestate.h"
 #include "filesys.h"
 #include "zfile.h"
-#include "xwin.h"
-#include "drawing.h"
 #include "gensound.h"
-#include "graph.h"
-#include "sounddep/sound.h"
-#include "libretro.h"
+//#include "newcpu.h"
+//#include "drawing.h"
+#include "target.h"
 
 #include "libretro-glue.h"
-#include "libretro-mapper.h"
-#include "retroglue.h"
 
 extern unsigned short int bmp[TEX_WIDTH * TEX_HEIGHT];
 
@@ -185,7 +184,7 @@ static int draw_menu_item(int index, char* name, char* value, int statId);
 static int draw_menu_item2(int index, char* name, char* value, int statId);
 void update_cpu_menu(void);
 char* get_hdf_name(int index);
-/*static*/ int hardfile_testrdb (char *filename);
+///*static*/ int hardfile_testrdb (char *filename);
 void update_hdf_menu(void);
 void update_video_menu(void);
 void update_sound_menu(void);
@@ -321,8 +320,9 @@ void  init_main_screen(void) {
 
 	if (config_name == NULL) {
 		config_name = (char *) malloc(512);
-		if (config_name) { //FIXME RETRO		  //sprintf(config_name, "%s\0", get_current_config_name());
-		  strncpy(config_name, PACKAGE, sizeof(PACKAGE));
+		if (config_name) {
+//FIXME RETRO
+			sprintf(config_name, "%s\0", get_current_config_name());
 		}
 	}
 	if (kickrom_name == NULL) {
@@ -448,7 +448,9 @@ void update_cpu_menu(void) {
 	}
 	draw_menu_item2(MPOS_CPU_SPEED,  " CPU speed          ", string, 4);
 	
+#ifndef LIBRETRO_UAE4ARM
 	draw_menu_item2(MPOS_CPU_EXACT,  " CPU cycle exact    ", currprefs.cpu_cycle_exact ? "on" : "off", 4);
+#endif /*LIBRETRO_UAE4ARM*/
 	draw_menu_item2(MPOS_CPU_COMPAT, " CPU compatible     ", currprefs.cpu_compatible ? "on" : "off", 4);
 	
 	draw_menu_item2(MPOS_CPU_CHIP_MEM, " Chip memory        ", 	getMemorySize(currprefs.chipmem_size,0), 4);
@@ -474,7 +476,7 @@ char* get_hdf_name(int index) {
      code makes a private copy which is updated every reset.  */
 
   int  nosize = 0,type;
-  struct uaedev_config_info *uci = &currprefs.mountconfig[index].ci;
+			struct uaedev_config_info *uci = &currprefs.mountconfig[index];
   struct mountedinfo mi;
 			
   type = get_filesys_unitconfig (&currprefs, index, &mi);
@@ -484,13 +486,15 @@ char* get_hdf_name(int index) {
     nosize = 1;
   }
 
+#ifndef LIBRETRO_UAE4ARM
   if(uci->type==FILESYS_HARDFILE)
-    return strdup(mi.rootdir);
+			return mi.rootdir;
+#endif /*LIBRETRO_UAE4ARM*/
 	
-  return "";
+		return "\0";
 }
 
-/*static*/ int hardfile_testrdb (char *filename)
+bool hardfile_testrdb (const TCHAR *filename)
 {
 	struct zfile *f = zfile_fopen3 (filename, "rb",0);
 	uae_u8 tmp[8];
@@ -579,10 +583,14 @@ void update_video_menu(void) {
 	draw_menu_item2(MPOS_VIDEO_SIGNAL,    " Signal             ", currprefs.ntscmode ? "NTSC" : "PAL", 4);
 	sprintf(string, "%d \0", currprefs.gfx_framerate);
 	draw_menu_item2(MPOS_VIDEO_FSKIP,     " Frame skip         ", string, 4);
+#ifndef LIBRETRO_UAE4ARM
 	draw_menu_item2(MPOS_VIDEO_VSYNC,     " Vsync              ", currprefs.gfx_apmode[0].gfx_vsync? "on ": "off", 4);
+#endif /*LIBRETRO_UAE4ARM*/
 	draw_menu_item2(MPOS_VIDEO_BLITS,     " Immediate blits    ", currprefs.immediate_blits ? "on ": "off", 4);
 	draw_menu_item2(MPOS_VIDEO_COLLISION, " Collision          ", (char*)collmode[currprefs.collision_level], 4);
+#ifndef LIBRETRO_UAE4ARM
 	draw_menu_item2(MPOS_VIDEO_BLIT_EXACT," Blitter cyc. exact ", currprefs.blitter_cycle_exact ? "on": "off", 4);
+#endif /*LIBRETRO_UAE4ARM*/
 	draw_menu_item2(MPOS_VIDEO_SCAN_LINE, " Scan lines         ", opt_scanline_name[opt_scanline], 4);
 
 	max_menu_pos = MPOS_VIDEO_SCAN_LINE;
@@ -805,10 +813,11 @@ int action_state_menu(int action) {
 
 	uci_set_defaults (&uci, false);
 	uci.readonly = false;
+#ifndef LIBRETRO_UAE4ARM
 	uci.type=UAEDEV_HDF;
+#endif /*LIBRETRO_UAE4ARM*/
 	sprintf(uci.rootdir,"%s\0",name);
-	add_filesys_config (&currprefs, -1, &uci);
-
+	//uci = add_filesys_config(&currprefs, -1, dhx, 0, target_file, readonly, 0, 0, 0, 0, 512, 127, 0, 0, 0, 0, 0, 0);
 }
 
 /*static*/ void unmount_all_hdfs(void) {
@@ -972,7 +981,9 @@ int action_sound_menu(int action) {
 */
 		} break;
 	} //end of switch
+#ifndef LIBRETRO_UAE4ARM
 	config_changed = 1;
+#endif /*LIBRETRO_UAE4ARM*/
 	check_prefs_changed_audio();
 	update_menu();
 	return 0;
@@ -1026,10 +1037,12 @@ int action_video_menu(int action) {
 			}
 		} break;
 		
+#ifndef LIBRETRO_UAE4ARM
 		case MPOS_VIDEO_VSYNC : {
 			changed_prefs.gfx_apmode[0].gfx_vsync = 1 - changed_prefs.gfx_apmode[0].gfx_vsync;
 			vsync_enabled = changed_prefs.gfx_apmode[0].gfx_vsync;
 		} break;
+#endif /*LIBRETRO_UAE4ARM*/
 		
 		case MPOS_VIDEO_BLITS : {
 			changed_prefs.immediate_blits = 1 - changed_prefs.immediate_blits;
@@ -1044,10 +1057,12 @@ int action_video_menu(int action) {
 			}
 		} break;
 		
+#ifndef LIBRETRO_UAE4ARM
 		case MPOS_VIDEO_BLIT_EXACT: {
 			changed_prefs.blitter_cycle_exact = 1 - currprefs.blitter_cycle_exact;
 			currprefs.blitter_cycle_exact = changed_prefs.blitter_cycle_exact; 
 		} break;
+#endif /*LIBRETRO_UAE4ARM*/
 
 		case MPOS_VIDEO_SCAN_LINE: {
 			if (action == 4) {
@@ -1066,7 +1081,9 @@ int action_video_menu(int action) {
 
 		
 	} // end of switch
+#ifndef LIBRETRO_UAE4ARM
 	config_changed = 1;
+#endif /*LIBRETRO_UAE4ARM*/
 	check_prefs_changed_custom();
 
 	update_menu();
@@ -1109,6 +1126,7 @@ int action_cpu_menu(int action) {
 			}
 		};	break;
 		
+#ifndef LIBRETRO_UAE4ARM
 		case MPOS_CPU_EXACT: {
 			changed_prefs.cpu_cycle_exact = 1 - currprefs.cpu_cycle_exact;
 			//exact & compatible cannot be turned on both at the same time
@@ -1116,13 +1134,16 @@ int action_cpu_menu(int action) {
 				changed_prefs.cpu_compatible = 0;
 			}
 		}; break;
+#endif /*LIBRETRO_UAE4ARM*/
 		
 		case MPOS_CPU_COMPAT: {
 			changed_prefs.cpu_compatible = 1 - currprefs.cpu_compatible;
 			//exact & compatible cannot be turned on both at the same time
+#ifndef LIBRETRO_UAE4ARM
 			if (changed_prefs.cpu_compatible && currprefs.cpu_cycle_exact) {
 				changed_prefs.cpu_cycle_exact = 0;
 			}
+#endif /*LIBRETRO_UAE4ARM*/
 		}; break;	
 		
 		case MPOS_CPU_CHIP_MEM : {
@@ -1174,7 +1195,9 @@ int action_cpu_menu(int action) {
 			memory_reset();
 		} break;
 	} //end of switch
+#ifndef LIBRETRO_UAE4ARM
 config_changed = 1;
+#endif /*LIBRETRO_UAE4ARM*/
 	check_prefs_changed_cpu();
 	update_menu();
 	return 0;
@@ -1290,7 +1313,7 @@ int action_main_menu(int action) {
 }
 
 void enter_options(void) {
-  static int  first_time=0;
+
   int event;
   int exit = 0;
 	
@@ -1302,6 +1325,7 @@ void enter_options(void) {
 
   memset(bmp,0,640*480*2);
 	
+	static first_time=0;
 
   if(!first_time){
 

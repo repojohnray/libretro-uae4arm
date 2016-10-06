@@ -9,7 +9,7 @@
 #ifndef OSDEP_SOUND_H
 #define OSDEP_SOUND_H
 #define SOUNDSTUFF 1
-#include "driveclick.h"
+//#include "driveclick.h"
 extern int retro_renderSound(short* samples, int sampleCount);
 
 #define sndbuffer paula_sndbuffer

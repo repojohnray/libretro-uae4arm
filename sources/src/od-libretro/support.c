@@ -1,19 +1,36 @@
+#include "config.h"
 #include "sysconfig.h"
+
+#include <stdlib.h>
+#include <stdarg.h>
+#include <signal.h>
+
 #include "sysdeps.h"
-
 #include "options.h"
-#include "uae_fs.h"
+#include "memory.h"
+#include "newcpu.h"
+#include "custom.h"
 
-int machdep_init(void) {
-    // We call libamiga_callbacks.init here because machdep_init is called
-    // very early in real_main2, just after default configuration and before
-    // it is too late to change the configuration
 
-    built_in_prefs(&currprefs, 1, 0, 0, 0);
+extern int screen_is_picasso;
 
-    if (g_libamiga_callbacks.init) {
-        g_libamiga_callbacks.init();
-    }
+int64_t g_uae_epoch = 0;
+
+
+int machdep_init (void)
+{
+  picasso_requested_on = 0;
+  picasso_on = 0;
+  screen_is_picasso = 0;
+
+  // Initialize timebase
+  g_uae_epoch = read_processor_time();
+  syncbase = 1000000; // Microseconds
 
     return 1;
+}
+
+
+void machdep_free (void)
+{
 }

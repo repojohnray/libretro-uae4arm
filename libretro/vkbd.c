@@ -1,6 +1,3 @@
-#include "sysconfig.h"
-#include "sysdeps.h"
-
 #include "libretro-glue.h"
 
 #include "vkbd_def.h"

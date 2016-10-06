@@ -1,279 +1,154 @@
-ifeq ($(PLATFORM),)
-	PLATFORM = rpi2
+PLATFLAGS :=
+
+DEBUG = 1
+
+
+ifeq ($(platform),)
+platform = unix
+ifeq ($(shell uname -a),)
+   platform = win
+else ifneq ($(findstring MINGW,$(shell uname -a)),)
+   platform = win
+else ifneq ($(findstring Darwin,$(shell uname -a)),)
+   platform = osx
+else ifneq ($(findstring win,$(shell uname -a)),)
+   platform = win
+else ifneq ($(findstring arm,$(shell uname -a)),)
+    PLATFLAGS +=  -DARM  -marm -DCPU_arm -DUSE_ARMNEON -DARM_ASSEMBLY -DARMV6_ASSEMBLY
+    #PLATFLAGS +=  -DARM  -mthumb -DCPU_arm -DUSE_ARMNEON -DARM_ASSEMBLY -DARMV6_ASSEMBLY -UJIT
+endif
 endif
 
-ifeq ($(PLATFORM),rpi2)
-	CPU_FLAGS += -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-	MORE_CFLAGS += -DCAPSLOCK_DEBIAN_WORKAROUND -DARMV6T2 
-	LDFLAGS += -lbcm_host
-	DEFS += -DRASPBERRY
-	HAVE_NEON = 1
-	HAVE_DISPMANX = 1
-	USE_PICASSO96 = 1
-else ifeq ($(PLATFORM),rpi1)
-	CPU_FLAGS += -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
-	MORE_CFLAGS += -DCAPSLOCK_DEBIAN_WORKAROUND
-	LDFLAGS += -lbcm_host
-	HAVE_DISPMANX = 1
-	DEFS += -DRASPBERRY
-else ifeq ($(PLATFORM),generic-sdl)
-	# On Raspberry Pi uncomment below line or remove ARMV6T2 define.
-	#CPU_FLAGS= -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-	MORE_CFLAGS += -DARMV6T2
-	HAVE_SDL_DISPLAY = 1
-else ifeq ($(PLATFORM),gles)
-	# For Raspberry Pi uncomment the two below lines
-	#LDFLAGS += -lbcm_host
-	#CPU_FLAGS= -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-	MORE_CFLAGS += -DARMV6T2
-	HAVE_GLES_DISPLAY = 1
-	HAVE_NEON = 1
-endif
+TARGET_NAME := uae4arm
 
-NAME   = uae4arm
-RM     = rm -f
-CXX    = g++
-STRIP  = strip
+CORE_DIR  := .
+ROOT_DIR  := .
 
-PROG   = $(NAME)
+ifeq ($(platform), unix)
+   CC = gcc
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+	LDFLAGS := -lz -lpthread
+   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T
+   CFLAGS += -DLINUX
 
-all: $(PROG)
+# use for raspberry pi
+else ifeq ($(platform), rpi) 
+	   TARGET := $(TARGET_NAME)_libretro.so
+	   fpic := -fPIC
+		 LDFLAGS := -lz -lpthread
+		 PLATFLAGS +=  -DARM  -marm
+	   SHARED := -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T 
 
-#DEBUG=1
-#TRACER=1
+else ifeq ($(platform), osx)
+   TARGET := $(TARGET_NAME)_libretro.dylib
+   fpic := -fPIC -mmacosx-version-min=10.6
+   SHARED := -dynamiclib
+   PLATFLAGS +=  -DRETRO -DLSB_FIRST -DALIGN_DWORD
 
-PANDORA=1
-#GEN_PROFILE=1
-#USE_PROFILE=1
+else ifeq ($(platform), android-armv7)
+   CC = arm-linux-androideabi-gcc
+   AR = @arm-linux-androideabi-ar
+   LD = @arm-linux-androideabi-g++ 
+   TARGET := $(TARGET_NAME)_libretro_android.so
+   fpic := -fPIC
+	LDFLAGS := -lz -lm
+   SHARED :=  -Wl,--fix-cortex-a8 -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T -Wl,--no-undefined
+   PLATFLAGS += -DANDROID -DRETRO -DAND -DLSB_FIRST -DALIGN_DWORD -DANDPORT -DA_ZIP
 
-SDL_CFLAGS = `sdl-config --cflags`
+else ifeq ($(platform), android)
+   CC = arm-linux-androideabi-gcc
+   AR = @arm-linux-androideabi-ar
+   LD = @arm-linux-androideabi-g++ 
+   TARGET := $(TARGET_NAME)_libretro_android.so
+   fpic := -fPIC
+	LDFLAGS := -lz
+   SHARED :=  -Wl,--fix-cortex-a8 -shared -Wl,--version-script=$(CORE_DIR)/libretro/link.T -Wl,--no-undefined
+   PLATFLAGS += -DANDROID -DRETRO -DAND -DLSB_FIRST -DALIGN_DWORD -DANDPORT -DARM_OPT_TEST=1
 
-DEFS +=  `xml2-config --cflags`
-DEFS += -DCPU_arm -DARM_ASSEMBLY -DARMV6_ASSEMBLY -DGP2X -DPANDORA
-DEFS += -DWITH_INGAME_WARNING
-DEFS += -DROM_PATH_PREFIX=\"./\" -DDATA_PREFIX=\"./data/\" -DSAVE_PREFIX=\"./saves/\"
-DEFS += -DUSE_SDL
+else ifeq ($(platform), wii)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
+   AR = $(DEVKITPPC)/bin/powerpc-eabi-ar$(EXE_EXT)   
+   ZLIB_DIR = $(LIBUTILS)/zlib/
+   CFLAGS += -DSDL_BYTEORDER=SDL_BIG_ENDIAN -DMSB_FIRST -DBYTE_ORDER=BIG_ENDIAN  -DBYTE_ORDER=BIG_ENDIAN \
+	-DWIIPORT=1 -DHAVE_MEMALIGN -DHAVE_ASPRINTF -I$(ZLIB_DIR) -I$(DEVKITPRO)/libogc/include \
+	-D__powerpc__ -D__POWERPC__ -DGEKKO -DHW_RVL -mrvl -mcpu=750 -meabi -mhard-float -D__ppc__
+   LDFLAGS :=   -lm -lpthread -lc
+   PLATFLAGS +=  -DRETRO -DALIGN_DWORD -DWIIPORT
+	STATIC_LINKING=1
 
-ifeq ($(USE_PICASSO96), 1)
-	DEFS += -DPICASSO96
-endif
+else ifeq ($(platform), ps3)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
+   AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
+   ZLIB_DIR = $(LIBUTILS)/zlib/
+   LDFLAGS :=   -lm -lpthread -lc
+   CFLAGS += -DSDL_BYTEORDER=SDL_BIG_ENDIAN -DMSB_FIRST -DBYTE_ORDER=BIG_ENDIAN  -DBYTE_ORDER=BIG_ENDIAN \
+	-D__CELLOS_LV2 -DPS3PORT=1 -DHAVE_MEMALIGN -DHAVE_ASPRINTF -I$(ZLIB_DIR) 
+   PLATFLAGS +=  -DRETRO -DALIGN_DWORD 
+	STATIC_LINKING=1
+else ifeq ($(platform), emscripten)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).bc
+   PLATFLAGS +=  -DRETRO -DALIGN_DWORD 
+   CFLAGS    +=  -DHAVE_MEMALIGN -DHAVE_ASPRINTF -I$(ZLIB_DIR) 
+	STATIC_LINKING=1
 
-ifeq ($(HAVE_NEON), 1)
-	DEFS += -DUSE_ARMNEON
-endif
-
-MORE_CFLAGS += -I/opt/vc/include -I/opt/vc/include/interface/vmcs_host/linux -I/opt/vc/include/interface/vcos/pthreads
-
-MORE_CFLAGS += -Isrc -Isrc/od-pandora -Isrc/gp2x -Isrc/threaddep -Isrc/menu -Isrc/include -Isrc/gp2x/menu -Wno-unused -Wno-format  -DGCCCONSTFUNC="__attribute__((const))"
-MORE_CFLAGS += -fexceptions -fpermissive
-
-LDFLAGS += -lSDL -lpthread -lm -lz -lSDL_image -lpng -lrt -lxml2 -lFLAC -lmpg123 -ldl
-LDFLAGS += -lSDL_ttf -lguichan_sdl -lguichan -L/opt/vc/lib 
-
-ifndef DEBUG
-MORE_CFLAGS += -Ofast -fomit-frame-pointer
-MORE_CFLAGS += -finline -fno-builtin
 else
-MORE_CFLAGS += -g -DDEBUG -Wl,--export-dynamic
 
-ifdef TRACER
-TRACE_CFLAGS = -DTRACER -finstrument-functions -Wall -rdynamic
+
+ifeq ($(subplatform), 32)
+   CC = i586-mingw32msvc-gcc
+else
+   CC = x86_64-w64-mingw32-gcc
+   CFLAGS += -fno-aggressive-loop-optimizations
+endif
+   PLATFLAGS +=  -DRETRO -DLSB_FIRST -DALIGN_DWORD -DWIN32PORT -DWIN32
+   TARGET := $(TARGET_NAME)_libretro.dll
+   fpic := -fPIC
+   SHARED := -shared -static-libgcc -s -Wl,--version-script=$(CORE_DIR)/libretro/link.T -Wl,--no-undefined 
+	LDFLAGS := -lm -lz
 endif
 
+ifeq ($(DEBUG), 1)
+   CFLAGS += -O0 -g -DDEBUG
+else
+  ifeq (1, 1)
+    CFLAGS += -Ofast -fomit-frame-pointer -finline -fno-builtin
+  else
+    CFLAGS += -O2
+endif
 endif
 
-ASFLAGS += $(CPU_FLAGS)
+DEFINES += 
+#-DSCSIEMU -DSCSIEMU_LINUX_IOCTL -DUSE_SDL -DDRIVESOUND -DBSDSOCKET -DCDTV -DCD32  -DA2091 -DNCR  -DGAYLE
+DEFINES += -D__LIBRETRO__
+CFLAGS += $(DEFINES) -DRETRO=1 -DINLINE="inline" -std=gnu11
 
-CXXFLAGS += $(SDL_CFLAGS) $(CPU_FLAGS) $(DEFS) $(MORE_CFLAGS)
+all: $(TARGET)
 
+include Makefile.common
 
-ifdef GEN_PROFILE
-MORE_CFLAGS += -fprofile-generate=/media/MAINSD/pandora/test -fprofile-arcs
-endif
-ifdef USE_PROFILE
-MORE_CFLAGS += -fprofile-use -fbranch-probabilities -fvpt -funroll-loops -fpeel-loops -ftracer -ftree-loop-distribute-patterns
-endif
+OBJECTS += $(SOURCES_C:.c=.o) $(SOURCES_CXX:.cpp=.o) $(SOURCES_ASM:.S=.o)
 
+INCDIRS := $(EXTRA_INCLUDES) $(INCFLAGS)
 
-OBJS =	\
-	src/akiko.o \
-	src/aros.rom.o \
-	src/audio.o \
-	src/autoconf.o \
-	src/blitfunc.o \
-	src/blittable.o \
-	src/blitter.o \
-	src/blkdev.o \
-	src/blkdev_cdimage.o \
-	src/bsdsocket.o \
-	src/calc.o \
-	src/cdrom.o \
-	src/cfgfile.o \
-	src/cia.o \
-	src/crc32.o \
-	src/custom.o \
-	src/disk.o \
-	src/diskutil.o \
-	src/drawing.o \
-	src/events.o \
-	src/expansion.o \
-	src/filesys.o \
-	src/fpp.o \
-	src/fsdb.o \
-	src/fsdb_unix.o \
-	src/fsusage.o \
-	src/gfxutil.o \
-	src/hardfile.o \
-	src/inputdevice.o \
-	src/keybuf.o \
-	src/main.o \
-	src/memory.o \
-	src/native2amiga.o \
-	src/rommgr.o \
-	src/savestate.o \
-	src/statusline.o \
-	src/traps.o \
-	src/uaelib.o \
-	src/uaeresource.o \
-	src/zfile.o \
-	src/zfile_archive.o \
-	src/archivers/7z/Archive/7z/7zAlloc.o \
-	src/archivers/7z/Archive/7z/7zDecode.o \
-	src/archivers/7z/Archive/7z/7zExtract.o \
-	src/archivers/7z/Archive/7z/7zHeader.o \
-	src/archivers/7z/Archive/7z/7zIn.o \
-	src/archivers/7z/Archive/7z/7zItem.o \
-	src/archivers/7z/7zBuf.o \
-	src/archivers/7z/7zCrc.o \
-	src/archivers/7z/7zStream.o \
-	src/archivers/7z/Bcj2.o \
-	src/archivers/7z/Bra.o \
-	src/archivers/7z/Bra86.o \
-	src/archivers/7z/LzmaDec.o \
-	src/archivers/dms/crc_csum.o \
-	src/archivers/dms/getbits.o \
-	src/archivers/dms/maketbl.o \
-	src/archivers/dms/pfile.o \
-	src/archivers/dms/tables.o \
-	src/archivers/dms/u_deep.o \
-	src/archivers/dms/u_heavy.o \
-	src/archivers/dms/u_init.o \
-	src/archivers/dms/u_medium.o \
-	src/archivers/dms/u_quick.o \
-	src/archivers/dms/u_rle.o \
-	src/archivers/lha/crcio.o \
-	src/archivers/lha/dhuf.o \
-	src/archivers/lha/header.o \
-	src/archivers/lha/huf.o \
-	src/archivers/lha/larc.o \
-	src/archivers/lha/lhamaketbl.o \
-	src/archivers/lha/lharc.o \
-	src/archivers/lha/shuf.o \
-	src/archivers/lha/slide.o \
-	src/archivers/lha/uae_lha.o \
-	src/archivers/lha/util.o \
-	src/archivers/lzx/unlzx.o \
-	src/archivers/wrp/warp.o \
-	src/archivers/zip/unzip.o \
-	src/md-pandora/support.o \
-	src/od-pandora/bsdsocket_host.o \
-	src/od-pandora/cda_play.o \
-	src/od-pandora/charset.o \
-	src/od-pandora/fsdb_host.o \
-	src/od-pandora/hardfile_pandora.o \
-	src/od-pandora/keyboard.o \
-	src/od-pandora/mp3decoder.o \
-	src/od-pandora/writelog.o \
-	src/od-pandora/pandora.o \
-	src/od-pandora/pandora_filesys.o \
-	src/od-pandora/pandora_input.o \
-	src/od-pandora/pandora_gui.o \
-	src/od-pandora/pandora_rp9.o \
-	src/od-pandora/pandora_mem.o \
-	src/od-pandora/sigsegv_handler.o \
-	src/od-pandora/menu/menu_config.o \
-	src/sd-sdl/sound_sdl_new.o \
-	src/od-pandora/gui/UaeRadioButton.o \
-	src/od-pandora/gui/UaeDropDown.o \
-	src/od-pandora/gui/UaeCheckBox.o \
-	src/od-pandora/gui/UaeListBox.o \
-	src/od-pandora/gui/InGameMessage.o \
-	src/od-pandora/gui/SelectorEntry.o \
-	src/od-pandora/gui/ShowMessage.o \
-	src/od-pandora/gui/SelectFolder.o \
-	src/od-pandora/gui/SelectFile.o \
-	src/od-pandora/gui/CreateFilesysHardfile.o \
-	src/od-pandora/gui/EditFilesysVirtual.o \
-	src/od-pandora/gui/EditFilesysHardfile.o \
-	src/od-pandora/gui/PanelPaths.o \
-	src/od-pandora/gui/PanelConfig.o \
-	src/od-pandora/gui/PanelCPU.o \
-	src/od-pandora/gui/PanelChipset.o \
-	src/od-pandora/gui/PanelROM.o \
-	src/od-pandora/gui/PanelRAM.o \
-	src/od-pandora/gui/PanelFloppy.o \
-	src/od-pandora/gui/PanelHD.o \
-	src/od-pandora/gui/PanelDisplay.o \
-	src/od-pandora/gui/PanelSound.o \
-	src/od-pandora/gui/PanelInput.o \
-	src/od-pandora/gui/PanelMisc.o \
-	src/od-pandora/gui/PanelSavestate.o \
-	src/od-pandora/gui/main_window.o \
-	src/od-pandora/gui/Navigation.o
-
-ifeq ($(HAVE_DISPMANX), 1)
-OBJS += src/od-rasp/rasp_gfx.o
+$(TARGET): $(OBJECTS)
+ifeq ($(STATIC_LINKING_LINK),1)
+	$(AR) rcs $@ $(OBJECTS) 
+else
+	$(CC) $(fpic) $(SHARED) $(INCDIRS) -o $@ $(OBJECTS) $(LDFLAGS)
 endif
 
-ifeq ($(HAVE_SDL_DISPLAY), 1)
-OBJS += src/od-pandora/pandora_gfx.o
-endif
+%.o: %.c
+	$(CC) $(fpic) $(CFLAGS) $(PLATFLAGS) $(INCDIRS) -c -o $@ $<
 
-ifeq ($(HAVE_GLES_DISPLAY), 1)
-OBJS += src/od-gles/gl.o
-OBJS += src/od-gles/gl_platform.o
-OBJS += src/od-gles/gles_gfx.o
-MORE_CFLAGS += -I/opt/vc/include/
-MORE_CFLAGS += -DHAVE_GLES
-LDFLAGS +=  -ldl -lEGL -lGLESv1_CM
-endif
-
-
-ifdef PANDORA
-OBJS += src/od-pandora/gui/sdltruetypefont.o
-endif
-
-ifeq ($(USE_PICASSO96), 1)
-	OBJS += src/od-pandora/picasso96.o
-endif
-
-ifeq ($(HAVE_NEON), 1)
-	OBJS += src/od-pandora/neon_helper.o
-endif
-
-OBJS += src/newcpu.o
-OBJS += src/readcpu.o
-OBJS += src/cpudefs.o
-OBJS += src/cpustbl.o
-OBJS += src/cpuemu_0.o
-OBJS += src/cpuemu_4.o
-OBJS += src/cpuemu_11.o
-OBJS += src/jit/compemu.o
-OBJS += src/jit/compstbl.o
-OBJS += src/jit/compemu_fpp.o
-OBJS += src/jit/compemu_support.o
-
-src/od-pandora/neon_helper.o: src/od-pandora/neon_helper.s
-	$(CXX) $(CPU_FLAGS) -Wall -o src/od-pandora/neon_helper.o -c src/od-pandora/neon_helper.s
-
-src/trace.o: src/trace.c
-	$(CC) $(MORE_CFLAGS) -c src/trace.c -o src/trace.o
-
-$(PROG): $(OBJS)
-	$(CXX) -o $(PROG) $(OBJS) $(LDFLAGS)
-ifndef DEBUG
-	$(STRIP) $(PROG)
-endif
+%.o: %.S
+	$(CC_AS) $(CFLAGS) -c $^ -o $@
 
 clean:
-	$(RM) $(PROG) $(OBJS)
+	rm -f $(OBJECTS) $(TARGET)
+	rm -Rf sources/gen/;
+	find sources/ -name "*.o" | xargs rm -Rf
+
+.PHONY: clean
