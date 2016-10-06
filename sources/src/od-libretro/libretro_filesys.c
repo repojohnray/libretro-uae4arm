@@ -5,6 +5,7 @@
 #include "sysdeps.h"
 #include "config.h"
 #include "zfile.h"
+#include "autoconf.h"
 
 
 int my_setcurrentdir (const TCHAR *curdir, TCHAR *oldcur)

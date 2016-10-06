@@ -6,15 +6,15 @@
 #include "autoconf.h"
 #include "options.h"
 #include "gui.h"
-#include "sounddep/sound.h"
+//#include "sounddep/sound.h"
 #include "memory.h"
 #include "newcpu.h"
 #include "custom.h"
 #include "uae.h"
 #include "disk.h"
-#include "SDL.h"
+//#include "SDL.h"
 
-extern int customControlMap[SDLK_LAST];
+//extern int customControlMap[SDLK_LAST];
 
 static int kickstart;
 
@@ -360,6 +360,7 @@ const char *kickstarts_names[] = { "KS ROM v1.2\0", "KS ROM v1.3\0", "KS ROM v2.
 const char *af_kickstarts_rom_names[] = { "amiga-os-120.rom\0", "amiga-os-130.rom\0", "amiga-os-204.rom\0", "amiga-os-310-a1200.rom\0" };
 #endif
 
+#if 0
 static bool CheckKickstart(struct uae_prefs *p)
 {
   char kickpath[MAX_DPATH];
@@ -394,6 +395,7 @@ static bool CheckKickstart(struct uae_prefs *p)
 
   return false;
 }
+#endif
 
 
 // In this procedure, we use changed_prefs
@@ -425,7 +427,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
 		int dummy;
 
 		fscanf(f,"kickstart=%d\n",&kickstart);
-#if defined(PANDORA) || defined(ANDROIDSDL)
+#if defined(PANDORA) || defined(ANDROIDSDL) || defined(__LIBRETRO__)
 		fscanf(f,"scaling=%d\n",&dummy);
 #else
 		fscanf(f,"scaling=%d\n",&mainMenu_enableHWscaling);
@@ -433,7 +435,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
 		fscanf(f,"showstatus=%d\n", &p->leds_on_screen);
 		fscanf(f,"mousemultiplier=%d\n", &p->input_joymouse_multiplier);
 		p->input_joymouse_multiplier *= 10;
-#if defined(PANDORA) || defined(ANDROIDSDL)
+#if defined(PANDORA) || defined(ANDROIDSDL) || defined(__LIBRETRO__)
 		fscanf(f,"systemclock=%d\n",&dummy);    // mainMenu_throttle never changes -> removed
 		fscanf(f,"syncthreshold=%d\n", &dummy); // timeslice_mode never changes -> removed
 #else
@@ -462,7 +464,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
 		fscanf(f,"stylusOffset=%d\n",&dummy);
 		fscanf(f,"tapDelay=%d\n",&p->pandora_tapDelay);
 		fscanf(f,"scanlines=%d\n", &dummy);
-#if defined(PANDORA) || defined(ANDROIDSDL)
+#if defined(PANDORA) || defined(ANDROIDSDL) || defined(__LIBRETRO__)
 		fscanf(f,"ham=%d\n",&dummy);
 #else
 		fscanf(f,"ham=%d\n",&mainMenu_ham);
@@ -485,6 +487,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
 		fscanf(f,"cutRight=%d\n", &dummy);
 		fscanf(f,"customControls=%d\n",&p->pandora_customControls);
 		fscanf(f,"custom_dpad=%d\n",&dummy);
+#if 0
 		fscanf(f,"custom_up=%d\n",&customControlMap[SDLK_UP]);
 		fscanf(f,"custom_down=%d\n",&customControlMap[SDLK_DOWN]);
 		fscanf(f,"custom_left=%d\n",&customControlMap[SDLK_LEFT]);
@@ -495,6 +498,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
 		fscanf(f,"custom_Y=%d\n",&customControlMap[SDLK_PAGEUP]);
 		fscanf(f,"custom_L=%d\n",&customControlMap[SDLK_RSHIFT]);
 		fscanf(f,"custom_R=%d\n",&customControlMap[SDLK_RCTRL]);
+#endif
 		fscanf(f,"cpu=%d\n", &cpu_level);
 		if(cpu_level > 0) // M68000
 		  // Was old format
@@ -565,7 +569,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
   		strcpy(p->floppyslots[0].df, filebuffer);
   	else
   	  p->floppyslots[0].df[0] = 0;
-		disk_insert(0, filebuffer);
+		disk_insert2(0, filebuffer);
 		if(p->nr_floppies > 1)
 		{
 			memset(filebuffer, 0, 256);
@@ -575,7 +579,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
     		strcpy(p->floppyslots[1].df, filebuffer);
     	else
     	  p->floppyslots[1].df[0] = 0;
-			disk_insert(1, filebuffer);
+			disk_insert2(1, filebuffer);
 		}
 		if(p->nr_floppies > 2)
 		{
@@ -586,7 +590,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
     		strcpy(p->floppyslots[2].df, filebuffer);
     	else
     	  p->floppyslots[2].df[0] = 0;
-			disk_insert(2, filebuffer);
+			disk_insert2(2, filebuffer);
 		}
 		if(p->nr_floppies > 3)
 		{
@@ -597,7 +601,7 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
     		strcpy(p->floppyslots[3].df, filebuffer);
     	else
     	  p->floppyslots[3].df[0] = 0;
-			disk_insert(3, filebuffer);
+			disk_insert2(3, filebuffer);
 		}
 
 		for(int i=0; i<4; ++i)
@@ -658,7 +662,8 @@ int loadconfig_old(struct uae_prefs *p, const char *orgpath)
 
 	SetPresetMode(presetModeId, p);
 
-  CheckKickstart(p);
+	fprintf(stderr, "CheckKickstart removed...");
+	//CheckKickstart(p);
 
 	return 1;
 }

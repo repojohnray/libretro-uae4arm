@@ -1,0 +1,241 @@
+EMU      = $(CORE_DIR)/sources/src
+LIBUTILS = $(CORE_DIR)/sources/utils
+GUI      = $(CORE_DIR)/gui-retro
+LIBRETRO = $(CORE_DIR)/libretro
+RETRODEP = $(CORE_DIR)/retrodep
+JIT      = $(CORE_DIR)/sources/src/jit
+GEN      = $(CORE_DIR)/sources/src
+
+USE_JIT = 1
+
+INCFLAGS := -I$(EMU) -I$(EMU)/include -I$(LIBRETRO) -I$(CORE_DIR)/libretro-include -I$(LIBUTILS) -I$(CORE_DIR) -I$(GEN) -I$(EMU)/od-libretro
+
+SOURCES_C +=  			  $(EMU)/akiko.c \
+				  $(EMU)/aros.rom.c \
+				  $(EMU)/audio.c \
+				  $(EMU)/autoconf.c \
+				  $(EMU)/blitfunc.c \
+				  $(EMU)/blittable.c \
+				  $(EMU)/blitter.c \
+				  $(EMU)/blkdev.c \
+				  $(EMU)/bsdsocket.c \
+				  $(EMU)/calc.c \
+				  $(EMU)/cdrom.c \
+				  $(EMU)/cfgfile.c \
+				  $(EMU)/cia.c \
+				  $(EMU)/crc32.c \
+				  $(EMU)/custom.c \
+				  $(EMU)/disk.c \
+				  $(EMU)/diskutil.c \
+				  $(EMU)/drawing.c \
+				  $(EMU)/events.c \
+				  $(EMU)/expansion.c \
+				  $(EMU)/filesys.c \
+				  $(EMU)/fpp.c \
+				  $(EMU)/fsdb.c \
+				  $(EMU)/fsdb_unix.c \
+				  $(EMU)/fsusage.c \
+				  $(EMU)/gfxutil.c \
+				  $(EMU)/hardfile.c \
+				  $(EMU)/inputdevice.c \
+				  $(EMU)/keybuf.c \
+				  $(EMU)/main.c \
+				  $(EMU)/memory.c \
+				  $(EMU)/native2amiga.c \
+				  $(EMU)/rommgr.c \
+				  $(EMU)/savestate.c \
+				  $(EMU)/statusline.c \
+				  $(EMU)/traps.c \
+				  $(EMU)/uaelib.c \
+				  $(EMU)/uaeresource.c \
+				  $(EMU)/zfile.c \
+				  $(EMU)/zfile_archive.c \
+				  $(EMU)/blkdev_cdimage.c \
+				  $(EMU)/od-libretro/libretro.c \
+				  $(EMU)/od-libretro/libretro_mem.c \
+				  $(EMU)/od-libretro/support.c \
+				  $(EMU)/od-libretro/audio.c \
+				  $(EMU)/od-libretro/sigsegv_handler.c \
+				  $(EMU)/od-libretro/writelog.c \
+				  $(EMU)/od-libretro/keyboard.c \
+				  $(EMU)/od-libretro/libretro_filesys.c \
+				  $(EMU)/od-libretro/menu_config.c \
+				  $(EMU)/od-libretro/charset.c \
+				  $(EMU)/od-libretro/libfsemu_thread.o \
+				  $(EMU)/od-libretro/bsdsocket_host.c \
+				  $(EMU)/od-libretro/fsdb_host.c
+
+SOURCES_C += \
+	$(EMU)/archivers/7z/Archive/7z/7zAlloc.c \
+	$(EMU)/archivers/7z/Archive/7z/7zDecode.c \
+	$(EMU)/archivers/7z/Archive/7z/7zExtract.c \
+	$(EMU)/archivers/7z/Archive/7z/7zHeader.c \
+	$(EMU)/archivers/7z/Archive/7z/7zIn.c \
+	$(EMU)/archivers/7z/Archive/7z/7zItem.c \
+	$(EMU)/archivers/7z/7zBuf.c \
+	$(EMU)/archivers/7z/7zCrc.c \
+	$(EMU)/archivers/7z/7zStream.c \
+	$(EMU)/archivers/7z/Bcj2.c \
+	$(EMU)/archivers/7z/Bra.c \
+	$(EMU)/archivers/7z/Bra86.c \
+	$(EMU)/archivers/7z/LzmaDec.c \
+	$(EMU)/archivers/dms/crc_csum.c \
+	$(EMU)/archivers/dms/getbits.c \
+	$(EMU)/archivers/dms/maketbl.c \
+	$(EMU)/archivers/dms/pfile.c \
+	$(EMU)/archivers/dms/tables.c \
+	$(EMU)/archivers/dms/u_deep.c \
+	$(EMU)/archivers/dms/u_heavy.c \
+	$(EMU)/archivers/dms/u_init.c \
+	$(EMU)/archivers/dms/u_medium.c \
+	$(EMU)/archivers/dms/u_quick.c \
+	$(EMU)/archivers/dms/u_rle.c \
+	$(EMU)/archivers/lha/crcio.c \
+	$(EMU)/archivers/lha/dhuf.c \
+	$(EMU)/archivers/lha/header.c \
+	$(EMU)/archivers/lha/huf.c \
+	$(EMU)/archivers/lha/larc.c \
+	$(EMU)/archivers/lha/lhamaketbl.c \
+	$(EMU)/archivers/lha/lharc.c \
+	$(EMU)/archivers/lha/shuf.c \
+	$(EMU)/archivers/lha/slide.c \
+	$(EMU)/archivers/lha/uae_lha.c \
+	$(EMU)/archivers/lha/util.c \
+	$(EMU)/archivers/lzx/unlzx.c \
+	$(EMU)/archivers/wrp/warp.c \
+	$(EMU)/archivers/zip/unzip.c
+
+
+
+SOURCES_C += 			  $(RETRODEP)/gui.c \
+				  $(RETRODEP)/retroglue.c \
+				  $(RETRODEP)/retromenu.c
+
+SOURCES_C += $(GUI)/dialog.c\
+				  $(GUI)/paths.c \
+				  $(GUI)/file.c \
+				  $(GUI)/thumb.c \
+				  $(GUI)/zip.c \
+				  $(GUI)/str.c \
+				  $(GUI)/dlgFloppy.c \
+				  $(GUI)/dlgHardDisk.c \
+				  $(GUI)/dlgFileSelect.c \
+				  $(GUI)/dlgMemory.c \
+				  $(GUI)/dlgJoystick.c \
+				  $(GUI)/dlgAbout.c \
+				  $(GUI)/dlgSound.c \
+				  $(GUI)/dlgAlert.c \
+				  $(GUI)/dlgMain.c \
+				  $(GUI)/dlgMisc.c \
+				  $(GUI)/dlgVideo.c \
+				  $(GUI)/dlgRom.c \
+				  $(GUI)/dlgSystem.c \
+				  $(GUI)/sdlgui.c
+#				  $(GUI)/unzip.c 
+
+
+SOURCES_C += $(LIBRETRO)/libretro.c \
+				  $(CORE_DIR)/libco/libco.c \
+				  $(LIBRETRO)/libretro-mapper.c \
+				  $(LIBRETRO)/vkbd.c \
+				  $(LIBRETRO)/graph.c \
+				  $(LIBRETRO)/diskutils.c \
+				  $(LIBRETRO)/fontmsx.c 
+
+ifeq ($(USE_JIT), 1)
+# CFLAGS += -DJIT
+INCFLAGS += -I$(JIT) -I$(GEN)
+SOURCES_C +=			 $(JIT)/compemu.c \
+                                 $(JIT)/compstbl.c \
+                                 $(JIT)/compemu_fpp.c \
+                                 $(JIT)/compemu_support.c
+endif
+
+
+ifeq (0, 1)
+CFLAGS += -DPICASSO96 -DPICASSO96_SUPPORTED
+SOURCES_C += $(EMU)/picasso96.c
+endif
+
+CFLAGS += -DLIBRETRO_UAE4ARM -DWITH_LOGGING -D_GNU_SOURCE -DUSE_GLIB $(shell pkg-config --cflags glib-2.0) -DUSE_PSEM
+
+SOURCES_C += $(EMU)/newcpu.c
+SOURCES_C += $(EMU)/readcpu.c
+SOURCES_C += $(EMU)/cpudefs.c
+SOURCES_C += $(EMU)/cpustbl.c
+SOURCES_C += $(EMU)/cpuemu_0.c
+SOURCES_C += $(EMU)/cpuemu_4.c
+SOURCES_C += $(EMU)/cpuemu_11.c
+
+
+
+ifeq (0,1)
+$(JIT)/compemu_support.c: $(GEN)/comptbl.h
+
+
+
+$(GEN)/gencomp_arm: $(JIT)/gencomp_arm.c $(GEN)/cpudefs.c $(EMU)/readcpu.c #$(EMU)/od-libretro/writelog.c
+	mkdir -p $(GEN);
+	$(CC) $(CFLAGS) $(PLATFLAGS) $(INCDIRS) -UJIT -DWITH_LOGGING -o $@ $(JIT)/gencomp_arm.c $(GEN)/cpudefs.c $(EMU)/readcpu.c #$(EMU)/od-libretro/writelog.c
+
+$(GEN)/comptbl.h: $(GEN)/gencomp_arm
+	(cd $(GEN); ./gencomp_arm)
+
+$(GEN)/compstbl.c:	$(GEN)/comptbl.h
+$(GEN)/compemu.c:	$(GEN)/comptbl.h
+
+$(GEN)/gencpu: $(EMU)/gencpu.c $(GEN)/cpudefs.c $(EMU)/readcpu.c $(EMU)/od-libretro/charset.c #$(EMU)/od-libretro/writelog.c
+	mkdir -p $(GEN);
+	$(CC) $(CFLAGS) $(PLATFLAGS) $(INCDIRS) -UJIT -DWITH_LOGGING -o $@ $(EMU)/gencpu.c $(GEN)/cpudefs.c $(EMU)/readcpu.c $(EMU)/od-libretro/charset.c #$(EMU)/od-libretro/writelog.c
+
+$(GEN)/cputbl.h: $(GEN)/gencpu
+	(cd $(GEN); ./gencpu --optimized-flags)
+
+$(GEN)/cpuemu_0.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_11.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_12.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_20.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_21.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_22.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_31.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_32.c:	$(GEN)/cputbl.h
+$(GEN)/cpuemu_33.c:	$(GEN)/cputbl.h
+$(GEN)/cpustbl.c:	$(GEN)/cputbl.h
+
+$(EMU)/custom.o:	$(GEN)/linetoscr.c
+$(EMU)/drawing.o:	$(GEN)/blit.h
+$(EMU)/blitter.o:	$(GEN)/blit.h
+
+
+$(GEN)/genblitter: $(EMU)/genblitter.c $(EMU)/blitops.c $(EMU)/od-libretro/writelog.c
+	mkdir -p $(GEN);
+	$(CC) $(CFLAGS) $(PLATFLAGS) $(INCDIRS) -UJIT -DWITH_LOGGING -o $@ $(EMU)/genblitter.c $(EMU)/blitops.c $(EMU)/od-libretro/writelog.c
+
+$(GEN)/build68k: $(EMU)/build68k.c $(EMU)/od-libretro/writelog.c
+	mkdir -p $(GEN);
+	$(CC) $(CFLAGS) $(PLATFLAGS) $(INCDIRS) -UJIT -DWITH_LOGGING -o $@ $(EMU)/build68k.c $(EMU)/od-libretro/writelog.c
+
+$(GEN)/genlinetoscr: $(EMU)/genlinetoscr.c
+	mkdir -p $(GEN);
+	$(CC) $(CFLAGS) $(PLATFLAGS) $(INCDIRS) -o $@ $(EMU)/genlinetoscr.c
+
+$(GEN)/cpudefs.c: $(GEN)/build68k
+	(cd $(GEN); ./build68k <../src/table68k >cpudefs.c)
+
+$(GEN)/blit.h:	$(GEN)/genblitter
+	$(GEN)/genblitter i >$(GEN)/blit.h
+
+$(GEN)/blitfunc.c: $(GEN)/genblitter $(GEN)/blitfunc.h
+	$(GEN)/genblitter f >$(GEN)/blitfunc.c
+
+$(GEN)/blitfunc.h: $(GEN)/genblitter
+	$(GEN)/genblitter h >$(GEN)/blitfunc.h
+
+$(GEN)/blittable.c: $(GEN)/genblitter $(GEN)/blitfunc.h
+	$(GEN)/genblitter t >$(GEN)/blittable.c
+
+$(GEN)/linetoscr.c: $(EMU)/linetoscr.c # $(GEN)/genlinetoscr
+	cat $(EMU)/linetoscr.c >$(GEN)/linetoscr.c
+	#$(GEN)/genlinetoscr >$(GEN)/linetoscr.c #-b: big endian
+
+endif

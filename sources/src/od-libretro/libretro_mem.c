@@ -1,16 +1,16 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 #include "config.h"
+#include "options.h"
 #include "autoconf.h"
 #include "uae.h"
-#include "options.h"
 #include "gui.h"
 #include "memory.h"
 #include "newcpu.h"
 #include "custom.h"
 #include "akiko.h"
 #include <sys/mman.h>
-#include <SDL.h>
+//#include <SDL.h>
 
 extern uae_u8 *extendedkickmemory2;
 

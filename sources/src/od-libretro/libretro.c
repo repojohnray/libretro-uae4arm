@@ -5,9 +5,6 @@
  *
  */
 
-#include <algorithm>
-#include <iostream>
-#include <vector>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <asm/sigcontext.h>
@@ -17,9 +14,9 @@
 #include "sysconfig.h"
 #include "sysdeps.h"
 #include "config.h"
+#include "options.h"
 #include "autoconf.h"
 #include "uae.h"
-#include "options.h"
 #include "od-libretro/threaddep/thread.h"
 #include "gui.h"
 #include "memory.h"
@@ -40,8 +37,9 @@
 #include "uaeresource.h"
 #include "rommgr.h"
 #include "akiko.h"
-#include <SDL.h>
-#include "pandora_rp9.h"
+//#include <SDL.h>
+//#include "pandora_rp9.h"
+//#define ENABLE_RP9
 
 /*
 #define DBG_MAX_THREADS 128
@@ -104,7 +102,7 @@ extern int loadconfig_old(struct uae_prefs *p, const char *orgpath);
 extern void SetLastActiveConfig(const char *filename);
 
 /* Keyboard */
-int customControlMap[SDLK_LAST];
+//int customControlMap[SDLK_LAST];
 
 char start_path_data[MAX_DPATH];
 char currentDir[MAX_DPATH];
@@ -114,7 +112,9 @@ static int capslock = 0;
 
 static char config_path[MAX_DPATH];
 static char rom_path[MAX_DPATH];
+#ifdef ENABLE_RP9
 static char rp9_path[MAX_DPATH];
+#endif
 char last_loaded_config[MAX_DPATH] = { '\0' };
 
 static bool cpuSpeedChanged = false;
@@ -122,7 +122,6 @@ static int lastCpuSpeed = 600;
 int defaultCpuSpeed = 600;
 
 
-extern "C" int main( int argc, char *argv[] );
 
 
 void reinit_amiga(void)
@@ -203,6 +202,9 @@ void sleep_millis_busy (int ms)
 void logging_init( void )
 {
 #ifdef WITH_LOGGING
+#if 1
+  debugfile = NULL;
+#else
   static int started;
   static int first;
   char debugfilename[MAX_DPATH];
@@ -223,6 +225,7 @@ void logging_init( void )
 
   first++;
   write_log ( "UAE4ARM Logfile\n\n");
+#endif
 #endif
 }
 
@@ -295,6 +298,7 @@ void target_fixup_options (struct uae_prefs *p)
 }
 
 
+#if 0 /*ZZ*/
 void target_default_options (struct uae_prefs *p, int type)
 {
   p->pandora_horizontal_offset = 0;
@@ -306,17 +310,20 @@ void target_default_options (struct uae_prefs *p, int type)
 	p->pandora_customControls = 0;
 
 	p->picasso96_modeflags = RGBFF_CLUT | RGBFF_R5G6B5 | RGBFF_R8G8B8A8;
-	
+#if 0	
 	memset(customControlMap, 0, sizeof(customControlMap));
+#endif
 }
+#endif
 
-
+#if 0 /*ZZ*/
 void target_save_options (struct zfile *f, struct uae_prefs *p)
 {
   cfgfile_write (f, "pandora.cpu_speed", "%d", p->pandora_cpu_speed);
   cfgfile_write (f, "pandora.hide_idle_led", "%d", p->pandora_hide_idle_led);
   cfgfile_write (f, "pandora.tap_delay", "%d", p->pandora_tapDelay);
   cfgfile_write (f, "pandora.custom_controls", "%d", p->pandora_customControls);
+#if 0
   cfgfile_write (f, "pandora.custom_up", "%d", customControlMap[SDLK_UP]);
   cfgfile_write (f, "pandora.custom_down", "%d", customControlMap[SDLK_DOWN]);
   cfgfile_write (f, "pandora.custom_left", "%d", customControlMap[SDLK_LEFT]);
@@ -327,9 +334,11 @@ void target_save_options (struct zfile *f, struct uae_prefs *p)
   cfgfile_write (f, "pandora.custom_y", "%d", customControlMap[SDLK_PAGEUP]);
   cfgfile_write (f, "pandora.custom_l", "%d", customControlMap[SDLK_RSHIFT]);
   cfgfile_write (f, "pandora.custom_r", "%d", customControlMap[SDLK_RCTRL]);
+#endif
   cfgfile_write (f, "pandora.move_x", "%d", p->pandora_horizontal_offset);
   cfgfile_write (f, "pandora.move_y", "%d", p->pandora_vertical_offset);
 }
+#endif /*ZZ*/
 
 
 void target_restart (void)
@@ -342,13 +351,15 @@ TCHAR *target_expand_environment (const TCHAR *path)
   return strdup(path);
 }
 
+#if 0 /*ZZ*/
 int target_parse_option (struct uae_prefs *p, const char *option, const char *value)
 {
+#if 0
   int result = (cfgfile_intval (option, value, "cpu_speed", &p->pandora_cpu_speed, 1)
     || cfgfile_intval (option, value, "hide_idle_led", &p->pandora_hide_idle_led, 1)
     || cfgfile_intval (option, value, "tap_delay", &p->pandora_tapDelay, 1)
     || cfgfile_intval (option, value, "custom_controls", &p->pandora_customControls, 1)
-    || cfgfile_intval (option, value, "custom_up", &customControlMap[SDLK_UP], 1)
+		/*|| cfgfile_intval (option, value, "custom_up", &customControlMap[SDLK_UP], 1)
     || cfgfile_intval (option, value, "custom_down", &customControlMap[SDLK_DOWN], 1)
     || cfgfile_intval (option, value, "custom_left", &customControlMap[SDLK_LEFT], 1)
     || cfgfile_intval (option, value, "custom_right", &customControlMap[SDLK_RIGHT], 1)
@@ -357,11 +368,13 @@ int target_parse_option (struct uae_prefs *p, const char *option, const char *va
     || cfgfile_intval (option, value, "custom_x", &customControlMap[SDLK_PAGEDOWN], 1)
     || cfgfile_intval (option, value, "custom_y", &customControlMap[SDLK_PAGEUP], 1)
     || cfgfile_intval (option, value, "custom_l", &customControlMap[SDLK_RSHIFT], 1)
-    || cfgfile_intval (option, value, "custom_r", &customControlMap[SDLK_RCTRL], 1)
+    || cfgfile_intval (option, value, "custom_r", &customControlMap[SDLK_RCTRL], 1)*/
     || cfgfile_intval (option, value, "move_x", &p->pandora_horizontal_offset, 1)
     || cfgfile_intval (option, value, "move_y", &p->pandora_vertical_offset, 1)
     );
+#endif
 }
+#endif /*ZZ*/
 
 
 void fetch_datapath (char *out, int size)
@@ -402,11 +415,12 @@ void set_rompath(char *newpath)
 }
 
 
+#ifdef ENABLE_RP9
 void fetch_rp9path (char *out, int size)
 {
   strncpy(out, rp9_path, size);
 }
-
+#endif
 
 void fetch_savestatepath(char *out, int size)
 {
@@ -426,14 +440,16 @@ int target_cfgfile_load (struct uae_prefs *p, const char *filename, int type, in
 {
   int i;
   int result = 0;
-
+  char *ptr;
+  
   if(emulating && changed_prefs.cdslots[0].inuse)
     gui_force_rtarea_hdchange();
 
   discard_prefs(p, type);
   default_prefs(p, 0);
-  
-	char *ptr = strstr(filename, ".rp9");
+
+#ifdef ENABLE_RP9
+	ptr = strstr(filename, ".rp9");
   if(ptr > 0)
   {
     // Load rp9 config
@@ -441,7 +457,8 @@ int target_cfgfile_load (struct uae_prefs *p, const char *filename, int type, in
     if(result)
       extractFileName(filename, last_loaded_config);
   }
-  else 
+  else
+#endif
 	{
   	ptr = strstr(filename, ".uae");
     if(ptr > 0)
@@ -455,24 +472,40 @@ int target_cfgfile_load (struct uae_prefs *p, const char *filename, int type, in
       result = loadconfig_old(p, filename);
   }
 
+  if(1 /*enable_jit*/) {
+    fprintf(stderr, "Enabling JIT...\n");
+    p->cachesize = 8192;
+    p->address_space_24 = 0;
+  }
+
+#ifdef __thumb__
+  if (p->cachesize == 8192 && p->address_space_24 == 0)
+    fprintf(stderr, "ARM thumb enabled with JIT, this will crash...\n");
+#endif /*__thumb__*/
+  
   if(result)
   {
     for(i=0; i < p->nr_floppies; ++i)
     {
       if(!DISK_validate_filename(p, p->floppyslots[i].df, 0, NULL, NULL, NULL))
         p->floppyslots[i].df[0] = 0;
-      disk_insert(i, p->floppyslots[i].df);
+      disk_insert2(i, p->floppyslots[i].df);
+#if 0
       if(strlen(p->floppyslots[i].df) > 0)
         AddFileToDiskList(p->floppyslots[i].df, 1);
+#endif
     }
 
     if(!isdefault)
       inputdevice_updateconfig (NULL, p);
-  
+
+    fprintf(stderr, "SetLastActiveConfig.. removed\n");
+#if 0
     SetLastActiveConfig(filename);
 
     if(count_HDs(p) > 0) // When loading a config with HDs, always do a hardreset
       gui_force_rtarea_hdchange();
+#endif
   }
 
   return result;
@@ -540,6 +573,7 @@ void removeFileExtension(char *filename)
 }
 
 
+#if 0
 void ReadDirectory(const char *path, std::vector<std::string> *dirs, std::vector<std::string> *files)
 {
   DIR *dir;
@@ -573,10 +607,11 @@ void ReadDirectory(const char *path, std::vector<std::string> *dirs, std::vector
   if(files != NULL)
     std::sort(files->begin(), files->end());
 }
-
+#endif
 
 void saveAdfDir(void)
 {
+#if 0
 	char path[MAX_DPATH];
 	int i;
 	
@@ -622,8 +657,8 @@ void saveAdfDir(void)
     snprintf(buffer, MAX_DPATH, "CDfile=%s\n", lstMRUCDList[i].c_str());
     fputs(buffer, f);
   }
-
 	fclose(f);
+#endif
 	return;
 }
 
@@ -642,90 +677,85 @@ void get_string(FILE *f, char *dst, int size)
 
 void loadAdfDir(void)
 {
-	char path[MAX_DPATH];
+  char path[MAX_DPATH];
   int i;
 
-	strcpy(currentDir, start_path_data);
-	snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
-	snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
-	snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
-
-	snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
-	FILE *f1=fopen(path,"rt");
-	if(f1)
+  strcpy(currentDir, start_path_data);
+  snprintf(config_path, MAX_DPATH, "%s/conf/", start_path_data);
+  snprintf(rom_path, MAX_DPATH, "%s/kickstarts/", start_path_data);
+#ifdef ENABLE_RP9
+  snprintf(rp9_path, MAX_DPATH, "%s/rp9/", start_path_data);
+#endif
+	
+  snprintf(path, MAX_DPATH, "%s/conf/adfdir.conf", start_path_data);
+  FILE *f1=fopen(path,"rt");
+  if(f1)
+    {
+      fscanf(f1, "path=");
+      get_string(f1, currentDir, sizeof(currentDir));
+      if(!feof(f1))
 	{
-		fscanf(f1, "path=");
-		get_string(f1, currentDir, sizeof(currentDir));
-		if(!feof(f1))
+	  fscanf(f1, "config_path=");
+	  get_string(f1, config_path, sizeof(config_path));
+	  fscanf(f1, "rom_path=");
+	  get_string(f1, rom_path, sizeof(rom_path));
+      
+	  int numROMs;
+	  fscanf(f1, "ROMs=%d\n", &numROMs);
+#if 0
+	  for(i=0; i<numROMs; ++i)
+	    {
+	      AvailableROM *tmp;
+	      tmp = new AvailableROM();
+	      fscanf(f1, "ROMName=");
+	      get_string(f1, tmp->Name, sizeof(tmp->Name));
+	      fscanf(f1, "ROMPath=");
+	      get_string(f1, tmp->Path, sizeof(tmp->Path));
+	      fscanf(f1, "ROMType=%d\n", &(tmp->ROMType));
+	      lstAvailableROMs.push_back(tmp);
+	    }
+	  lstMRUDiskList.clear();
+	  int numDisks = 0;
+	  char disk[MAX_PATH];
+	  fscanf(f1, "MRUDiskList=%d\n", &numDisks);
+	  for(i=0; i<numDisks; ++i)
+	    {
+	      fscanf(f1, "Diskfile=");
+	      get_string(f1, disk, sizeof(disk));
+	      FILE *f = fopen(disk, "rb");
+	      if(f != NULL)
 		{
-		  fscanf(f1, "config_path=");
-		  get_string(f1, config_path, sizeof(config_path));
-		  fscanf(f1, "rom_path=");
-      get_string(f1, rom_path, sizeof(rom_path));
-      
-      int numROMs;
-      fscanf(f1, "ROMs=%d\n", &numROMs);
-      for(i=0; i<numROMs; ++i)
-      {
-        AvailableROM *tmp;
-        tmp = new AvailableROM();
-        fscanf(f1, "ROMName=");
-        get_string(f1, tmp->Name, sizeof(tmp->Name));
-        fscanf(f1, "ROMPath=");
-        get_string(f1, tmp->Path, sizeof(tmp->Path));
-        fscanf(f1, "ROMType=%d\n", &(tmp->ROMType));
-        lstAvailableROMs.push_back(tmp);
-      }
-      
-      lstMRUDiskList.clear();
-      int numDisks = 0;
-      char disk[MAX_PATH];
-      fscanf(f1, "MRUDiskList=%d\n", &numDisks);
-      for(i=0; i<numDisks; ++i)
-      {
-        fscanf(f1, "Diskfile=");
-        get_string(f1, disk, sizeof(disk));
-        FILE *f = fopen(disk, "rb");
-        if(f != NULL)
-        {
-          fclose(f);
-          lstMRUDiskList.push_back(disk);
-        }
-      }
+		  fclose(f);
+		  lstMRUDiskList.push_back(disk);
+		}
+	    }
 
-      lstMRUCDList.clear();
-      int numCD = 0;
-      char cd[MAX_PATH];
-      fscanf(f1, "MRUCDList=%d\n", &numCD);
-      for(i=0; i<numCD; ++i)
-      {
-        fscanf(f1, "CDfile=");
-        get_string(f1, cd, sizeof(cd));
-        FILE *f = fopen(cd, "rb");
-        if(f != NULL)
-        {
-          fclose(f);
-          lstMRUCDList.push_back(cd);
-        }
-      }
-	  }
-		fclose(f1);
+	  lstMRUCDList.clear();
+	  int numCD = 0;
+	  char cd[MAX_PATH];
+	  fscanf(f1, "MRUCDList=%d\n", &numCD);
+	  for(i=0; i<numCD; ++i)
+	    {
+	      fscanf(f1, "CDfile=");
+	      get_string(f1, cd, sizeof(cd));
+	      FILE *f = fopen(cd, "rb");
+	      if(f != NULL)
+		{
+		  fclose(f);
+		  lstMRUCDList.push_back(cd);
+		}
+	    }
+#endif
 	}
+      fclose(f1);
+    }
 }
 
 
 int currVSyncRate = 0;
 bool SetVSyncRate(int hz)
 {
-	char cmd[64];
-  
-  if(currVSyncRate != hz)
-  {
-    snprintf((char*)cmd, 64, "sudo /usr/pandora/scripts/op_lcdrate.sh %d", hz);
-    system(cmd);
-    currVSyncRate = hz;
-    return true;
-  }
+  fprintf(stderr, "SetVSyncRate()...\n");
   return false;
 }
 
@@ -822,7 +852,7 @@ uae_u32 emulib_target_getcpurate (uae_u32 v, uae_u32 *low)
   return 0;
 }
 
-int main (int argc, char *argv[])
+int umain (int argc, TCHAR **argv)
 {
   struct sigaction action;
   
@@ -831,7 +861,9 @@ int main (int argc, char *argv[])
   // Get startup path
 	getcwd(start_path_data, MAX_DPATH);
 	loadAdfDir();
-  rp9_init();
+#ifdef ENABLE_RP9
+	rp9_init();
+#endif
 
   snprintf(savestate_fname, MAX_PATH, "%s/saves/default.ads", start_path_data);
 	logging_init ();
@@ -851,7 +883,9 @@ int main (int argc, char *argv[])
   }
 
   alloc_AmigaMem();
-  RescanROMs();
+
+  fprintf(stderr, "RescanROMs(); removed..\n");
+  //RescanROMs();
 
   //keyboard_settrans();
   real_main (argc, argv);
@@ -860,9 +894,12 @@ int main (int argc, char *argv[])
   romlist_clear();
   free_keyring();
   free_AmigaMem();
-  lstMRUDiskList.clear();
-  lstMRUCDList.clear();
+  //lstMRUDiskList.clear();
+  //lstMRUCDList.clear();
+  
+#ifdef ENABLE_RP9
   rp9_cleanup();
+#endif
   
   logging_cleanup();
 
@@ -872,190 +909,21 @@ int main (int argc, char *argv[])
   return 0;
 }
 
-
+#if 1
 int handle_msgpump (void)
 {
-	int got = 0;
-  SDL_Event rEvent;
-  int keycode;
-  int modifier;
-  
-  if(delayed_mousebutton) {
-    --delayed_mousebutton;
-    if(delayed_mousebutton == 0)
-      setmousebuttonstate (0, 0, 1);
-  }
-  
-	while (SDL_PollEvent(&rEvent)) {
-		got = 1;
-		
-		switch (rEvent.type)
-		{
-  		case SDL_QUIT:
-  			uae_quit();
-  			break;
-  			
-  		case SDL_KEYDOWN:
-
-  		  if(rEvent.key.keysym.sym == currprefs.key_for_menu)
-  		    inputdevice_add_inputcode (AKS_ENTERGUI, 1);
-  		  switch(rEvent.key.keysym.sym)
-  		  {
-
-				  case SDLK_LSHIFT: // Shift key
-				  inputdevice_do_keyboard(AK_LSH, 1);
-				  break;
-            
-				  case SDLK_RSHIFT: // Left shoulder button
-				  case SDLK_RCTRL:  // Right shoulder button
-  					if(currprefs.input_tablet > TABLET_OFF) {
-  					  // Holding left or right shoulder button -> stylus does right mousebutton
-  					  doStylusRightClick = 1;
-            }
-            // Fall through...
-            
-  				default:
-  				  if(currprefs.pandora_customControls) {
-  				    keycode = customControlMap[rEvent.key.keysym.sym];
-  				    if(keycode < 0) {
-  				      // Simulate mouse or joystick
-  				      SimulateMouseOrJoy(keycode, 1);
-  				      break;
-  				    }
-  				    else if(keycode > 0) {
-  				      // Send mapped key press
-  				      inputdevice_do_keyboard(keycode, 1);
-  				      break;
-  				    }
-  				  }
-  				  else
-  				    
-  				  modifier = rEvent.key.keysym.mod;
-  				  keycode = translate_pandora_keys(rEvent.key.keysym.sym, &modifier);
-  				  if(keycode)
-  				  {
-				      if(modifier == KMOD_SHIFT)
-  				      inputdevice_do_keyboard(AK_LSH, 1);
-  				    else
-  				      inputdevice_do_keyboard(AK_LSH, 0);
-				      inputdevice_do_keyboard(keycode, 1);
-  				  } else {
-				      if (keyboard_type == KEYCODE_UNK)
-				        inputdevice_translatekeycode(0, rEvent.key.keysym.sym, 1);
-				      else
-				        inputdevice_translatekeycode(0, rEvent.key.keysym.scancode, 1);
-
-				    }
-  				  break;
-				}
-        break;
-        
-  	  case SDL_KEYUP:
-  	    switch(rEvent.key.keysym.sym)
-  	    {
-
-				  case SDLK_LSHIFT: // Shift key
-            inputdevice_do_keyboard(AK_LSH, 0);
-            break;
-            
-				  case SDLK_RSHIFT: // Left shoulder button
-				  case SDLK_RCTRL:  // Right shoulder button
-  					if(currprefs.input_tablet > TABLET_OFF) {
-  					  // Release left or right shoulder button -> stylus does left mousebutton
-    					doStylusRightClick = 0;
-            }
-            // Fall through...
-  				
-  				default:
-  				  if(currprefs.pandora_customControls) {
-  				    keycode = customControlMap[rEvent.key.keysym.sym];
-  				    if(keycode < 0) {
-  				      // Simulate mouse or joystick
-  				      SimulateMouseOrJoy(keycode, 0);
-  				      break;
-  				    }
-  				    else if(keycode > 0) {
-  				      // Send mapped key release
-  				      inputdevice_do_keyboard(keycode, 0);
-  				      break;
-  				    }
-  				  }
-
-  				  modifier = rEvent.key.keysym.mod;
-  				  keycode = translate_pandora_keys(rEvent.key.keysym.sym, &modifier);
-  				  if(keycode)
-  				  {
-				      inputdevice_do_keyboard(keycode, 0);
-				      if(modifier == KMOD_SHIFT)
-  				      inputdevice_do_keyboard(AK_LSH, 0);
-            } else {
-				      if (keyboard_type == KEYCODE_UNK)
-				        inputdevice_translatekeycode(0, rEvent.key.keysym.sym, 0);
-				      else
-				        inputdevice_translatekeycode(0, rEvent.key.keysym.scancode, 0);
-				    }
-  				  break;
-  	    }
-  	    break;
-  	    
-  	  case SDL_MOUSEBUTTONDOWN:
-        if(currprefs.jports[0].id == JSEM_MICE || currprefs.jports[1].id == JSEM_MICE) {
-    	    if(rEvent.button.button == SDL_BUTTON_LEFT) {
-    	      if(currprefs.input_tablet > TABLET_OFF && !doStylusRightClick) {
-    	        // Delay mousebutton, we need new position first...
-    	        delayed_mousebutton = currprefs.pandora_tapDelay << 1;
-    	      } else {
-      	      setmousebuttonstate (0, doStylusRightClick, 1);
-      	    }
-    	    }
-    	    else if(rEvent.button.button == SDL_BUTTON_RIGHT)
-    	      setmousebuttonstate (0, 1, 1);
-        }
-  	    break;
-
-  	  case SDL_MOUSEBUTTONUP:
-        if(currprefs.jports[0].id == JSEM_MICE || currprefs.jports[1].id == JSEM_MICE) {
-    	    if(rEvent.button.button == SDL_BUTTON_LEFT) {
-  	        setmousebuttonstate (0, doStylusRightClick, 0);
-          }
-    	    else if(rEvent.button.button == SDL_BUTTON_RIGHT)
-    	      setmousebuttonstate (0, 1, 0);
-        }
-  	    break;
-  	    
-  		case SDL_MOUSEMOTION:
-  		  if(currprefs.input_tablet == TABLET_OFF) {
-          if(currprefs.jports[0].id == JSEM_MICE || currprefs.jports[1].id == JSEM_MICE) {
-  			    int x, y;
-    		    int mouseScale = currprefs.input_joymouse_multiplier / 2;
-            x = rEvent.motion.xrel;
-    				y = rEvent.motion.yrel;
-#ifdef PANDORA_SPECIFIC
-    				if(rEvent.motion.x == 0 && x > -4)
-    					x = -4;
-    				if(rEvent.motion.y == 0 && y > -4)
-    					y = -4;
-    				if(rEvent.motion.x == currprefs.gfx_size.width - 1 && x < 4)
-    					x = 4;
-    				if(rEvent.motion.y == currprefs.gfx_size.height - 1 && y < 4)
-    					y = 4;
-#endif
-  				  setmousestate(0, 0, x * mouseScale, 0);
-        	  setmousestate(0, 1, y * mouseScale, 0);
-          }
-        }
-        break;
-		}
-	}
-	return got;
+  return 0;
 }
+#endif
 
 
+#if 0 /*ZZ*/
 void handle_events (void)
 {
   /* Handle GUI events */
-  gui_handle_events ();
+  //  gui_handle_events ();
 }
+#endif /*ZZ*/
 
 
 static uaecptr clipboard_data;
