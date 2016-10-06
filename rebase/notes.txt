@@ -1,6 +1,0 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-aclocal -I m4 -I /usr/share/aclocal -I /usr/gnome/share/aclocal -I /usr/X11R6/share/aclocal -I /usr/local/share/aclocal --force;autoheader -f;libtoolize --copy --force;automake --add-missing --copy --foreign;autoconf --force;
-diff -r -x "*.o" -x ".git*" -b -B -w -x blkdev_cdimage.c /tmp/tmp/fsdev/fs-uae-2.7.14dev/ sources/ | less
