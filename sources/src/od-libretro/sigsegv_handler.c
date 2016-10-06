@@ -35,26 +35,26 @@
 
 #include <asm/sigcontext.h>
 #include <signal.h>
-#include <dlfcn.h>
 #include <execinfo.h>
-#include <SDL.h>
+#include <dlfcn.h>
+//#include <SDL.h>
 
 #define DEBUG 0
 #include "debug.h"
 
 
-enum transfer_type_t {
+typedef enum transfer_type_t {
 	TYPE_UNKNOWN,
 	TYPE_LOAD,
 	TYPE_STORE
-};
+} transfer_type_t;
 
-enum type_size_t {
+typedef enum type_size_t {
 	SIZE_UNKNOWN,
 	SIZE_BYTE,
 	SIZE_WORD,
 	SIZE_INT
-};
+} type_size_t;
 
 static int in_handler=0;
 
@@ -66,7 +66,7 @@ enum {
 STATIC_INLINE void unknown_instruction(uae_u32 instr) 
 {
 	panicbug("Unknown instruction %08x!\n", instr);
-  SDL_Quit();
+	//SDL_Quit();
 	abort();
 }
 
@@ -221,7 +221,7 @@ void signal_segv(int signum, siginfo_t* info, void*ptr)
 {
   int i, f = 0;
   ucontext_t *ucontext = (ucontext_t*)ptr;
-	Dl_info dlinfo;
+  Dl_info dlinfo;
 
 #ifdef TRACER
 	trace_end();
@@ -323,6 +323,6 @@ void signal_segv(int signum, siginfo_t* info, void*ptr)
 	printf("End of stack trace.\n");
 */
   
-  SDL_Quit();
+  //SDL_Quit();
   exit(1);
 }

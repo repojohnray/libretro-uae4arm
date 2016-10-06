@@ -1,4 +1,6 @@
- /*
+#ifndef UAE_TARGET_H
+#define UAE_TARGET_H
+/*
   * UAE - The Un*x Amiga Emulator
   *
   * Target specific stuff, Pandora version
@@ -6,9 +8,10 @@
   * Copyright 1997 Bernd Schmidt
   */
 
-#include <SDL.h>
+//#include <SDL.h>
+struct uae_prefs;
 
-#define TARGET_NAME "pandora"
+#define TARGET_NAME "libretro"
 
 #define NO_MAIN_IN_MAIN_C
 
@@ -102,3 +105,5 @@ STATIC_INLINE int max(int x, int y)
 {
     return x > y ? x : y;
 }
+#endif /*UAE_TARGET_H*/
+

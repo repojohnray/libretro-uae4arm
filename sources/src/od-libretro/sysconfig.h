@@ -1,3 +1,9 @@
+#ifndef UAE_SYSCONFIG_H
+#define UAE_SYSCONFIG_H
+
+#include <stdbool.h>
+
+#define PACKAGE_STRING "uae4arm"
 
 #define SUPPORT_THREADS
 #define MAX_DPATH 256
@@ -54,7 +60,11 @@
 /* #define ADDRESS_SPACE_24BIT */
 #define INPUTDEVICE_SIMPLE /* simplified inputdevice for faster emulation */
 
+#if defined(__x86_64__)
+#define SIZEOF_VOID_P 8
+#else
 #define SIZEOF_VOID_P 4
+#endif
 
 #if !defined(AHI)
 #undef ENFORCER
@@ -195,7 +205,11 @@
 #define SIZEOF_INT 4
 
 /* The number of bytes in a long.  */
+#if defined(__x86_64__)
+#define SIZEOF_LONG 8
+#else
 #define SIZEOF_LONG 4
+#endif
 
 /* The number of bytes in a long long.  */
 #define SIZEOF_LONG_LONG 8
@@ -522,3 +536,5 @@ typedef unsigned char boolean;
 #define _strtoui64(x,y,z)   strtoll(x,y,z)
 #define _istalnum(x)        isalnum(x)
 #define _tcsspn(x,y)		    strspn(x,y)
+
+#endif /* UAE_SYSCONFIG_H */

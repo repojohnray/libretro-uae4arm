@@ -25,7 +25,6 @@ void console_out (const TCHAR *format,...)
 }
 
 #ifdef WITH_LOGGING
-
 void write_log (const TCHAR *format,...)
 {
   int count;
@@ -39,6 +38,8 @@ void write_log (const TCHAR *format,...)
 	  fprintf( debugfile, buffer );
 	  fflush (debugfile);
   }
+  else
+    fprintf(stderr, buffer); fflush (stderr);
   va_end (parms);
 }
 

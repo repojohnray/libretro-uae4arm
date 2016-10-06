@@ -1123,8 +1123,8 @@ void host_WaitSelect (TrapContext *context, SB, uae_u32 nfds, uae_u32 readfds, u
   uae_u32 sigs;
 
   if (wssigs) {
-		m68k_dreg (regs, 0) = 0;
-		m68k_dreg (regs, 1) = wssigs;
+		m68k_dreg (&regs, 0) = 0;
+		m68k_dreg (&regs, 1) = wssigs;
 		sigs = CallLib (context, get_long (4), -0x132) & wssigs;	// SetSignal()
 		if (sigs) {
 	    DEBUG_LOG ("WaitSelect preempted by signals 0x%08x\n", sigs & wssigs);
@@ -1141,7 +1141,7 @@ void host_WaitSelect (TrapContext *context, SB, uae_u32 nfds, uae_u32 readfds, u
 
   if (nfds == 0) {
 		/* No sockets - Just wait on signals */
-		m68k_dreg (regs, 0) = wssigs;
+		m68k_dreg (&regs, 0) = wssigs;
 		sigs = CallLib (context, get_long (4), -0x13e);	// Wait()
 
 		if (sigmp)
@@ -1164,7 +1164,7 @@ void host_WaitSelect (TrapContext *context, SB, uae_u32 nfds, uae_u32 readfds, u
 
   uae_sem_post (&sb->sem);
 
-  m68k_dreg (regs, 0) = (((uae_u32)1) << sb->signal) | sb->eintrsigs | wssigs;
+  m68k_dreg (&regs, 0) = (((uae_u32)1) << sb->signal) | sb->eintrsigs | wssigs;
   sigs = CallLib (context, get_long (4), -0x13e); // Wait()
 
   if (sigmp)
@@ -1466,7 +1466,7 @@ uae_u32 host_Inet_NtoA (TrapContext *context, SB, uae_u32 in)
   BSDTRACE (("Inet_NtoA(%x) -> \n", in));
 
   if ((addr = inet_ntoa(ina)) != NULL) {
-		buf = m68k_areg (regs, 6) + offsetof (struct UAEBSDBase, scratchbuf);
+		buf = m68k_areg (&regs, 6) + offsetof (struct UAEBSDBase, scratchbuf);
 		strncpyha (buf, addr, SCRATCHBUFSIZE);
 		BSDTRACE ((" -> %s\n", addr));
 		return buf;
