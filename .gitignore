@@ -1,6 +1,7 @@
 *.o
 conf/*.uae
 conf/*.conf
+*.uae
 kickstarts/*.rom
 sources/gen/*
 sources/gen/
