@@ -9,11 +9,3 @@ sed -r -i "s/(m68k_[ad]reg[ \t]*[(][ \t]*)(regs[ \t]*,)/\1\&\2/g" sources/src/fi
 
 sed -r -i "s/(getromdatabycrc)([ \t]*[(][^,]*[)])/\11\2/" sources/src/cfgfile.c
 sed -r -i "s/(exception3)([ \t]*[(][^,]*[,][^,]*[,][^,]*[,][^,]*[,][^,]*[)])/\1z\2/" sources/src/cpuemu_11.c
-
-echo >retrodep/retroglue.o
-echo >retrodep/retromenu.o
-echo >gui-retro/dlgSound.o
-echo >gui-retro/dlgVideo.o
-echo >gui-retro/dlgSystem.o
-
-
